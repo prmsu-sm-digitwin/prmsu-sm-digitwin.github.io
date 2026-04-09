@@ -1,4 +1,4 @@
-# prmsusm-digital-twin
+# PRMSU SAN MARCELINO DIGITAL TWIN
 Photogrammetry-Based Digital Twin Navigation for PRMSU San Marcelino Campus
 
 A project made by PixiCraft Studios, a team of three minds passionate about bringing PRMSU San Marcelino to the digital world.
