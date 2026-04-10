@@ -22,3 +22,6 @@ A client-side Progressive Web App (PWA) that works fully offline after an initia
 
 ## Team
 PixiCraft Studios —  BS Computer Science, PRMSU San Marcelino Campus
+- ryliv >> lead developer + project leader
+- tronixckz >> frontend developer + artist
+- HaideeNEKU  >> frontend developer + artist
