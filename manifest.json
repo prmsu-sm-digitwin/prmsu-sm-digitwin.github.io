@@ -1,7 +1,7 @@
 {
-    "name": "PRMSU SM Digital Twin",
-    "short_name": "PRMSU Twin",
-    "description": "Photogrammetry-Based Digital Twin Navigation for PRMSU San Marcelino Campus",
+    "name": "PRMSU SM Campus Digital Twin", 
+    "short_name": "PRMSU SM DigiTwin",
+    "description": "Photogrammetry-Based Digital Twin with A* Navigation for PRMSU San Marcelino Campus",
     "start_url": "index.html",
     "display": "standalone",
     "background_color": "#ffffff",  
