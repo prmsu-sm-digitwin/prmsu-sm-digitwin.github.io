@@ -1,21 +1,22 @@
 {
-    "name": "PRMSU SM Campus Digital Twin", 
-    "short_name": "PRMSU SM DigiTwin",
-    "description": "Photogrammetry-Based Digital Twin with A* Navigation for PRMSU San Marcelino Campus",
-    "start_url": "/", 
-    "display": "standalone",
-    "background_color": "#ffffff",  
-    "orientation": "portrait-primary",
-    "icons": [
-        {
-            "src": "icons/icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "icons/icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
+  "name": "PRMSU SM Campus Digital Twin",
+  "short_name": "PRMSU SM DigiTwin",
+  "description": "Photogrammetry-Based Digital Twin with A* Navigation for PRMSU San Marcelino Campus",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
