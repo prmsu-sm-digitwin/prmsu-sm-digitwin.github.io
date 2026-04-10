@@ -21,4 +21,7 @@ A client-side Progressive Web App (PWA) that works fully offline after an initia
 - Full campus zones
 
 ## Team
-PixiCraft Studios — PRMSU San Marcelino Campus, BS Computer Science
+PixiCraft Studios —  BS Computer Science, PRMSU San Marcelino Campus
+- ryliv >> lead developer + project leader
+- tronixckz >> frontend developer + artist
+- HaideeNEKU  >> frontend developer + artist
