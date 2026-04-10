@@ -1,27 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRMSU SM Digital Twin</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="manifest.json" />
+    <title></title>
+  </head>
+  <body>
+
+    <!-- MAIN PAGE -->
     <div id="page-main">
-        
     </div>
 
-    <div id="page-map">
-        <canvas canvas id="three-canvas">
-
-    </canvas>
+    <!-- 3D MAP NAVIGATION PAGE -->
+    <div id="page-3dmap">
+      <canvas id="three-canvas"></canvas>
     </div>
 
+    <!-- LEGEND PAGE -->
     <div id="page-legend">
-
     </div>
 
+    <!-- ABOUT PAGE -->
     <div id="page-about">
-
     </div>
-</body>
+
+    <!-- 4TH YEAR PLACEHOLDERS -->
+    <div id="page-3dtour"></div>
+    <div id="page-devplan"></div>
+    <div id="page-virtualtour"></div>
+
+    <!-- TUTORIAL OVERLAY (4th year) -->
+    <div id="tutorial-overlay">
+      <div id="tutorial-spotlight"></div>
+      <img id="tutorial-sprite" />
+      <div id="tutorial-textbox"></div>
+      <button id="btn-skip">Skip</button>
+      <button id="btn-back">Back</button>
+      <button id="btn-next">Tap to Continue</button>
+    </div>
+
+  </body>
 </html>
