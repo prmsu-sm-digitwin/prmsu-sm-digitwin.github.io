@@ -1,0 +1,771 @@
+{
+  "_comment": "PRMSU San Marcelino Campus data. Origin = Main Gate. Coordinates: x=east(m), z=north(m, negative=north). Bump CACHE_NAME in service-worker.js after editing.",
+  "origin": {
+    "lat": 14.968510420710322,
+    "lng": 120.19104104076527,
+    "_note": "Main Gate — (0,0) in Three.js scene"
+  },
+  "ground": {
+    "width": 1100,
+    "depth": 400,
+    "offsetX": 500,
+    "offsetZ": -80,
+    "texture": null,
+    "color": "#7cb87a",
+    "_note": "offsetX/Z shifts plane center to cover campus. texture=null uses solid color. Change to 'images/campus-topdown.jpg' later."
+  },
+  "camera": {
+    "position": {
+      "x": 500,
+      "y": 220,
+      "z": 120
+    },
+    "lookAt": {
+      "x": 700,
+      "y": 0,
+      "z": -80
+    },
+    "_note": "Tilted top-down view. Adjust x/z to reframe campus center."
+  },
+  "bounds": {
+    "minX": -50,
+    "maxX": 1050,
+    "minZ": -230,
+    "maxZ": 80,
+    "_note": "Used by gps.js to clamp blue dot to scene area"
+  },
+  "waypoints": [
+    {
+      "id": "main_gate",
+      "label": "Main Gate",
+      "latLng": {
+        "lat": 14.968510420710322,
+        "lng": 120.19104104076527
+      },
+      "position": {
+        "x": 0.0,
+        "z": -0.0
+      },
+      "neighbors": [
+        "inner_gate"
+      ]
+    },
+    {
+      "id": "inner_gate",
+      "label": "Inner Gate",
+      "latLng": {
+        "lat": 14.968298652468183,
+        "lng": 120.19544713601876
+      },
+      "position": {
+        "x": 473.8,
+        "z": 23.6
+      },
+      "neighbors": [
+        "main_gate",
+        "z1_int1",
+        "z2_start"
+      ]
+    },
+    {
+      "id": "z1_int1",
+      "label": "Z1 Int 1",
+      "latLng": {
+        "lat": 14.968346018496462,
+        "lng": 120.19542906175793
+      },
+      "position": {
+        "x": 471.9,
+        "z": 18.3
+      },
+      "neighbors": [
+        "inner_gate",
+        "z1_int2"
+      ]
+    },
+    {
+      "id": "z1_int2",
+      "label": "Z1 Int 2",
+      "latLng": {
+        "lat": 14.968588376409816,
+        "lng": 120.19587357713708
+      },
+      "position": {
+        "x": 519.7,
+        "z": -8.7
+      },
+      "neighbors": [
+        "z1_int1",
+        "z1_int3",
+        "z2_start"
+      ]
+    },
+    {
+      "id": "z1_int3",
+      "label": "Z1 Int 3",
+      "latLng": {
+        "lat": 14.968804057187914,
+        "lng": 120.19673759101715
+      },
+      "position": {
+        "x": 612.6,
+        "z": -32.7
+      },
+      "neighbors": [
+        "z1_int2",
+        "z1_int4",
+        "z2_wp1"
+      ]
+    },
+    {
+      "id": "z1_int4",
+      "label": "Z1 Int 4",
+      "latLng": {
+        "lat": 14.968937364952716,
+        "lng": 120.1970464202239
+      },
+      "position": {
+        "x": 645.8,
+        "z": -47.5
+      },
+      "neighbors": [
+        "z1_int3",
+        "z1_int5"
+      ]
+    },
+    {
+      "id": "z1_int5",
+      "label": "Z1 Int 5",
+      "latLng": {
+        "lat": 14.969032540034839,
+        "lng": 120.1973137606458
+      },
+      "position": {
+        "x": 674.6,
+        "z": -58.1
+      },
+      "neighbors": [
+        "z1_int4",
+        "z1_int6",
+        "z2_wp3"
+      ]
+    },
+    {
+      "id": "z1_int6",
+      "label": "Z1 Int 6",
+      "latLng": {
+        "lat": 14.96910784285833,
+        "lng": 120.19751715668423
+      },
+      "position": {
+        "x": 696.5,
+        "z": -66.5
+      },
+      "neighbors": [
+        "z1_int5",
+        "z1_int7",
+        "z2_wp4"
+      ]
+    },
+    {
+      "id": "z1_int7",
+      "label": "Z1 Int 7",
+      "latLng": {
+        "lat": 14.969199428482773,
+        "lng": 120.19777659071787
+      },
+      "position": {
+        "x": 724.4,
+        "z": -76.7
+      },
+      "neighbors": [
+        "z1_int6",
+        "z1_int8"
+      ]
+    },
+    {
+      "id": "z1_int8",
+      "label": "Z1 Int 8",
+      "latLng": {
+        "lat": 14.969345376589217,
+        "lng": 120.19815587145462
+      },
+      "position": {
+        "x": 765.1,
+        "z": -92.9
+      },
+      "neighbors": [
+        "z1_int7",
+        "z1_int9"
+      ]
+    },
+    {
+      "id": "z1_int9",
+      "label": "Z1 Int 9",
+      "latLng": {
+        "lat": 14.969416304240923,
+        "lng": 120.19832669345246
+      },
+      "position": {
+        "x": 783.5,
+        "z": -100.8
+      },
+      "neighbors": [
+        "z1_int8",
+        "z1_int10",
+        "z2_wp5"
+      ]
+    },
+    {
+      "id": "z1_int10",
+      "label": "Z1 Int 10",
+      "latLng": {
+        "lat": 14.969659363148098,
+        "lng": 120.19900678826515
+      },
+      "position": {
+        "x": 856.7,
+        "z": -127.9
+      },
+      "neighbors": [
+        "z1_int9",
+        "z1_int11b",
+        "z1_int11",
+        "z2_wp6"
+      ]
+    },
+    {
+      "id": "z1_int11b",
+      "label": "Z1 Int 11 Branch",
+      "latLng": {
+        "lat": 14.969741400842855,
+        "lng": 120.1993901329979
+      },
+      "position": {
+        "x": 897.9,
+        "z": -137.0
+      },
+      "neighbors": [
+        "z1_int10",
+        "z1_int11"
+      ]
+    },
+    {
+      "id": "z1_int11",
+      "label": "Z1 Int 11",
+      "latLng": {
+        "lat": 14.969834068364882,
+        "lng": 120.19938282209148
+      },
+      "position": {
+        "x": 897.1,
+        "z": -147.3
+      },
+      "neighbors": [
+        "z1_int10",
+        "z1_int11b",
+        "z1_int12",
+        "z2_wp7"
+      ]
+    },
+    {
+      "id": "z1_int12",
+      "label": "Z1 Int 12",
+      "latLng": {
+        "lat": 14.97002640371381,
+        "lng": 120.19994958854798
+      },
+      "position": {
+        "x": 958.0,
+        "z": -168.8
+      },
+      "neighbors": [
+        "z1_int11",
+        "z2_end"
+      ]
+    },
+    {
+      "id": "z2_start",
+      "label": "Z2 Start",
+      "latLng": {
+        "lat": 14.968774861186308,
+        "lng": 120.1958923489216
+      },
+      "position": {
+        "x": 521.7,
+        "z": -29.4
+      },
+      "neighbors": [
+        "inner_gate",
+        "z1_int2",
+        "z2_wp1"
+      ]
+    },
+    {
+      "id": "z2_wp1",
+      "label": "Z2 WP1",
+      "latLng": {
+        "lat": 14.968878464723684,
+        "lng": 120.19622624387499
+      },
+      "position": {
+        "x": 557.6,
+        "z": -41.0
+      },
+      "neighbors": [
+        "z2_start",
+        "z2_wp2",
+        "z1_int3"
+      ]
+    },
+    {
+      "id": "z2_wp2",
+      "label": "Z2 WP2",
+      "latLng": {
+        "lat": 14.96910725159843,
+        "lng": 120.19685100627915
+      },
+      "position": {
+        "x": 624.8,
+        "z": -66.4
+      },
+      "neighbors": [
+        "z2_wp1",
+        "z2_wp3"
+      ]
+    },
+    {
+      "id": "z2_wp3",
+      "label": "Z2 WP3",
+      "latLng": {
+        "lat": 14.969244523609104,
+        "lng": 120.19718481434623
+      },
+      "position": {
+        "x": 660.7,
+        "z": -81.7
+      },
+      "neighbors": [
+        "z2_wp2",
+        "z2_wp4",
+        "z1_int5"
+      ]
+    },
+    {
+      "id": "z2_wp4",
+      "label": "Z2 WP4",
+      "latLng": {
+        "lat": 14.969419175667317,
+        "lng": 120.19747231846226
+      },
+      "position": {
+        "x": 691.6,
+        "z": -101.2
+      },
+      "neighbors": [
+        "z2_wp3",
+        "z2_wp5",
+        "z1_int6"
+      ]
+    },
+    {
+      "id": "z2_wp5",
+      "label": "Z2 WP5",
+      "latLng": {
+        "lat": 14.96968252184026,
+        "lng": 120.19824999634871
+      },
+      "position": {
+        "x": 775.3,
+        "z": -130.5
+      },
+      "neighbors": [
+        "z2_wp4",
+        "z2_wp6",
+        "z1_int9"
+      ]
+    },
+    {
+      "id": "z2_wp6",
+      "label": "Z2 WP6",
+      "latLng": {
+        "lat": 14.969878624150281,
+        "lng": 120.19890407974147
+      },
+      "position": {
+        "x": 845.6,
+        "z": -152.3
+      },
+      "neighbors": [
+        "z2_wp5",
+        "z2_wp7",
+        "z1_int10"
+      ]
+    },
+    {
+      "id": "z2_wp7",
+      "label": "Z2 WP7",
+      "latLng": {
+        "lat": 14.970048579340462,
+        "lng": 120.19932359529682
+      },
+      "position": {
+        "x": 890.7,
+        "z": -171.2
+      },
+      "neighbors": [
+        "z2_wp6",
+        "z2_end",
+        "z1_int11"
+      ]
+    },
+    {
+      "id": "z2_end",
+      "label": "Z2 End / Admin",
+      "latLng": {
+        "lat": 14.970261909043302,
+        "lng": 120.19986743014964
+      },
+      "position": {
+        "x": 949.2,
+        "z": -195.0
+      },
+      "neighbors": [
+        "z2_wp7",
+        "z1_int12"
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "canteen",
+      "name": "Canteen",
+      "category": "facility",
+      "description": "Campus canteen",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.968801594093382,
+        "lng": 120.19528272398298
+      },
+      "position": {
+        "x": 456.2,
+        "z": -32.4
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_start"
+    },
+    {
+      "id": "multipurpose",
+      "name": "Multi-purpose Quad",
+      "category": "facility",
+      "description": "Open quadrangle used for events",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.96876957300278,
+        "lng": 120.19624905153202
+      },
+      "position": {
+        "x": 560.1,
+        "z": -28.8
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "meshFile": null,
+      "entryWaypoint": "z1_int2"
+    },
+    {
+      "id": "student_center",
+      "name": "Student Center",
+      "category": "facility",
+      "description": "OSA, Clinic, Dental, and other student services",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.968569111818253,
+        "lng": 120.19717604559149
+      },
+      "position": {
+        "x": 659.8,
+        "z": -6.5
+      },
+      "size": {
+        "width": 15,
+        "depth": 12,
+        "height": 6
+      },
+      "meshFile": null,
+      "entryWaypoint": "z1_int4"
+    },
+    {
+      "id": "chm1",
+      "name": "CHM 1",
+      "category": "academic",
+      "description": "College of Hospitality Management 1",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.968911420179088,
+        "lng": 120.19620175495515
+      },
+      "position": {
+        "x": 555.0,
+        "z": -44.6
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_wp1"
+    },
+    {
+      "id": "chm2",
+      "name": "CHM 2",
+      "category": "academic",
+      "description": "College of Hospitality Management 2",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.96927054066282,
+        "lng": 120.1967062527351
+      },
+      "position": {
+        "x": 609.3,
+        "z": -84.6
+      },
+      "size": {
+        "width": 15,
+        "depth": 12,
+        "height": 6
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_wp2"
+    },
+    {
+      "id": "cte_beed",
+      "name": "CTE (BEED)",
+      "category": "academic",
+      "description": "College of Teacher Education BEED",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.968806614723318,
+        "lng": 120.19770382321065
+      },
+      "position": {
+        "x": 716.5,
+        "z": -33.0
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "meshFile": null,
+      "entryWaypoint": "z1_int6"
+    },
+    {
+      "id": "cte_bsed",
+      "name": "CTE (BSED)",
+      "category": "academic",
+      "description": "College of Teacher Education BSED",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.969558203065242,
+        "lng": 120.19723540641978
+      },
+      "position": {
+        "x": 666.2,
+        "z": -116.6
+      },
+      "size": {
+        "width": 40,
+        "depth": 30,
+        "height": 10
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_wp3"
+    },
+    {
+      "id": "gabaldon",
+      "name": "Gabaldon Court",
+      "category": "court",
+      "description": "Gabaldon Court",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.969009254602204,
+        "lng": 120.19761360481161
+      },
+      "position": {
+        "x": 706.8,
+        "z": -55.5
+      },
+      "size": {
+        "width": 40,
+        "depth": 30,
+        "height": 10
+      },
+      "meshFile": null,
+      "entryWaypoint": "z1_int6"
+    },
+    {
+      "id": "bangar",
+      "name": "Bangar",
+      "category": "open_space",
+      "description": "Bangar Seating Area",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.969151893063865,
+        "lng": 120.19743333765356
+      },
+      "position": {
+        "x": 687.4,
+        "z": -71.4
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "meshFile": null,
+      "entryWaypoint": "z1_int6"
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "category": "facility",
+      "description": "Campus library",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.968987465377106,
+        "lng": 120.19818874710526
+      },
+      "position": {
+        "x": 768.7,
+        "z": -53.1
+      },
+      "size": {
+        "width": 40,
+        "depth": 30,
+        "height": 10
+      },
+      "meshFile": null,
+      "entryWaypoint": "z1_int7"
+    },
+    {
+      "id": "lhs",
+      "name": "LHS Building",
+      "category": "academic",
+      "description": "Laboratory High School",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.96972192298314,
+        "lng": 120.19821810489631
+      },
+      "position": {
+        "x": 771.8,
+        "z": -134.9
+      },
+      "size": {
+        "width": 15,
+        "depth": 12,
+        "height": 6
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_wp5"
+    },
+    {
+      "id": "lhs_fac_ccit",
+      "name": "LHS Faculty / CCIT",
+      "category": "academic",
+      "description": "LHS Faculty and CCIT Classrooms",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.969946351126277,
+        "lng": 120.19887218828903
+      },
+      "position": {
+        "x": 842.2,
+        "z": -159.8
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_wp6"
+    },
+    {
+      "id": "ccit_main",
+      "name": "CCIT Main",
+      "category": "academic",
+      "description": "College of Communication & Information Technology",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.970116306267327,
+        "lng": 120.19934809033998
+      },
+      "position": {
+        "x": 893.4,
+        "z": -178.8
+      },
+      "size": {
+        "width": 15,
+        "depth": 12,
+        "height": 6
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_wp7"
+    },
+    {
+      "id": "asb",
+      "name": "ASB Building",
+      "category": "academic",
+      "description": "Agriculture Sciences Building",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.969197252107014,
+        "lng": 120.19944109496984
+      },
+      "position": {
+        "x": 903.4,
+        "z": -76.5
+      },
+      "size": {
+        "width": 40,
+        "depth": 30,
+        "height": 10
+      },
+      "meshFile": null,
+      "entryWaypoint": "z1_int11b"
+    },
+    {
+      "id": "admin",
+      "name": "Admin Building",
+      "category": "admin",
+      "description": "University administration building",
+      "color": "#c0392b",
+      "latLng": {
+        "lat": 14.970205221778164,
+        "lng": 120.20003922758869
+      },
+      "position": {
+        "x": 967.7,
+        "z": -188.7
+      },
+      "size": {
+        "width": 40,
+        "depth": 30,
+        "height": 10
+      },
+      "meshFile": null,
+      "entryWaypoint": "z2_end"
+    }
+  ]
+}
