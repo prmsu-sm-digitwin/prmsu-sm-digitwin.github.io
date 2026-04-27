@@ -1,0 +1,5 @@
+#4B71E3 the blue
+#FEBF26 the yellow
+#00006D the dark blue
+#FFCF57 the light yellow 
+font-family: &quot;Times New Roman&quot;, Georgia, serif
