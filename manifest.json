@@ -4,8 +4,8 @@
   "description": "Photogrammetry-Based Digital Twin with A* Navigation for PRMSU San Marcelino Campus",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#0F3060",
+  "theme_color": "#1A4B8C",
   "orientation": "portrait-primary",
   "icons": [
     {

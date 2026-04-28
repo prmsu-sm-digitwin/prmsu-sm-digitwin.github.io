@@ -48,7 +48,7 @@ function sidebarGoTo(pageId) {
 (function () {
   var panel, handle, dragging, startY, startH, maxH;
 
-  var SNAP_COLLAPSED = 0;   
+  var SNAP_COLLAPSED = 0;
   var SNAP_MID, SNAP_FULL;
   var currentSnap = 'collapsed';
 
@@ -58,7 +58,7 @@ function sidebarGoTo(pageId) {
   }
 
   function getAvailH() {
-  
+
     var pg = document.getElementById('page-map');
     if (!pg) return 400;
     return pg.offsetHeight;

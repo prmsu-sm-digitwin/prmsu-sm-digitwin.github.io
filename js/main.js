@@ -112,7 +112,7 @@ function buildRoads(waypoints) {
   const zone1Chain = [
     'main_gate','inner_gate','z1_int1','z1_int2','z1_int3',
     'z1_int4','z1_int5','z1_int6','z1_int7','z1_int8',
-    'z1_int9','z1_int10','z1_int11b','z1_int11','z1_int12'
+    'z1_int9','z1_int10','z1_int11','z1_int12'
   ];
   const zone2Chain = [
     'z2_start','z2_wp1','z2_wp2','z2_wp3','z2_wp4',

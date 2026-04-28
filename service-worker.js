@@ -1,74 +1,68 @@
-const CACHE_NAME = 'prmsu-sm-campus-digital-twin-v1';
+// service-worker.js — PRMSU SM Digital Twin PWA
+// Bump CACHE_NAME version whenever files change
 
-const LOCAL_ASSETS = [
+const CACHE_NAME = 'prmsu-digitwin-v3';
+
+const STATIC_ASSETS = [
   './',
   './index.html',
+  './style.css',
+  './script.js',
   './manifest.json',
-  './css/styles.css',
-  './js/main.js',
   './js/pathfinding.js',
   './js/gps.js',
   './js/ui.js',
+  './js/main.js',
   './data/campus.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  // add the Meshroom mesh files here once exported
-  // './models/zone1.glb',
-  // './models/zone2.glb',
-];
-
-const CDN_ASSETS = [
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-  'https://cdn.jsdelivr.net/npm/pathfinding@0.4.18/visual/lib/pathfinding-browser.min.js',
 ];
 
-self.addEventListener('install', (event) => {
+// Install: cache all static assets
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      await cache.addAll(LOCAL_ASSETS);
-      await Promise.all(
-        CDN_ASSETS.map((url) =>
-          cache.add(url).catch((err) =>
-            console.warn('CDN cache failed for', url, err)
-          )
-        )
-      );
-      self.skipWaiting();
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[SW] Caching static assets');
+      // Cache one by one so a single failure doesn't break the whole install
+      return Promise.allSettled(STATIC_ASSETS.map(url => cache.add(url)));
     })
   );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+// Activate: clean up old caches
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      )
-    ).then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
   );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
+// Fetch: cache-first for our assets, network-first for everything else
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // Skip non-GET and cross-origin requests we don't control
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return (
-        cached ||
-        fetch(event.request).then((response) => {
-          if (response.ok && event.request.url.startsWith(self.location.origin)) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        }).catch(() => {
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
-        })
-      );
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        // Cache successful same-origin responses
+        if (response && response.status === 200 && url.origin === self.location.origin) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => {
+        // Offline fallback for HTML pages
+        if (event.request.headers.get('accept')?.includes('text/html')) {
+          return caches.match('./index.html');
+        }
+      });
     })
   );
 });

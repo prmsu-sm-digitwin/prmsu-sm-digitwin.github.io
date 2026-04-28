@@ -1,182 +1,67 @@
 // =============================================================
-//  js/ui.js  —  All UI logic for PRMSU SM Digital Twin PWA
+//  js/ui.js  —  PRMSU SM Digital Twin  (integrated with Jonathan's script.js)
 //
-//  Designed around the Figma blueprint:
-//  - Bottom nav: hamburger (≡) | home (⌂) | back (<)
-//  - Hamburger opens dropdown: Home, 3D Map, Legend, About
-//  - 3D Map has a search bar to pick a building
-//  - About has Vision / Mission / Quality Policy tabs
+//  Jonathan's script.js handles:  goTo, goBack, history, openSidebar,
+//    closeSidebar, sidebarGoTo, sheetToggle, openVmq, closeVmq
 //
-//  Defensive: all getElementById calls are null-checked so
-//  this works even before Jonathan's final HTML is in place.
+//  This file handles:
+//    - Building info panel (showBuildingInfo / hideBuildingInfo)
+//    - Path info bar (showPathInfo / hidePathInfo / clearNavigation)
+//    - GPS toggle button
+//    - Building sheet list (populated from campus.json)
+//    - Hook into goTo for Three.js canvas resize
 // =============================================================
 
 
-// ── Page History (for the Back button) ───────────────────────
-let pageHistory    = ['page-main'];   // stack of visited page IDs
-let selectedBuilding = null;          // building currently shown in panel
-let gpsEnabled       = false;
-let campusBuildings  = [];            // filled by onSceneReady()
-let hamOpen          = false;         // hamburger dropdown state
+// ── State ────────────────────────────────────────────────────
+let selectedBuilding = null;   // building object currently shown in panel
+let gpsEnabled       = false;  // GPS on/off
+let campusBuildings  = [];     // filled by onSceneReady() from main.js
 
 
-// ── Page Switching ───────────────────────────────────────────
-
-function showPage(pageId, addToHistory = true) {
-  // Hide all pages
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-
-  // Show target page
-  const target = document.getElementById(pageId);
-  if (target) {
-    target.classList.add('active');
-  } else {
-    console.warn('[ui] showPage: element not found —', pageId);
-    return;
-  }
-
-  // Track history for back button (avoid duplicate stacking)
-  if (addToHistory && pageHistory[pageHistory.length - 1] !== pageId) {
-    pageHistory.push(pageId);
-  }
-
-  // Close hamburger menu if open
-  closeHamburger();
-
-  // Three.js needs a resize signal when its canvas becomes visible
-  if (pageId === 'page-3dmap' && typeof onMapPageShown === 'function') {
-    onMapPageShown();
-  }
-
-  console.log('[ui] Page →', pageId, '| history:', pageHistory);
-}
-
-// Called by the ⌂ home button
-function goHome() {
-  pageHistory = ['page-main'];
-  showPage('page-main', false);
-}
-
-// Called by the < back button
-function goBack() {
-  if (pageHistory.length > 1) {
-    pageHistory.pop();                               // remove current
-    const prev = pageHistory[pageHistory.length - 1];
-    showPage(prev, false);
-  } else {
-    showPage('page-main', false);
-  }
-}
+// ── Hook into goTo for Three.js resize ───────────────────────
+// When the user navigates TO the map page, the canvas needs a resize
+// signal because it was hidden (zero-size) while inactive.
+// script.js already wraps goTo once; we chain onto it here.
+(function () {
+  var _goTo = window.goTo;
+  window.goTo = function (pageId) {
+    _goTo(pageId);
+    if (pageId === 'map') {
+      // Give the DOM 1 frame to layout before firing resize
+      setTimeout(function () {
+        if (typeof onResize === 'function') onResize();
+      }, 80);
+    }
+  };
+})();
 
 
-// ── Hamburger Menu ───────────────────────────────────────────
+// ── Building Info Panel ───────────────────────────────────────
 
-function toggleHamburger() {
-  hamOpen = !hamOpen;
-  const menu = document.getElementById('ham-dropdown');
-  if (!menu) return;
-  menu.classList.toggle('hidden', !hamOpen);
-}
-
-function closeHamburger() {
-  hamOpen = false;
-  const menu = document.getElementById('ham-dropdown');
-  if (menu) menu.classList.add('hidden');
-}
-
-// Close hamburger when tapping anywhere outside it
-document.addEventListener('click', function (e) {
-  const btn  = document.getElementById('btn-hamburger');
-  const menu = document.getElementById('ham-dropdown');
-  if (!menu || !btn) return;
-  if (!menu.contains(e.target) && !btn.contains(e.target)) {
-    closeHamburger();
-  }
-});
-
-
-// ── Building Search Bar (3D Map page) ────────────────────────
-
-// Called by onSceneReady() — populates the search dropdown list
-function populateBuildingSearch(buildings) {
-  const list = document.getElementById('search-results');
-  if (!list) return;
-
-  list.innerHTML = '';
-  buildings.forEach(b => {
-    const item = document.createElement('div');
-    item.className   = 'search-item';
-    item.textContent = b.name;
-    item.addEventListener('click', () => {
-      closeBuildingSearch();
-      showBuildingInfo(b);
-    });
-    list.appendChild(item);
-  });
-}
-
-// Called when user types in the search bar
-function onSearchInput(e) {
-  const query   = e.target.value.trim().toLowerCase();
-  const results = document.getElementById('search-results');
-  if (!results) return;
-
-  if (query === '') {
-    results.classList.add('hidden');
-    return;
-  }
-
-  // Filter buildings by name
-  const items = results.querySelectorAll('.search-item');
-  let anyVisible = false;
-  items.forEach(item => {
-    const match = item.textContent.toLowerCase().includes(query);
-    item.classList.toggle('hidden', !match);
-    if (match) anyVisible = true;
-  });
-
-  results.classList.toggle('hidden', !anyVisible);
-}
-
-// Called when search bar gains focus — show full list
-function onSearchFocus() {
-  const results = document.getElementById('search-results');
-  if (results) results.classList.remove('hidden');
-}
-
-function closeBuildingSearch() {
-  const bar     = document.getElementById('search-bar');
-  const results = document.getElementById('search-results');
-  if (bar)     bar.value = '';
-  if (results) results.classList.add('hidden');
-}
-
-
-// ── Building Panel ───────────────────────────────────────────
-
-// Called by main.js when a building box is tapped
+// Called by main.js when a building mesh is tapped
 function showBuildingInfo(bldg) {
   selectedBuilding = bldg;
-  closeBuildingSearch();
 
-  setText('building-name',        bldg.name);
-  setText('building-description', bldg.description);
+  setText('building-name',        bldg.name        || '—');
+  setText('building-description', bldg.description || '');
 
   const badge = document.getElementById('building-category-badge');
   if (badge) {
-    badge.textContent = bldg.category;
-    badge.className   = 'category-badge ' + bldg.category;
+    badge.textContent = bldg.category || 'facility';
+    badge.className   = 'category-badge ' + (bldg.category || 'facility');
   }
 
   show('building-panel');
 }
 
-// Called by main.js when user taps empty space
+// Called by main.js when user taps empty space, or by closePanel()
 function hideBuildingInfo() {
   selectedBuilding = null;
   hide('building-panel');
 }
 
+// Called by the ✕ button on the panel
 function closePanel() {
   hideBuildingInfo();
 }
@@ -200,13 +85,17 @@ function navigateToSelected() {
 }
 
 // Called by main.js after A* draws the path
-function showPathInfo(destinationName, stepCount) {
-  setText('path-destination', destinationName);
-  setText('path-steps', stepCount + ' stops');
+// pathIds  : array of waypoint id strings
+// targetBldg : building object (has .name)
+function showPathInfo(pathIds, targetBldg) {
+  const name  = targetBldg ? targetBldg.name : '—';
+  const stops = Array.isArray(pathIds) ? pathIds.length : pathIds;
+  setText('path-destination', name);
+  setText('path-steps', stops + ' stops');
   show('path-bar');
 }
 
-// Called by main.js when path is cleared
+// Called by main.js / clearPath() when path is removed
 function hidePathInfo() {
   setText('path-destination', '—');
   setText('path-steps', '');
@@ -232,28 +121,80 @@ function toggleGPS() {
 }
 
 
-// ── About Page Tabs ──────────────────────────────────────────
+// ── Building Sheet List ───────────────────────────────────────
 
-function showAboutTab(tabId) {
-  // Hide all tab panels
-  document.querySelectorAll('.about-tab-panel').forEach(p => p.classList.remove('active'));
-  // Deactivate all tab buttons
-  document.querySelectorAll('.about-tab-btn').forEach(b => b.classList.remove('active'));
+// Called by onSceneReady() with the full campus data object
+// Populates the draggable bottom sheet with building items
+function populateBuildingSheet(buildings) {
+  const container = document.getElementById('building-sheet-list');
+  if (!container) return;
+  container.innerHTML = '';
 
-  // Show selected tab
-  const panel = document.getElementById('tab-' + tabId);
-  const btn   = document.getElementById('tabBtn-' + tabId);
-  if (panel) panel.classList.add('active');
-  if (btn)   btn.classList.add('active');
+  if (!buildings || buildings.length === 0) {
+    container.innerHTML = '<div class="building-cat">No buildings found</div>';
+    return;
+  }
+
+  // Group by category
+  const groups = {};
+  buildings.forEach(b => {
+    const cat = b.category || 'Other';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(b);
+  });
+
+  // Category display names
+  const catLabels = {
+    academic:       'Academic Buildings',
+    administration: 'Administration',
+    facility:       'Facilities',
+    court:          'Courts & Open Spaces',
+  };
+
+  Object.keys(groups).sort().forEach(cat => {
+    // Category header
+    const header = document.createElement('div');
+    header.className = 'building-cat';
+    header.textContent = catLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
+    container.appendChild(header);
+
+    // Building items
+    groups[cat].forEach(b => {
+      const item = document.createElement('div');
+      item.className = 'building-item';
+      item.innerHTML = `
+        <div class="building-pin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="building-info">
+          <div class="building-name">${b.name}</div>
+          <div class="building-type">${b.description || ''}</div>
+        </div>
+        <div class="building-arrow">›</div>
+      `;
+      item.addEventListener('click', () => {
+        // Close the sheet and show the building panel
+        if (typeof sheetToggle === 'function') sheetToggle();
+        showBuildingInfo(b);
+        // Also highlight the mesh in Three.js
+        if (typeof selectBuilding === 'function') selectBuilding(b);
+      });
+      container.appendChild(item);
+    });
+  });
+
+  console.log('[ui] Building sheet populated —', buildings.length, 'buildings');
 }
 
 
-// ── Called by main.js after campus.json loads ─────────────────
+// ── Called by main.js after campus.json loads & scene is built ─
 
 function onSceneReady(data) {
   campusBuildings = data.buildings;
-  populateBuildingSearch(campusBuildings);
-  console.log('[ui] Scene ready —', data.buildings.length, 'buildings loaded into search.');
+  populateBuildingSheet(campusBuildings);
 }
 
 

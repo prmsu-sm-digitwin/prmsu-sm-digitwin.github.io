@@ -334,7 +334,7 @@
     display: flex;
     flex-direction: column;
     pointer-events: none;
-  
+
   }
   .sheet-search-bar {
     pointer-events: all;
@@ -1051,3 +1051,199 @@
     font-size: 16px;
     flex-shrink: 0;
   }
+
+
+/* =============================================================
+   OUR ADDITIONS — Three.js canvas, overlays, GPS btn, utility
+   ============================================================= */
+
+/* Utility */
+.hidden { display: none !important; }
+
+/* Three.js canvas fills the entire map viewport */
+#three-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  touch-action: none; /* prevents scroll interference */
+}
+
+/* ── Path bar (shown while navigating) ── */
+.map-overlay-bar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 58px; /* avoid overlapping GPS btn */
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 5;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.14);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+}
+#path-destination {
+  font-weight: 600;
+  color: var(--maroon-dark);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#path-steps {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+#btn-clear-path {
+  background: none;
+  border: none;
+  color: var(--maroon);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+#btn-clear-path:hover { background: var(--gold-pale); }
+
+/* ── GPS floating button ── */
+#gps-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 42px;
+  height: 42px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  color: var(--maroon);
+  transition: background 0.2s, color 0.2s;
+}
+#gps-btn svg { width: 20px; height: 20px; }
+#gps-btn.gps-active {
+  background: var(--maroon);
+  color: var(--white);
+  border-color: var(--maroon);
+}
+
+/* ── Building info panel (slides up from bottom) ── */
+.building-info-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--white);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+  z-index: 15;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  transform: translateY(0);
+}
+.building-info-panel.hidden {
+  transform: translateY(110%);
+  display: block !important; /* override .hidden display:none — use transform instead */
+  pointer-events: none;
+}
+.building-info-panel-handle {
+  width: 36px;
+  height: 4px;
+  background: #C7C7CC;
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+.building-info-panel-inner {
+  padding: 12px 16px 24px;
+  position: relative;
+}
+.building-info-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(0,0,0,0.06);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: background 0.15s;
+}
+.building-info-close:hover { background: rgba(0,0,0,0.12); }
+
+/* Category badge */
+.category-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--gold-pale);
+  color: var(--gold);
+  border: 1px solid rgba(232,169,0,0.3);
+}
+.category-badge.academic       { background: #e8f0fe; color: #1a73e8; border-color: rgba(26,115,232,0.3); }
+.category-badge.administration { background: #fce8e6; color: #c5221f; border-color: rgba(197,34,31,0.3); }
+.category-badge.facility       { background: #e6f4ea; color: #188038; border-color: rgba(24,128,56,0.3); }
+.category-badge.court          { background: #e6f4ea; color: #188038; border-color: rgba(24,128,56,0.3); }
+
+/* Building panel content */
+.building-info-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--maroon-dark);
+  font-weight: 600;
+  margin: 8px 0 6px;
+  line-height: 1.25;
+}
+.building-info-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+/* Navigate Here button */
+.navigate-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--maroon);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+  letter-spacing: 0.02em;
+}
+.navigate-btn:hover  { background: var(--maroon-light); }
+.navigate-btn:active { background: var(--maroon-dark);  }
