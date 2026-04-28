@@ -604,15 +604,45 @@
     width: 100%;
     aspect-ratio: 1;
     background: var(--maroon-dark);
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(201,152,10,0.2);
+    gap: 5px;
+    border: 1px solid rgba(232,169,0,0.25);
     transition: transform 0.15s;
+    padding: 8px 6px;
+    overflow: hidden;
   }
   .vmq-img-box:active { transform: scale(0.96); }
-  .vmq-img-box svg { width: 24px; height: 24px; color: var(--gold-light); }
+  .vmq-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--gold-light);
+    flex-shrink: 0;
+  }
+  .vmq-box-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1;
+  }
+  .vmq-box-text {
+    font-size: 7.5px;
+    color: rgba(255,255,255,0.80);
+    text-align: center;
+    line-height: 1.5;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
   .vmq-label {
     font-size: 9px;
     font-weight: 600;
@@ -622,100 +652,60 @@
     text-align: center;
   }
 
-  .about-pwa-section {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
+.about-pwa-section {
     flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
   }
-  .about-pwa-row {
+  .about-pwa-full {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+  }
+  .about-pwa-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .about-pwa-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0.75) 0%,
+      rgba(0,0,0,0.50) 45%,
+      rgba(0,0,0,0.10) 100%
+    );
+    z-index: 1;
+  }
+  .about-pwa-text-wrap {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 65%;
+    z-index: 2;
     display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px 20px;
+    -webkit-mask-image: linear-gradient(to right, black 55%, transparent 100%);
+    mask-image: linear-gradient(to right, black 55%, transparent 100%);
   }
   .about-pwa-label {
     font-size: 11px;
-    font-weight: 600;
-    color: var(--maroon);
-    white-space: nowrap;
-    padding-top: 4px;
-    letter-spacing: 0.03em;
-    flex-shrink: 0;
-  }
-  .about-pwa-photo-box {
-    flex: 1;
-    height: 110px;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    background: var(--maroon-dark);
-    border: 1px solid rgba(201,152,10,0.15);
-  }
-  .photo-half {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 52%;
-    background: var(--maroon);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .photo-half-left { left: 0; background: #0D2E5A; }
-  .photo-half-right { right: 0; background: #163D75; }
-  .photo-half svg { width: 20px; height: 20px; color: rgba(255,255,255,0.25); }
-  .photo-divider {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--gold);
-    transform: translateX(-50%);
-    z-index: 2;
-  }
-  .photo-divider::before, .photo-divider::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-  }
-  .photo-divider::before {
-    top: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 10px solid var(--gold);
-  }
-  .photo-divider::after {
-    bottom: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 10px solid var(--gold);
-  }
-  .photo-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 3;
-    gap: 2px;
-  }
-  .photo-text-main {
-    font-family: 'Playfair Display', serif;
-    font-size: 11px;
-    color: var(--white);
-    text-align: center;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-    font-weight: 600;
-  }
-  .photo-text-sub {
-    font-size: 9px;
+    font-weight: 700;
     color: var(--gold-light);
-    text-align: center;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .about-pwa-desc {
+    font-size: 11px;
+    color: rgba(255,255,255,0.90);
+    line-height: 1.6;
+    font-family: 'DM Sans', sans-serif;
   }
 
   .info-section {
