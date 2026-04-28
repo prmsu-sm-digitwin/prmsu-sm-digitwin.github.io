@@ -1,12 +1,12 @@
 // service-worker.js — PRMSU SM Digital Twin PWA
 // Bump CACHE_NAME version whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v3';
+const CACHE_NAME = 'prmsu-digitwin-v4';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './style.css',
+  './css/style.css',       // ← correct path (was ./style.css — caused offline CSS failure)
   './script.js',
   './manifest.json',
   './js/pathfinding.js',
@@ -30,14 +30,20 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activate: clean up old caches
+// Activate: clean up old caches, then tell every open tab to reload
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+    caches.keys()
+      .then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      )
+      .then(() => self.clients.claim())
+      .then(() =>
+        // Notify all tabs that a new version is ready
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+          .then(clients => clients.forEach(client => client.postMessage({ type: 'SW_UPDATED' })))
+      )
   );
-  self.clients.claim();
 });
 
 // Fetch: cache-first for our assets, network-first for everything else
