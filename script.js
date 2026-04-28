@@ -1,15 +1,15 @@
 const vmqData = {
   vision: {
     title: 'Vision',
-    text: 'President Ramon Magsaysay State University envisions itself as a premier state university in the CALABARZON and Central Luzon regions, producing competent, innovative, and morally upright graduates who contribute to national development and global competitiveness.'
+    text: 'PRMSU shall be a premier learner-centered and proactive university in a digital and global society.'
   },
   mission: {
     title: 'Mission',
-    text: 'PRMSU is committed to provide quality higher education, advanced technology education, research, extension services and production activities to produce competent, disciplined and morally upright graduates who will serve the needs of the industry and the community.'
+    text: 'The PRMSU shall primarily provide advance and higher professional, technical, and special instructions in various disciplines; undertake research, extension and income generation programs for the sustainable development of Zambales, the region and the country.'
   },
   quality: {
     title: 'Quality Policy',
-    text: 'PRMSU is committed to provide quality higher education and promote quality culture through continual improvement of its services anchored on good governance, relevant academic programs, research and extension activities, and linkages to satisfy stakeholders\' needs and comply with applicable requirements.'
+    text: 'The President Ramon Magsaysay State University is committed to continually strive for excellence in instruction, research, extension and production to strengthen global competitiveness adhering to quality standards for the utmost satisfaction of its valued customers.'
   }
 };
 
