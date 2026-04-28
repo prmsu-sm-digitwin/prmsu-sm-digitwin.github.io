@@ -398,8 +398,13 @@ function clearPath() {
 
 // ── GPS blue dot (called from gps.js) ────────────────────────
 function updateGPSMarker(x, z) {
+  // null means GPS was turned off — just hide the marker
+  if (x === null || z === null) {
+    if (gpsMarker) gpsMarker.visible = false;
+    return;
+  }
   if (!gpsMarker) {
-    // Blue pulsing sphere
+    // Blue sphere
     gpsMarker = new THREE.Mesh(
       new THREE.SphereGeometry(2.5, 16, 16),
       new THREE.MeshBasicMaterial({ color: 0x3498db })
@@ -407,6 +412,7 @@ function updateGPSMarker(x, z) {
     gpsMarker.userData.isGPS = true;
     scene.add(gpsMarker);
   }
+  gpsMarker.visible = true;
   gpsMarker.position.set(x, 2.5, z);
 }
 
