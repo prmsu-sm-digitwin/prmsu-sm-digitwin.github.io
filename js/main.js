@@ -258,9 +258,21 @@ function darkenColor(hex, factor) {
 }
 
 // ── camera setup ──────────────────────────────────────────────
+// camOffset = camera.position - camera.lookAt, stored on first load.
+// Every pan/zoom preserves this offset so the tilt angle never resets.
+let camOffset = { x: -200, y: 220, z: 200 }; // safe default; overwritten by positionCamera
+
 function positionCamera(cam) {
   camera.position.set(cam.position.x, cam.position.y, cam.position.z);
   camera.lookAt(cam.lookAt.x, cam.lookAt.y, cam.lookAt.z);
+  // Sync lookTarget to the JSON value
+  lookTarget.x = cam.lookAt.x;
+  lookTarget.y = cam.lookAt.y;
+  lookTarget.z = cam.lookAt.z;
+  // Store the exact offset from this initial pose
+  camOffset.x = cam.position.x - cam.lookAt.x;
+  camOffset.y = cam.position.y - cam.lookAt.y;
+  camOffset.z = cam.position.z - cam.lookAt.z;
 }
 
 // ── tap/click to select building ─────────────────────────────
@@ -458,7 +470,7 @@ function panMove(e) {
   pan.lastY = cy;
 
   // Pan speed scales with camera height
-  const speed = camera.position.y * 0.002;
+  const speed = camOffset.y * 0.002;
   lookTarget.x -= dx * speed;
   lookTarget.z -= dy * speed * 0.6;
 
@@ -467,10 +479,6 @@ function panMove(e) {
   lookTarget.x = Math.max(b.minX, Math.min(b.maxX, lookTarget.x));
   lookTarget.z = Math.max(b.minZ, Math.min(b.maxZ, lookTarget.z));
 
-  // Move camera with target (maintain offset)
-  const offX = camera.position.x - lookTarget.x;
-  const offZ = camera.position.z - lookTarget.z;
-  // Recalculate camera pos from look target + fixed offset
   updateCameraFromTarget();
 }
 
@@ -514,15 +522,22 @@ function getTouchDist(touches) {
 }
 
 function zoomCamera(newY) {
-  camera.position.y = Math.max(50, Math.min(500, newY));
+  const clampedY = Math.max(50, Math.min(500, newY));
+  // Scale the whole offset so the tilt angle is preserved at every zoom level
+  const scale = clampedY / camOffset.y;
+  camOffset.x *= scale;
+  camOffset.y  = clampedY;
+  camOffset.z *= scale;
   updateCameraFromTarget();
 }
 
 function updateCameraFromTarget() {
-  // Keep tilt angle constant: camera is always offset behind and above lookTarget
-  const tiltRatio = 0.545; // z offset = y * tiltRatio (controls tilt angle)
-  camera.position.x = lookTarget.x;
-  camera.position.z = lookTarget.z + camera.position.y * tiltRatio;
+  // Camera = lookTarget + stored offset — tilt angle never changes
+  camera.position.set(
+    lookTarget.x + camOffset.x,
+    lookTarget.y + camOffset.y,
+    lookTarget.z + camOffset.z
+  );
   camera.lookAt(lookTarget.x, lookTarget.y, lookTarget.z);
 }
 
