@@ -8,7 +8,6 @@
 let scene, camera, renderer, raycaster, mouse;
 let campusData = null;
 let buildingMeshes = [];       // { mesh, data }
-let selectedBuilding = null;
 let pathLine = null;
 let waypointMap = {};          // id → waypoint object (for pathfinding + gps)
 let gpsMarker = null;
