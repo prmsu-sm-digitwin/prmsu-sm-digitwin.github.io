@@ -416,6 +416,21 @@
 </div><!-- end #app -->
 
 
+<!-- Update banner — shown when SW detects a new version -->
+<div id="sw-update-banner" style="
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
+  background:var(--maroon,#7B1C1C); color:#fff;
+  padding:12px 16px; font-family:'DM Sans',sans-serif; font-size:13px;
+  display:none; align-items:center; justify-content:space-between; gap:12px;
+  box-shadow:0 -2px 12px rgba(0,0,0,0.25);">
+  <span>A new version is available!</span>
+  <button onclick="window.location.reload()"
+    style="background:#fff;color:var(--maroon,#7B1C1C);border:none;border-radius:6px;
+           padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;">
+    Reload
+  </button>
+</div>
+
 <!-- SERVICE WORKER -->
 <script>
   if ('serviceWorker' in navigator) {
@@ -423,6 +438,14 @@
       navigator.serviceWorker.register('service-worker.js')
         .then(reg => console.log('SW registered:', reg.scope))
         .catch(err => console.error('SW failed:', err));
+    });
+
+    // Listen for the SW_UPDATED message sent by the new service worker
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.type === 'SW_UPDATED') {
+        const banner = document.getElementById('sw-update-banner');
+        if (banner) banner.style.display = 'flex';
+      }
     });
   }
 </script>
