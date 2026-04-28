@@ -27,7 +27,7 @@
     ═══════════════════════════════════════ -->
     <div class="page active" id="page-main">
       <div class="main-hero">
-        <img src="images/university-gate.jpg" alt="University Gate" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.45;">
+        <img src="images/university-gate.jpg" alt="University Gate" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45;">
         <div class="hero-gate-text"></div>
         <div class="hero-badge">
           <span class="hero-badge-label">PRMSU SM</span>
@@ -39,7 +39,7 @@
       <div class="main-logo-section">
         <div class="logo-ring">
           <div class="logo-inner">
-            <img src="images/prmsu_logo.png" alt="PRMSU Logo" style="width:68px;height:68px;border-radius:50%;object-fit:cover;">
+            <img src="images/prmsu_logo.png" alt="PRMSU Logo" style="width:68px; height:68px; border-radius:50%; object-fit:cover;">
           </div>
         </div>
       </div>
@@ -104,28 +104,39 @@
       </div>
 
       <div class="map-wrapper">
-
-        <!-- Three.js canvas fills this area -->
         <div class="map-viewport">
+
+          <!-- Three.js canvas — fills everything, renders behind controls -->
           <canvas id="three-canvas"></canvas>
 
-          <!-- Path bar — shown while navigating -->
+          <!-- Jonathan's placeholder grid (visible while canvas loads) -->
+          <div class="map-grid"></div>
+
+          <!-- Jonathan's zoom controls (z-index above canvas) -->
+          <div class="map-controls">
+            <div class="map-ctrl-btn" onclick="zoomIn()">+</div>
+            <div class="map-ctrl-btn" onclick="zoomOut()">−</div>
+          </div>
+
+          <!-- Path bar — shown while navigating (our addition) -->
           <div id="path-bar" class="map-overlay-bar hidden">
             <span id="path-destination">—</span>
             <span id="path-steps"></span>
             <button id="btn-clear-path" onclick="clearNavigation()">✕ Clear</button>
           </div>
 
-          <!-- GPS floating button -->
+          <!-- GPS button — our addition -->
           <button id="gps-btn" onclick="toggleGPS()" title="My location">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
               <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
             </svg>
           </button>
+
         </div>
 
-        <!-- Building info panel — slides up when building is tapped -->
+        <!-- Building info panel — slides up when building is tapped (our addition) -->
         <div id="building-panel" class="building-info-panel hidden">
           <div class="building-info-panel-handle"></div>
           <div class="building-info-panel-inner">
@@ -142,7 +153,7 @@
           </div>
         </div>
 
-        <!-- Bottom search sheet -->
+        <!-- Bottom search sheet (Jonathan's + our id for dynamic population) -->
         <div class="map-search-panel" id="map-sheet">
           <div class="sheet-search-bar" id="sheet-search-bar" onclick="sheetToggle()">
             <svg class="sheet-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
@@ -153,8 +164,8 @@
 
           <div class="sheet-panel" id="sheet-panel">
             <div class="panel-handle" id="sheet-handle"></div>
+            <!-- id="building-sheet-list" lets ui.js populate this from campus.json -->
             <div class="sheet-panel-inner" id="building-sheet-list">
-              <!-- Populated dynamically by ui.js from campus.json -->
               <div class="building-cat">Loading buildings…</div>
             </div>
           </div>
@@ -197,35 +208,35 @@
             </svg>
           </div>
           <span class="legend-placeholder-text">Legend Image</span>
-          <span style="font-size:10px;color:#999;margin-top:4px;">Map symbols will be displayed here</span>
+          <span style="font-size: 10px; color: #999; margin-top: 4px;">Map symbols will be displayed here</span>
         </div>
 
         <div class="legend-key-section">
           <div class="legend-key-title">Map Symbol Key</div>
           <div class="legend-key-grid">
             <div class="legend-key-item">
-              <div class="legend-dot" style="background:#4a90d9;"></div>
+              <div class="legend-dot" style="background: #1A4B8C;"></div>
               <span class="legend-key-label">Academic Building</span>
             </div>
             <div class="legend-key-item">
-              <div class="legend-dot" style="background:#c0392b;"></div>
-              <span class="legend-key-label">Administration</span>
+              <div class="legend-dot" style="background: #C9980A;"></div>
+              <span class="legend-key-label">Facility Building</span>
             </div>
             <div class="legend-key-item">
-              <div class="legend-dot" style="background:#27ae60;"></div>
-              <span class="legend-key-label">Facility</span>
+              <div class="legend-dot" style="background: #2C6E49;"></div>
+              <span class="legend-key-label">Green Area</span>
             </div>
             <div class="legend-key-item">
-              <div class="legend-dot" style="background:#5aab70;"></div>
-              <span class="legend-key-label">Court / Open Space</span>
+              <div class="legend-dot" style="background: #1A5276;"></div>
+              <span class="legend-key-label">Admin Office</span>
             </div>
             <div class="legend-key-item">
-              <div class="legend-dot" style="background:#f39c12;"></div>
-              <span class="legend-key-label">A* Path</span>
+              <div class="legend-dot" style="background: #6C3483;"></div>
+              <span class="legend-key-label">Sports Area</span>
             </div>
             <div class="legend-key-item">
-              <div class="legend-dot" style="background:#3498db;"></div>
-              <span class="legend-key-label">Your Location</span>
+              <div class="legend-dot" style="background: #784212;"></div>
+              <span class="legend-key-label">Farm</span>
             </div>
           </div>
         </div>
@@ -240,12 +251,13 @@
       <div class="page-header-bar">
         <button class="page-back-btn" onclick="goTo('main')">‹</button>
         <div>
-          <div class="about-title" style="color:white;font-family:'Playfair Display',serif;font-size:16px;font-weight:600;">About</div>
+          <div class="about-title" style="color:white; font-family:'Playfair Display',serif; font-size:16px; font-weight:600;">About</div>
           <div class="about-subtitle">PRMSU Digital Twin PWA</div>
         </div>
       </div>
 
       <div class="about-content">
+
         <div class="vmq-section">
           <div class="vmq-section-title">University Core Values</div>
           <div class="vmq-grid">
@@ -295,14 +307,14 @@
               <span class="info-link-text">Official PRMSU Website</span>
             </a>
             <a class="info-link-row" href="https://www.facebook.com/share/1bbdaQfEqn/" target="_blank">
-              <div class="info-link-icon" style="background:#1877F2;">
+              <div class="info-link-icon" style="background: #1877F2;">
                 <svg viewBox="0 0 24 24" fill="white" width="14" height="14">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
               </div>
               <span class="info-link-text">PRMSU San Marcelino Registrar</span>
             </a>
-            <div style="font-size:10px;font-weight:600;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;margin:10px 0 6px;">Department Pages</div>
+            <div style="font-size: 10px; font-weight: 600; color: var(--text-light); letter-spacing: 0.08em; text-transform: uppercase; margin: 10px 0 6px;">Department Pages</div>
             <div class="info-dept-grid">
               <a class="info-dept-item" href="https://www.facebook.com/share/1AbgtQmM9R/" target="_blank">
                 <div class="dept-icon">
@@ -345,8 +357,10 @@
               <strong>President Ramon Magsaysay State University</strong>
             </div>
           </div>
-        </div>
-      </div>
+
+        </div><!-- end vmq-section -->
+
+      </div><!-- end about-content -->
 
       <div class="vmq-overlay" id="vmq-overlay" onclick="closeVmq(event)">
         <div class="vmq-modal" id="vmq-modal">
@@ -356,7 +370,8 @@
           <div class="vmq-modal-text" id="vmq-modal-text"></div>
         </div>
       </div>
-    </div>
+
+    </div><!-- end page-about -->
 
   </div><!-- end .pages -->
 
@@ -427,21 +442,6 @@
 
 </div><!-- end #app -->
 
-<!--4TH YEAR PLACEHOLDERS-->
-    <!--<div id="page-3dtour"></div>
-    <div id="page-devplan"></div>
-    <div id="page-virtualtour"></div> -->
-
-    <!--TUTORIAL OVERLAY (4th year)-->
-    <!-- <div id="tutorial-overlay">
-      <div id="tutorial-spotlight"></div>
-      <img id="tutorial-sprite" />
-      <div id="tutorial-textbox"></div>
-      <button id="btn-skip">Skip</button>
-      <button id="btn-back">Back</button>
-      <button id="btn-next">Tap to Continue</button>
-    </div> -->
-
 
 <!-- ═══════════════════════════════════════
      SERVICE WORKER
@@ -456,13 +456,13 @@
   }
 </script>
 
-<!-- Jonathan's UI script first -->
+<!-- Jonathan's navigation / sidebar / sheet / VMQ script (MUST load first, non-deferred) -->
 <script src="script.js"></script>
 
 <!-- Three.js library -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-<!-- Our app scripts (order matters!) -->
+<!-- Our app scripts (load after Three.js, order matters) -->
 <script defer src="js/pathfinding.js"></script>
 <script defer src="js/gps.js"></script>
 <script defer src="js/ui.js"></script>

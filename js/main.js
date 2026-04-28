@@ -532,9 +532,14 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+// ── Zoom button helpers (called by HTML onclick) ─────────────
+function zoomIn()  { zoomCamera(camera ? camera.position.y - 40 : 220); }
+function zoomOut() { zoomCamera(camera ? camera.position.y + 40 : 220); }
+
 // ── public API (called by ui.js / pathfinding.js / gps.js) ───
 // navigateTo(buildingId)   — draw A* path to building
 // clearPath()              — remove path line
 // updateGPSMarker(x, z)   — move blue dot
 // selectBuilding(bldg)     — highlight + show info
 // deselectBuilding()       — clear selection
+// zoomIn() / zoomOut()     — called by map-ctrl-btn buttons
