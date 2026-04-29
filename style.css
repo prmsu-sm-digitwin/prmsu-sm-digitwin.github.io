@@ -651,14 +651,6 @@
     line-clamp: 4;
     -webkit-box-orient: vertical;
   }
-  .vmq-label {
-    font-size: 9px;
-    font-weight: 600;
-    color: var(--maroon);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-align: center;
-  }
 
 .about-pwa-section {
     flex-shrink: 0;
