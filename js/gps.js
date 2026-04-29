@@ -68,10 +68,6 @@ function stopWatching() {
 
 // ── Position Handler ─────────────────────────────────────────
 
-// How many scene-units beyond the campus edge we still accept as "on campus"
-// (GPS accuracy can be off by ~20 m, so give a small buffer)
-const GPS_MARGIN = 60;
-
 function onPosition(pos) {
   const lat = pos.coords.latitude;
   const lng = pos.coords.longitude;
@@ -80,21 +76,8 @@ function onPosition(pos) {
 
   console.log(`[gps] lat=${lat.toFixed(6)} lng=${lng.toFixed(6)} → x=${x.toFixed(1)} z=${z.toFixed(1)}`);
 
-  // Check if user is outside campus bounds (with a small tolerance buffer)
-  const outside =
-    x < _bounds.minX - GPS_MARGIN ||
-    x > _bounds.maxX + GPS_MARGIN ||
-    z < _bounds.minZ - GPS_MARGIN ||
-    z > _bounds.maxZ + GPS_MARGIN;
-
-  if (outside) {
-    showGPSToast('You are too far from campus!');
-    // Hide the marker — don't clamp and mislead the user
-    if (typeof updateGPSMarker === 'function') updateGPSMarker(null, null);
-    return;
-  }
-
-  // Inside campus — clamp only to prevent floating-point edge cases
+  // Always show the dot — clamp to campus bounds so it stays visible on the map.
+  // (Out-of-bounds warning removed for testing. Re-add after on-campus verification.)
   const cx = clamp(x, _bounds.minX, _bounds.maxX);
   const cz = clamp(z, _bounds.minZ, _bounds.maxZ);
 

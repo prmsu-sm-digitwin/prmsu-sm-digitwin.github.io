@@ -330,7 +330,7 @@ function deselectBuilding() {
 // ── A* path rendering ─────────────────────────────────────────
 // Called from ui.js when user taps "Navigate here"
 function navigateTo(targetBuildingId) {
-  if (!campusData || !selectedBuilding) return;
+  if (!campusData) return;
 
   // Origin: main gate (for 50% defense — swap to GPS position later)
   const originWpId = 'main_gate';

@@ -1,7 +1,7 @@
-// service-worker.js — PRMSU SM Digital Twin PWA
+// service-worker.js — PRMSU SM Digital Twin 
 // Bump CACHE_NAME version whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v9';
+const CACHE_NAME = 'prmsu-digitwin-v1.0.1';
 
 const STATIC_ASSETS = [
   './',
