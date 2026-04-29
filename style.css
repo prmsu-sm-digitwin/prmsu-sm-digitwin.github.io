@@ -1053,9 +1053,7 @@
   }
 
 
-/* =============================================================
-   OUR ADDITIONS — Three.js canvas, overlays, GPS btn, utility
-   ============================================================= */
+/* Three.js canvas, overlays, GPS btn, utility */
 
 /* Utility */
 .hidden { display: none !important; }
@@ -1076,7 +1074,6 @@
   z-index: 0;
 }
 
-/* Zoom controls sit above the canvas */
 .map-controls {
   z-index: 3;
 }
@@ -1085,7 +1082,7 @@
   user-select: none;
 }
 
-/* ── Path bar (shown while navigating) ── */
+/* pathbar when navigating*/
 .map-overlay-bar {
   position: absolute;
   top: 10px;
@@ -1145,7 +1142,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 5;
+  z-index: 10;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   color: var(--maroon);
   transition: background 0.2s, color 0.2s;
