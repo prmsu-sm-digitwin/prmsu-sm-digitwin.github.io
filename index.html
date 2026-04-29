@@ -11,7 +11,7 @@
 <title>PRMSU Digital Twin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="app">
@@ -22,7 +22,9 @@
 
   <div class="pages">
 
-    <!--MAIN PAGE-->
+    <!-- ═══════════════════════════════════════
+         MAIN PAGE
+    ═══════════════════════════════════════ -->
     <div class="page active" id="page-main">
       <div class="main-hero">
         <img src="images/university-gate.jpg" alt="University Gate" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45;">
@@ -37,7 +39,7 @@
       <div class="main-logo-section">
         <div class="logo-ring">
           <div class="logo-inner">
-            <img src="icons/icon-192.png" alt="APP Logo" style="width: 89px; height: 89px; border-radius: 50%; object-fit:cover;">
+            <img src="icons/app_logo.png" alt="APP Logo" style="width:68px; height:68px; border-radius:50%; object-fit:cover;">
           </div>
         </div>
       </div>
@@ -77,7 +79,9 @@
     </div>
 
 
-    <!--3D MAP NAVIGATION PAGE-->
+    <!-- ═══════════════════════════════════════
+         3D MAP NAVIGATION PAGE
+    ═══════════════════════════════════════ -->
     <div class="page" id="page-map">
       <div class="inner-top-bar">
         <div class="inner-top-logo">
@@ -102,10 +106,10 @@
       <div class="map-wrapper">
         <div class="map-viewport">
 
-          <!-- Three.js canvas nag rerender sa controls-->
+          <!-- Three.js canvas — fills everything, renders behind controls -->
           <canvas id="three-canvas"></canvas>
 
-          <!-- Placeholder grid pag ung canvas nag loload-->
+          <!-- Placeholder grid (visible while canvas loads) -->
           <div class="map-grid"></div>
 
           <!-- Zoom controls -->
@@ -114,14 +118,14 @@
             <div class="map-ctrl-btn" onclick="zoomOut()">−</div>
           </div>
 
-          <!-- Path bar shown while navigating -->
+          <!-- Path bar — shown while navigating -->
           <div id="path-bar" class="map-overlay-bar hidden">
             <span id="path-destination">—</span>
             <span id="path-steps"></span>
             <button id="btn-clear-path" onclick="clearNavigation()">✕ Clear</button>
           </div>
 
-          <!-- GPS button-->
+          <!-- GPS button -->
           <button id="gps-btn" onclick="toggleGPS()" title="My location">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <circle cx="12" cy="12" r="3"/>
@@ -170,7 +174,9 @@
     </div>
 
 
-    <!--LEGEND PAGE-->
+    <!-- ═══════════════════════════════════════
+         LEGEND PAGE
+    ═══════════════════════════════════════ -->
     <div class="page" id="page-legend">
       <div class="inner-top-bar">
         <div class="inner-top-logo">
@@ -193,11 +199,14 @@
       </div>
 
       <div class="legend-content">
+
+        <!-- Shane's campus map image -->
         <div class="legend-image-area">
           <img src="images/Legend_Map.png" alt="Campus Map"
                style="width:100%;height:100%;object-fit:contain;border-radius:12px;">
         </div>
 
+        <!-- Shane's symbol key image -->
         <div class="legend-key-section">
           <div class="legend-key-title">Map Symbol Key</div>
           <img src="images/Legend_Markings.png" alt="Map Symbol Key"
@@ -208,7 +217,9 @@
     </div>
 
 
-    <!--ABOUT PAGE-->
+    <!-- ═══════════════════════════════════════
+         ABOUT PAGE
+    ═══════════════════════════════════════ -->
     <div class="page" id="page-about">
       <div class="page-header-bar">
         <button class="page-back-btn" onclick="goTo('main')">‹</button>
@@ -247,8 +258,10 @@
           </div>
 
           <div class="about-pwa-section">
-            <div class="about-pwa-full">
-              <img src="images/admin-building.png" class="about-pwa-img" alt="PRMSU" onerror="this.style.display='none'">
+            <div class="about-pwa-full"
+                 style="background-image:url('images/admin-building.png');
+                        background-size:cover;
+                        background-position:center;">
               <div class="about-pwa-overlay"></div>
               <div class="about-pwa-text-wrap">
                 <span class="about-pwa-label">About this PWA</span>
@@ -302,7 +315,7 @@
                 </div>
                 <span class="dept-name">CTE</span>
               </a>
-              <a class="info-dept-item" href="https://www.facebook.com/share/17HMM2H3d7/" target="_blank">
+              <a class="info-dept-item" href="#" target="_blank">
                 <div class="dept-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -423,15 +436,19 @@
 <!-- SERVICE WORKER -->
 <script>
   if ('serviceWorker' in navigator) {
+    // Capture BEFORE registration — true means a prior SW was controlling this page,
+    // so any SW_UPDATED message is a real update, not a first-install activation.
+    const hadController = !!navigator.serviceWorker.controller;
+
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('service-worker.js')
         .then(reg => console.log('SW registered:', reg.scope))
         .catch(err => console.error('SW failed:', err));
     });
 
-    // Listen for the SW_UPDATED message sent by the new service worker
+    // Only show the "New version" banner when it truly is an update
     navigator.serviceWorker.addEventListener('message', event => {
-      if (event.data && event.data.type === 'SW_UPDATED') {
+      if (event.data && event.data.type === 'SW_UPDATED' && hadController) {
         const banner = document.getElementById('sw-update-banner');
         if (banner) banner.style.display = 'flex';
       }
