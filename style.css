@@ -1075,7 +1075,8 @@
 }
 
 .map-controls {
-  z-index: -10;
+  z-index: 3;
+  margin-top: 50px; /* move controls below GPS button to avoid overlap */
 }
 .map-ctrl-btn {
   cursor: pointer;
