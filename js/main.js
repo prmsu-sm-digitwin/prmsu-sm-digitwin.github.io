@@ -324,7 +324,7 @@ function deselectBuilding() {
     }
   });
   if (typeof hideBuildingInfo === 'function') hideBuildingInfo();
-  clearPath();
+  // ← Do NOT clearPath() here — path must persist while user pans the map
 }
 
 // ── A* path rendering ─────────────────────────────────────────
@@ -358,51 +358,67 @@ function navigateTo(targetBuildingId) {
 function drawPath(waypointIds) {
   clearPath();
 
-  const points = waypointIds.map(id => {
-    const wp = waypointMap[id];
-    return new THREE.Vector3(wp.position.x, 0.5, wp.position.z);
-  });
+  // Use flat box strips instead of THREE.Line — linewidth is ignored on iOS/WebGL.
+  // Same technique as buildRoadStrip but raised higher and orange-colored.
+  const pathMat  = new THREE.MeshBasicMaterial({ color: 0xf39c12 }); // orange
+  const stripW   = 3.5; // width of path strip in scene units
 
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  const material = new THREE.LineBasicMaterial({
-    color: 0xf39c12,   // orange
-    linewidth: 3,      // Note: linewidth >1 only works in some browsers
-  });
-  pathLine = new THREE.Line(geometry, material);
-  scene.add(pathLine);
+  for (let i = 0; i < waypointIds.length - 1; i++) {
+    const a = waypointMap[waypointIds[i]];
+    const b = waypointMap[waypointIds[i + 1]];
+    if (!a || !b) continue;
+    const ax = a.position.x, az = a.position.z;
+    const bx = b.position.x, bz = b.position.z;
+    const dx = bx - ax, dz = bz - az;
+    const length = Math.sqrt(dx * dx + dz * dz);
+    if (length < 0.1) continue;
 
-  // Also draw small spheres at each waypoint node along the path for visibility
+    const strip = new THREE.Mesh(
+      new THREE.BoxGeometry(length, 0.5, stripW),
+      pathMat
+    );
+    strip.position.set((ax + bx) / 2, 0.6, (az + bz) / 2);
+    strip.rotation.y = -Math.atan2(dz, dx);
+    strip.userData.isPathDot = true;
+    scene.add(strip);
+  }
+
+  // Waypoint junction dots
   const dotMat = new THREE.MeshBasicMaterial({ color: 0xf39c12 });
   waypointIds.forEach(id => {
     const wp = waypointMap[id];
-    const dot = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 8), dotMat);
-    dot.position.set(wp.position.x, 0.6, wp.position.z);
+    if (!wp) return;
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 8), dotMat);
+    dot.position.set(wp.position.x, 0.8, wp.position.z);
     dot.userData.isPathDot = true;
     scene.add(dot);
   });
 
-  // Destination marker (red sphere)
+  // Destination marker — tall red pin so it's easy to spot
   const lastWp = waypointMap[waypointIds[waypointIds.length - 1]];
-  const endMarker = new THREE.Mesh(
-    new THREE.SphereGeometry(3, 12, 12),
-    new THREE.MeshBasicMaterial({ color: 0xe74c3c })
-  );
-  endMarker.position.set(lastWp.position.x, 5, lastWp.position.z);
-  endMarker.userData.isPathDot = true;
-  scene.add(endMarker);
+  if (lastWp) {
+    const pinMat = new THREE.MeshBasicMaterial({ color: 0xe74c3c });
+    const pinSphere = new THREE.Mesh(new THREE.SphereGeometry(4, 12, 12), pinMat);
+    pinSphere.position.set(lastWp.position.x, 8, lastWp.position.z);
+    pinSphere.userData.isPathDot = true;
+    scene.add(pinSphere);
+    const pinStick = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 8, 8), pinMat);
+    pinStick.position.set(lastWp.position.x, 4, lastWp.position.z);
+    pinStick.userData.isPathDot = true;
+    scene.add(pinStick);
+  }
 }
 
 function clearPath() {
-  if (pathLine) {
-    scene.remove(pathLine);
-    pathLine.geometry.dispose();
-    pathLine.material.dispose();
-    pathLine = null;
-  }
-  // Remove dot markers
+  // Remove all path meshes (strips, dots, pin)
   const toRemove = [];
   scene.traverse(obj => { if (obj.userData.isPathDot) toRemove.push(obj); });
-  toRemove.forEach(obj => scene.remove(obj));
+  toRemove.forEach(obj => {
+    if (obj.geometry) obj.geometry.dispose();
+    if (obj.material) obj.material.dispose();
+    scene.remove(obj);
+  });
+  pathLine = null; // kept for backwards compat
 
   if (typeof hidePathInfo === 'function') hidePathInfo();
 }
@@ -428,16 +444,28 @@ function updateGPSMarker(x, z) {
 }
 
 // ── pan + zoom controls ───────────────────────────────────────
+// Tap detection: only fire building select if pointer barely moved (< 12 px)
+const TAP_THRESHOLD = 12;
+let _tapX = 0, _tapY = 0;
+
 function initControls() {
   const canvas = document.getElementById('three-canvas');
 
-  // Pointer down — check building tap first, then start pan
   canvas.addEventListener('pointerdown', e => {
-    onPointerDown(e);
+    _tapX = e.clientX;
+    _tapY = e.clientY;
     panStart(e);
   });
   canvas.addEventListener('pointermove', panMove);
-  canvas.addEventListener('pointerup',   panEnd);
+  canvas.addEventListener('pointerup', e => {
+    panEnd();
+    // Only do building hit-test on a real tap (not the end of a drag)
+    const dx = Math.abs(e.clientX - _tapX);
+    const dy = Math.abs(e.clientY - _tapY);
+    if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
+      onPointerDown({ clientX: _tapX, clientY: _tapY });
+    }
+  });
   canvas.addEventListener('pointercancel', panEnd);
 
   // Touch events for mobile pinch-zoom
@@ -542,9 +570,14 @@ function updateCameraFromTarget() {
 }
 
 // ── render loop ───────────────────────────────────────────────
+// Only render when map page is visible — prevents sky-blue canvas bleeding
+// through on other pages (iOS treats opacity:0 layers differently from display:none)
 function animate() {
   requestAnimationFrame(animate);
-  renderer.render(scene, camera);
+  const mapPage = document.getElementById('page-map');
+  if (mapPage && mapPage.classList.contains('active')) {
+    renderer.render(scene, camera);
+  }
 }
 
 // ── Zoom button helpers (called by HTML onclick) ─────────────
