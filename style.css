@@ -699,8 +699,6 @@
     flex-direction: column;
     justify-content: center;
     padding: 16px 20px;
-    -webkit-mask-image: linear-gradient(to right, black 55%, transparent 100%);
-    mask-image: linear-gradient(to right, black 55%, transparent 100%);
   }
   .about-pwa-label {
     font-size: 11px;
