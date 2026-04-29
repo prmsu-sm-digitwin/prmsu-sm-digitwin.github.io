@@ -14,6 +14,37 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!--SPLASH SCREEN (shown while app loads)--> 
+<div id="splash-screen" style="
+  position:fixed; inset:0; z-index:99999;
+  background:#0F3060;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:20px;
+  transition:opacity 0.5s ease;
+">
+  <img src="icons/icon-192.png" alt="PRMSU SM DigiTwin"
+       style="width:140px; height:140px; border-radius:50%;
+              box-shadow:0 0 0 6px rgba(232,169,0,0.5), 0 8px 32px rgba(0,0,0,0.4);">
+  <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700;
+              color:#F5C842; letter-spacing:0.06em; text-align:center; line-height:1.4;">
+    PRMSU SM<br><span style="color:#fff; font-size:22px;">Digital Twin</span>
+  </div>
+</div>
+<script>
+  function hideSplash() {
+    var s = document.getElementById('splash-screen');
+    if (!s) return;
+    s.style.opacity = '0';
+    setTimeout(function(){ s.remove(); }, 520);
+  }
+  if (document.readyState === 'complete') {
+    setTimeout(hideSplash, 800);
+  } else {
+    window.addEventListener('load', function(){ setTimeout(hideSplash, 800); });
+  }
+</script>  
+
 <div id="app">
 
   <div class="top-bar">
