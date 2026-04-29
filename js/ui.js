@@ -75,11 +75,12 @@ function navigateToSelected() {
     console.warn('[ui] No building selected');
     return;
   }
-  const bldg = selectedBuilding;   // ← save BEFORE hideBuildingInfo() clears it
+  // ⚠️ Capture id BEFORE hideBuildingInfo() — that call nulls selectedBuilding
+  const targetId = selectedBuilding.id;
   hideBuildingInfo();
 
   if (typeof navigateTo === 'function') {
-    navigateTo(bldg.id);           // ← use saved reference
+    navigateTo(targetId);
   } else {
     console.warn('[ui] navigateTo() not found — is main.js loaded?');
   }
@@ -89,11 +90,8 @@ function navigateToSelected() {
 // pathIds  : array of waypoint id strings
 // targetBldg : building object (has .name)
 function showPathInfo(pathIds, targetBldg) {
-  const name  = targetBldg ? targetBldg.name : '—';
-  const stops = Array.isArray(pathIds) ? pathIds.length : pathIds;
-  setText('path-destination', name);
-  setText('path-steps', stops + ' stops');
-  show('path-bar');
+  // Path bar removed — orange line on the 3D map is the only indicator needed.
+  // The ✕ Clear button in clearNavigation() still works to remove the path.
 }
 
 // Called by main.js / clearPath() when path is removed
@@ -197,7 +195,7 @@ function onSceneReady(data) {
   campusBuildings = data.buildings;
   populateBuildingSheet(campusBuildings);
 
-  // Auto-enable GPS on app load so the blue dot appears immediately
+  // Auto-start GPS so the blue dot appears immediately without pressing the button
   gpsEnabled = true;
   const btn = document.getElementById('gps-btn');
   if (btn) btn.classList.add('gps-active');
