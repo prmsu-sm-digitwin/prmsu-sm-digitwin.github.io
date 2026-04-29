@@ -1,7 +1,6 @@
-// service-worker.js — PRMSU SM Digital Twin PWA
-// Bump CACHE_NAME version whenever files change
+// Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v18.5';
+const CACHE_NAME = 'prmsu-digitwin-v19';
 
 const STATIC_ASSETS = [
   './',
@@ -22,7 +21,7 @@ const STATIC_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
 ];
 
-// Install: cache all static assets
+// Install the cache all static assets
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -34,7 +33,7 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activate: clean up old caches, then tell every open tab to reload
+// Activate the service worker and clean up old caches then tell every open tab to reload
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -43,14 +42,14 @@ self.addEventListener('activate', event => {
       )
       .then(() => self.clients.claim())
       .then(() =>
-        // Notify all tabs that a new version is ready
+        // Notify the tabs that a new version is ready
         self.clients.matchAll({ type: 'window', includeUncontrolled: true })
           .then(clients => clients.forEach(client => client.postMessage({ type: 'SW_UPDATED' })))
       )
   );
 });
 
-// Fetch: cache-first for our assets, network-first for everything else
+// Fetch yung cache-first for assets amd network-first for everything else
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 

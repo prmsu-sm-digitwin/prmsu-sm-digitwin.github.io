@@ -1,4 +1,3 @@
-// =============================================================
 //  js/ui.js  —  PRMSU SM Digital Twin  (integrated with Jonathan's script.js)
 //
 //  Jonathan's script.js handles:  goTo, goBack, history, openSidebar,
@@ -10,25 +9,22 @@
 //    - GPS toggle button
 //    - Building sheet list (populated from campus.json)
 //    - Hook into goTo for Three.js canvas resize
-// =============================================================
 
 
-// ── State ────────────────────────────────────────────────────
+
 let selectedBuilding = null;   // building object currently shown in panel
 let gpsEnabled       = false;  // GPS on/off
 let campusBuildings  = [];     // filled by onSceneReady() from main.js
 
 
-// ── Hook into goTo for Three.js resize ───────────────────────
 // When the user navigates TO the map page, the canvas needs a resize
-// signal because it was hidden (zero-size) while inactive.
-// script.js already wraps goTo once; we chain onto it here.
+// signal because it was hidden (zero-size) while inactive
+// script.js already wraps goTo once we chain onto it here.
 (function () {
   var _goTo = window.goTo;
   window.goTo = function (pageId) {
     _goTo(pageId);
-    // Explicitly show/hide the WebGL canvas so it never bleeds through on iOS.
-    // CSS opacity:0 on the parent doesn't stop the WebGL surface compositing on touch.
+  
     var canvas = document.getElementById('three-canvas');
     if (canvas) canvas.style.display = pageId === 'map' ? 'block' : 'none';
     if (pageId === 'map') {
@@ -41,9 +37,6 @@ let campusBuildings  = [];     // filled by onSceneReady() from main.js
 })();
 
 
-// ── Building Info Panel ───────────────────────────────────────
-
-// Called by main.js when a building mesh is tapped
 function showBuildingInfo(bldg) {
   selectedBuilding = bldg;
 
@@ -59,7 +52,7 @@ function showBuildingInfo(bldg) {
   show('building-panel');
 }
 
-// Called by main.js when user taps empty space, or by closePanel()
+// Called by main.js when user taps empty space  or by closePanel()
 function hideBuildingInfo() {
   selectedBuilding = null;
   hide('building-panel');
@@ -71,15 +64,13 @@ function closePanel() {
 }
 
 
-// ── Navigation ───────────────────────────────────────────────
-
 // Called by the "Navigate Here" button
 function navigateToSelected() {
   if (!selectedBuilding) {
     console.warn('[ui] No building selected');
     return;
   }
-  // ⚠️ Capture id BEFORE hideBuildingInfo() — that call nulls selectedBuilding
+
   const targetId = selectedBuilding.id;
   hideBuildingInfo();
 
@@ -91,11 +82,7 @@ function navigateToSelected() {
 }
 
 // Called by main.js after A* draws the path
-// pathIds  : array of waypoint id strings
-// targetBldg : building object (has .name)
 function showPathInfo(pathIds, targetBldg) {
-  // Path bar removed — orange line on the 3D map is the only indicator needed.
-  // The ✕ Clear button in clearNavigation() still works to remove the path.
 }
 
 // Called by main.js / clearPath() when path is removed
@@ -113,7 +100,6 @@ function clearNavigation() {
 }
 
 
-// ── GPS ──────────────────────────────────────────────────────
 
 function toggleGPS() {
   gpsEnabled = !gpsEnabled;
@@ -124,10 +110,7 @@ function toggleGPS() {
 }
 
 
-// ── Building Sheet List ───────────────────────────────────────
-
 // Called by onSceneReady() with the full campus data object
-// Populates the draggable bottom sheet with building items
 function populateBuildingSheet(buildings) {
   const container = document.getElementById('building-sheet-list');
   if (!container) return;
@@ -155,13 +138,13 @@ function populateBuildingSheet(buildings) {
   };
 
   Object.keys(groups).sort().forEach(cat => {
-    // Category header
+  
     const header = document.createElement('div');
     header.className = 'building-cat';
     header.textContent = catLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
     container.appendChild(header);
 
-    // Building items
+
     groups[cat].forEach(b => {
       const item = document.createElement('div');
       item.className = 'building-item';
@@ -182,7 +165,7 @@ function populateBuildingSheet(buildings) {
         // Close the sheet and show the building panel
         if (typeof sheetToggle === 'function') sheetToggle();
         showBuildingInfo(b);
-        // Also highlight the mesh in Three.js
+        //  highlight the mesh in Three.js
         if (typeof selectBuilding === 'function') selectBuilding(b);
       });
       container.appendChild(item);
@@ -193,7 +176,7 @@ function populateBuildingSheet(buildings) {
 }
 
 
-// ── Called by main.js after campus.json loads & scene is built ─
+// Called by main.js after campus.json loads at scene is built 
 
 function onSceneReady(data) {
   campusBuildings = data.buildings;
@@ -207,8 +190,6 @@ function onSceneReady(data) {
   console.log('[ui] GPS auto-started on scene ready');
 }
 
-
-// ── Helpers ──────────────────────────────────────────────────
 
 function show(id) {
   const el = document.getElementById(id);

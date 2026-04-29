@@ -22,9 +22,7 @@
 
   <div class="pages">
 
-    <!-- ═══════════════════════════════════════
-         MAIN PAGE
-    ═══════════════════════════════════════ -->
+    <!--MAIN PAGE-->
     <div class="page active" id="page-main">
       <div class="main-hero">
         <img src="images/university-gate.jpg" alt="University Gate" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45;">
@@ -79,9 +77,7 @@
     </div>
 
 
-    <!-- ═══════════════════════════════════════
-         3D MAP NAVIGATION PAGE
-    ═══════════════════════════════════════ -->
+    <!--3D MAP NAVIGATION PAGE-->
     <div class="page" id="page-map">
       <div class="inner-top-bar">
         <div class="inner-top-logo">
@@ -105,27 +101,25 @@
 
       <div class="map-wrapper">
         <div class="map-viewport">
-
-          <!-- Three.js canvas — starts hidden; shown only when map page is active -->
+          
           <canvas id="three-canvas" style="display:none;"></canvas>
 
-          <!-- Placeholder grid (visible while canvas loads) -->
           <div class="map-grid"></div>
 
-          <!-- Zoom controls -->
+          
           <div class="map-controls">
             <div class="map-ctrl-btn" onclick="zoomIn()">+</div>
             <div class="map-ctrl-btn" onclick="zoomOut()">−</div>
           </div>
 
-          <!-- Path bar — shown while navigating -->
+          
           <div id="path-bar" class="map-overlay-bar hidden">
             <span id="path-destination">—</span>
             <span id="path-steps"></span>
             <button id="btn-clear-path" onclick="clearNavigation()">✕ Clear</button>
           </div>
 
-          <!-- GPS button -->
+         
           <button id="gps-btn" onclick="toggleGPS()" title="My location">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <circle cx="12" cy="12" r="3"/>
@@ -136,7 +130,7 @@
 
         </div>
 
-        <!-- Building info panel -->
+        
         <div id="building-panel" class="building-info-panel hidden">
           <div class="building-info-panel-handle"></div>
           <div class="building-info-panel-inner">
@@ -153,7 +147,7 @@
           </div>
         </div>
 
-        <!-- Bottom search sheet -->
+        
         <div class="map-search-panel" id="map-sheet">
           <div class="sheet-search-bar" id="sheet-search-bar" onclick="sheetToggle()">
             <svg class="sheet-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
@@ -174,9 +168,7 @@
     </div>
 
 
-    <!-- ═══════════════════════════════════════
-         LEGEND PAGE
-    ═══════════════════════════════════════ -->
+    <!--LEGEND PAGE-->
     <div class="page" id="page-legend">
       <div class="inner-top-bar">
         <div class="inner-top-logo">
@@ -200,13 +192,13 @@
 
       <div class="legend-content">
 
-        <!-- Shane's campus map image -->
+        
         <div class="legend-image-area">
           <img src="images/Legend_Map.png" alt="Campus Map"
                style="width:100%;height:100%;object-fit:contain;border-radius:12px;">
         </div>
 
-        <!-- Shane's symbol key image -->
+        
         <div class="legend-key-section">
           <div class="legend-key-title">Map Symbol Key</div>
           <img src="images/Legend_Markings.png" alt="Map Symbol Key"
@@ -217,9 +209,7 @@
     </div>
 
 
-    <!-- ═══════════════════════════════════════
-         ABOUT PAGE
-    ═══════════════════════════════════════ -->
+    <!--ABOUT PAGE-->
     <div class="page" id="page-about">
       <div class="page-header-bar">
         <button class="page-back-btn" onclick="goTo('main')">‹</button>
@@ -330,9 +320,9 @@
             </div>
           </div>
 
-        </div><!-- end vmq-section -->
+        </div>
 
-      </div><!-- end about-content -->
+      </div>
 
       <div class="vmq-overlay" id="vmq-overlay" onclick="closeVmq(event)">
         <div class="vmq-modal" id="vmq-modal">
@@ -343,14 +333,11 @@
         </div>
       </div>
 
-    </div><!-- end page-about -->
+    </div>
 
-  </div><!-- end .pages -->
+  </div>
 
-
-  <!-- ═══════════════════════════════════════
-       SIDEBAR DRAWER
-  ═══════════════════════════════════════ -->
+  <!--SIDEBAR DRAWER-->
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar(event)">
     <div class="sidebar-drawer">
       <div class="sidebar-header">
@@ -412,7 +399,7 @@
   <!-- Hidden nav anchor — required by script.js updateNav() -->
   <button class="nav-btn nav-home" aria-hidden="true"></button>
 
-</div><!-- end #app -->
+</div>
 
 
 <!-- SERVICE WORKER -->
@@ -426,7 +413,6 @@
   }
 </script>
 
-<!-- Jonathan's navigation / sidebar / sheet / VMQ script (MUST load first) -->
 <script src="script.js"></script>
 
 <!-- Three.js library -->

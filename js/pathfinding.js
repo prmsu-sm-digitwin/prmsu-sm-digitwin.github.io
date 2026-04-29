@@ -1,13 +1,10 @@
-// =============================================================
 //  js/pathfinding.js  —  A* on the campus waypoint graph
 //  Called by main.js:  findPath(waypointMap, startId, goalId)
-//  Returns: array of waypoint ids  e.g. ["main_gate","inner_gate",...]
-//           or [] if no path exists
-// =============================================================
+//  Returns: array of waypoint ids  "main_gate","inner_gate" or [] if no path exists
+
 
 function findPath(waypointMap, startId, goalId) {
 
-  // ── 1. Quick guards ─────────────────────────────────────────
   if (startId === goalId) {
     console.log('[A*] Start === Goal. No movement needed.');
     return [startId];
@@ -21,7 +18,7 @@ function findPath(waypointMap, startId, goalId) {
     return [];
   }
 
-  // ── 2. Heuristic — straight-line distance on the x/z plane ─
+  // Heuristic  straight-line distance on the x/z plane
   function h(aId, bId) {
     const a = waypointMap[aId].position;
     const b = waypointMap[bId].position;
@@ -30,7 +27,7 @@ function findPath(waypointMap, startId, goalId) {
     return Math.sqrt(dx * dx + dz * dz);
   }
 
-  // ── 3. A* data structures ───────────────────────────────────
+  // A* data structures 
   const openSet   = new Set([startId]);  // nodes queued for evaluation
   const cameFrom  = {};                  // cameFrom[n] = the node before n in best path
 
@@ -44,9 +41,9 @@ function findPath(waypointMap, startId, goalId) {
   gScore[startId] = 0;
   fScore[startId] = h(startId, goalId);
 
-  // ── 4. Main loop ────────────────────────────────────────────
+  // Main loop 
   let iterations = 0;
-  const ITER_LIMIT = 1000;   // safety cap — campus has 38 nodes so 1000 is generous
+  const ITER_LIMIT = 1000;   
 
   while (openSet.size > 0) {
 
@@ -56,7 +53,7 @@ function findPath(waypointMap, startId, goalId) {
       return [];
     }
 
-    // Pick the open node with the lowest fScore
+
     let current = null;
     let lowestF  = Infinity;
     for (const id of openSet) {
@@ -66,7 +63,7 @@ function findPath(waypointMap, startId, goalId) {
       }
     }
 
-    // ── 5. Goal reached — rebuild and return the path ─────────
+
     if (current === goalId) {
       const path = [];
       let node = goalId;
@@ -80,12 +77,12 @@ function findPath(waypointMap, startId, goalId) {
 
     openSet.delete(current);
 
-    // ── 6. Expand neighbors ───────────────────────────────────
+
     const neighbors = waypointMap[current].neighbors || [];
 
     for (const neighborId of neighbors) {
 
-      // Safety: skip if neighbor id doesn't exist in map
+      //skip if neighbor id doesn't exist in map
       if (!waypointMap[neighborId]) {
         console.warn(`[A*] Neighbor "${neighborId}" not in waypointMap (referenced by "${current}"). Check campus.json.`);
         continue;
@@ -94,7 +91,6 @@ function findPath(waypointMap, startId, goalId) {
       const tentativeG = gScore[current] + h(current, neighborId);
 
       if (tentativeG < gScore[neighborId]) {
-        // Found a better path to this neighbor — update records
         cameFrom[neighborId]  = current;
         gScore[neighborId]    = tentativeG;
         fScore[neighborId]    = tentativeG + h(neighborId, goalId);
@@ -103,7 +99,6 @@ function findPath(waypointMap, startId, goalId) {
     }
   }
 
-  // ── 7. Open set exhausted — no path exists ─────────────────
   console.warn(`[A*] No path found from "${startId}" to "${goalId}". Nodes may be disconnected.`);
   return [];
 }

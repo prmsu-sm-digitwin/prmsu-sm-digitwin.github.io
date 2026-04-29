@@ -1,10 +1,3 @@
-// ============================================================
-// js/main.js  —  PRMSU SM Digital Twin
-// Three.js scene: ground, roads, buildings, camera, controls
-// Reads data/campus.json  |  calls pathfinding.js + gps.js
-// ============================================================
-
-// ── globals ──────────────────────────────────────────────────
 let scene, camera, renderer, raycaster, mouse;
 let campusData = null;
 let buildingMeshes = [];       // { mesh, data }
@@ -12,7 +5,7 @@ let pathLine = null;
 let waypointMap = {};          // id → waypoint object (for pathfinding + gps)
 let gpsMarker = null;
 
-// ── boot ─────────────────────────────────────────────────────
+
 window.addEventListener('DOMContentLoaded', () => {
   initScene();
   loadCampus();
@@ -20,7 +13,7 @@ window.addEventListener('DOMContentLoaded', () => {
   animate();
 });
 
-// ── Three.js scene setup ──────────────────────────────────────
+
 function initScene() {
   const canvas = document.getElementById('three-canvas');
 
@@ -59,7 +52,6 @@ function onResize() {
   renderer.setSize(w, h);
 }
 
-// ── load campus.json and build scene ─────────────────────────
 function loadCampus() {
   fetch('data/campus.json')
     .then(r => r.json())
@@ -84,7 +76,6 @@ function loadCampus() {
     .catch(err => console.error('Failed to load campus.json:', err));
 }
 
-// ── ground plane ─────────────────────────────────────────────
 function buildGround(g) {
   let material;
   if (g.texture) {
@@ -104,7 +95,6 @@ function buildGround(g) {
   scene.add(ground);
 }
 
-// ── road strips (OSM style) ───────────────────────────────────
 // Draws a flat box strip between two waypoints.
 // Zone 1 / Zone 2 edges are wider; cross-path edges are narrower.
 function buildRoads(waypoints) {
@@ -132,7 +122,6 @@ function buildRoads(waypoints) {
   const matMain  = new THREE.MeshLambertMaterial({ color: 0x9a9a9a }); // gray tarmac
   const matPath  = new THREE.MeshLambertMaterial({ color: 0xc0b090 }); // beige path
 
-  // Track drawn edges so we don't double-draw
   const drawn = new Set();
 
   waypoints.forEach(wp => {
@@ -152,7 +141,6 @@ function buildRoads(waypoints) {
 
       buildRoadStrip(ax, az, bx, bz, roadWidth, mat);
 
-      // Center dashed line on main roads
       if (isMain) {
         buildCenterLine(ax, az, bx, bz);
       }
@@ -200,7 +188,6 @@ function buildCenterLine(ax, az, bx, bz) {
   }
 }
 
-// ── buildings ─────────────────────────────────────────────────
 function buildBuildings(buildings) {
   buildingMeshes = [];
 
@@ -257,8 +244,7 @@ function darkenColor(hex, factor) {
   return (r << 16) | (g << 8) | b;
 }
 
-// ── camera setup ──────────────────────────────────────────────
-// camOffset = camera.position - camera.lookAt, stored on first load.
+// camOffset  camera.position camera.lookAt, stored on first load
 // Every pan/zoom preserves this offset so the tilt angle never resets.
 let camOffset = { x: -200, y: 220, z: 200 }; // safe default; overwritten by positionCamera
 
@@ -269,13 +255,12 @@ function positionCamera(cam) {
   lookTarget.x = cam.lookAt.x;
   lookTarget.y = cam.lookAt.y;
   lookTarget.z = cam.lookAt.z;
-  // Store the exact offset from this initial pose
   camOffset.x = cam.position.x - cam.lookAt.x;
   camOffset.y = cam.position.y - cam.lookAt.y;
   camOffset.z = cam.position.z - cam.lookAt.z;
 }
 
-// ── tap/click to select building ─────────────────────────────
+
 function onPointerDown(e) {
   if (!campusData) return;
 
@@ -303,7 +288,7 @@ function onPointerDown(e) {
 function selectBuilding(bldg) {
   selectedBuilding = bldg;
 
-  // Highlight selected box (slight emissive)
+  // Highlight selected box 
   buildingMeshes.forEach(b => {
     if (b.mesh.material.emissive !== undefined) {
       b.mesh.material.emissive.setHex(
@@ -324,16 +309,26 @@ function deselectBuilding() {
     }
   });
   if (typeof hideBuildingInfo === 'function') hideBuildingInfo();
-  // ← Do NOT clearPath() here — path must persist while user pans the map
+  // Do NOT clearPath() here 
 }
 
-// ── A* path rendering ─────────────────────────────────────────
+// A* path rendering
 // Called from ui.js when user taps "Navigate here"
 function navigateTo(targetBuildingId) {
   if (!campusData) return;
 
-  // Origin: main gate (for 50% defense — swap to GPS position later)
-  const originWpId = 'main_gate';
+  // Origin: nearest waypoint to user's GPS position or main_gate as fallback
+  let originWpId = 'main_gate';
+  if (currentGPSPosition) {
+    let bestId = null, bestDist = Infinity;
+    Object.values(waypointMap).forEach(wp => {
+      const dx = wp.position.x - currentGPSPosition.x;
+      const dz = wp.position.z - currentGPSPosition.z;
+      const d = dx * dx + dz * dz;
+      if (d < bestDist) { bestDist = d; bestId = wp.id; }
+    });
+    if (bestId) originWpId = bestId;
+  }
   const targetBldg = campusData.buildings.find(b => b.id === targetBuildingId);
   if (!targetBldg) return;
   const targetWpId = targetBldg.entryWaypoint;
@@ -350,17 +345,15 @@ function navigateTo(targetBuildingId) {
   }
 
   drawPath(pathIds);
-
-  // Tell ui.js to show path info
   if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg);
 }
 
 function drawPath(waypointIds) {
   clearPath();
 
-  // Use flat box strips instead of THREE.Line — linewidth is ignored on iOS/WebGL.
+  // Use flat box strips instead of THREE.Line for better visibility and easier hit-testing on mobile.
   // Same technique as buildRoadStrip but raised higher and orange-colored.
-  const pathMat  = new THREE.MeshBasicMaterial({ color: 0xf39c12 }); // orange
+  const pathMat  = new THREE.MeshBasicMaterial({ color: 0xf39c12 }); // orange path
   const stripW   = 3.5; // width of path strip in scene units
 
   for (let i = 0; i < waypointIds.length - 1; i++) {
@@ -383,7 +376,6 @@ function drawPath(waypointIds) {
     scene.add(strip);
   }
 
-  // Waypoint junction dots
   const dotMat = new THREE.MeshBasicMaterial({ color: 0xf39c12 });
   waypointIds.forEach(id => {
     const wp = waypointMap[id];
@@ -394,7 +386,6 @@ function drawPath(waypointIds) {
     scene.add(dot);
   });
 
-  // Destination marker — tall red pin so it's easy to spot
   const lastWp = waypointMap[waypointIds[waypointIds.length - 1]];
   if (lastWp) {
     const pinMat = new THREE.MeshBasicMaterial({ color: 0xe74c3c });
@@ -410,7 +401,6 @@ function drawPath(waypointIds) {
 }
 
 function clearPath() {
-  // Remove all path meshes (strips, dots, pin)
   const toRemove = [];
   scene.traverse(obj => { if (obj.userData.isPathDot) toRemove.push(obj); });
   toRemove.forEach(obj => {
@@ -423,15 +413,15 @@ function clearPath() {
   if (typeof hidePathInfo === 'function') hidePathInfo();
 }
 
-// ── GPS blue dot (called from gps.js) ────────────────────────
+// GPS blue dot (called from gps.js)
 function updateGPSMarker(x, z) {
-  // null means GPS was turned off — just hide the marker
+  // null means GPS was turned off hide marker
   if (x === null || z === null) {
     if (gpsMarker) gpsMarker.visible = false;
     return;
   }
   if (!gpsMarker) {
-    // Blue sphere
+    // Blue sphere with radius 2.5 units (adjust as needed) stands out against roads/buildings
     gpsMarker = new THREE.Mesh(
       new THREE.SphereGeometry(2.5, 16, 16),
       new THREE.MeshBasicMaterial({ color: 0x3498db })
@@ -443,8 +433,7 @@ function updateGPSMarker(x, z) {
   gpsMarker.position.set(x, 2.5, z);
 }
 
-// ── pan + zoom controls ───────────────────────────────────────
-// Tap detection: only fire building select if pointer barely moved (< 12 px)
+
 const TAP_THRESHOLD = 12;
 let _tapX = 0, _tapY = 0;
 
@@ -459,7 +448,7 @@ function initControls() {
   canvas.addEventListener('pointermove', panMove);
   canvas.addEventListener('pointerup', e => {
     panEnd();
-    // Only do building hit-test on a real tap (not the end of a drag)
+
     const dx = Math.abs(e.clientX - _tapX);
     const dy = Math.abs(e.clientY - _tapY);
     if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
@@ -477,9 +466,7 @@ function initControls() {
   canvas.addEventListener('wheel', onWheel, { passive: false });
 }
 
-// Pan state
 const pan = { active: false, lastX: 0, lastY: 0 };
-// Look-at target (what the camera orbits around / pans over)
 const lookTarget = { x: 700, y: 0, z: -80 };
 
 function panStart(e) {
@@ -497,12 +484,10 @@ function panMove(e) {
   pan.lastX = cx;
   pan.lastY = cy;
 
-  // Pan speed scales with camera height
   const speed = camOffset.y * 0.002;
   lookTarget.x -= dx * speed;
   lookTarget.z -= dy * speed * 0.6;
 
-  // Clamp to campus bounds
   const b = campusData.bounds;
   lookTarget.x = Math.max(b.minX, Math.min(b.maxX, lookTarget.x));
   lookTarget.z = Math.max(b.minZ, Math.min(b.maxZ, lookTarget.z));
@@ -551,7 +536,7 @@ function getTouchDist(touches) {
 
 function zoomCamera(newY) {
   const clampedY = Math.max(50, Math.min(500, newY));
-  // Scale the whole offset so the tilt angle is preserved at every zoom level
+  // tilt angle is preserved at every zoom level
   const scale = clampedY / camOffset.y;
   camOffset.x *= scale;
   camOffset.y  = clampedY;
@@ -560,7 +545,7 @@ function zoomCamera(newY) {
 }
 
 function updateCameraFromTarget() {
-  // Camera = lookTarget + stored offset — tilt angle never changes
+  // Camera tilt
   camera.position.set(
     lookTarget.x + camOffset.x,
     lookTarget.y + camOffset.y,
@@ -569,9 +554,7 @@ function updateCameraFromTarget() {
   camera.lookAt(lookTarget.x, lookTarget.y, lookTarget.z);
 }
 
-// ── render loop ───────────────────────────────────────────────
-// Only render when map page is visible — prevents sky-blue canvas bleeding
-// through on other pages (iOS treats opacity:0 layers differently from display:none)
+//redner
 function animate() {
   requestAnimationFrame(animate);
   const mapPage = document.getElementById('page-map');
@@ -584,7 +567,6 @@ function animate() {
 function zoomIn()  { zoomCamera(camera ? camera.position.y - 40 : 220); }
 function zoomOut() { zoomCamera(camera ? camera.position.y + 40 : 220); }
 
-// ── public API (called by ui.js / pathfinding.js / gps.js) ───
 // navigateTo(buildingId)   — draw A* path to building
 // clearPath()              — remove path line
 // updateGPSMarker(x, z)   — move blue dot
