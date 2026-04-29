@@ -75,10 +75,11 @@ function navigateToSelected() {
     console.warn('[ui] No building selected');
     return;
   }
+  const bldg = selectedBuilding;   // ← save BEFORE hideBuildingInfo() clears it
   hideBuildingInfo();
 
   if (typeof navigateTo === 'function') {
-    navigateTo(selectedBuilding.id);
+    navigateTo(bldg.id);           // ← use saved reference
   } else {
     console.warn('[ui] navigateTo() not found — is main.js loaded?');
   }
