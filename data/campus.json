@@ -664,7 +664,7 @@
     {
       "id": "multipurpose",
       "name": "Multi-purpose Quad",
-      "category": "facility",
+      "category": "court",
       "description": "Open quadrangle used for events",
       "color": "#27ae60",
       "latLng": {
