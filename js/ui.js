@@ -27,6 +27,10 @@ let campusBuildings  = [];     // filled by onSceneReady() from main.js
   var _goTo = window.goTo;
   window.goTo = function (pageId) {
     _goTo(pageId);
+    // Explicitly show/hide the WebGL canvas so it never bleeds through on iOS.
+    // CSS opacity:0 on the parent doesn't stop the WebGL surface compositing on touch.
+    var canvas = document.getElementById('three-canvas');
+    if (canvas) canvas.style.display = pageId === 'map' ? 'block' : 'none';
     if (pageId === 'map') {
       // Give the DOM 1 frame to layout before firing resize
       setTimeout(function () {

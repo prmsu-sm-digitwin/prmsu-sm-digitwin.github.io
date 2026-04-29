@@ -11,7 +11,7 @@
 <title>PRMSU Digital Twin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="app">
@@ -39,7 +39,7 @@
       <div class="main-logo-section">
         <div class="logo-ring">
           <div class="logo-inner">
-            <img src="icons/icon-192.png" alt="APP Logo" style="width: 89px; height: 89px; border-radius: 50%; object-fit:cover;">
+            <img src="icons/app_logo.png" alt="APP Logo" style="width:68px; height:68px; border-radius:50%; object-fit:cover;">
           </div>
         </div>
       </div>
@@ -106,8 +106,8 @@
       <div class="map-wrapper">
         <div class="map-viewport">
 
-          <!-- Three.js canvas — fills everything, renders behind controls -->
-          <canvas id="three-canvas"></canvas>
+          <!-- Three.js canvas — starts hidden; shown only when map page is active -->
+          <canvas id="three-canvas" style="display:none;"></canvas>
 
           <!-- Placeholder grid (visible while canvas loads) -->
           <div class="map-grid"></div>
@@ -418,40 +418,13 @@
 </div><!-- end #app -->
 
 
-<!-- Update banner — shown when SW detects a new version -->
-<div id="sw-update-banner" style="
-  display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
-  background:var(--maroon,#7B1C1C); color:#fff;
-  padding:12px 16px; font-family:'DM Sans',sans-serif; font-size:13px;
-  display:none; align-items:center; justify-content:space-between; gap:12px;
-  box-shadow:0 -2px 12px rgba(0,0,0,0.25);">
-  <span>A new version is available!</span>
-  <button onclick="window.location.reload()"
-    style="background:#fff;color:var(--maroon,#7B1C1C);border:none;border-radius:6px;
-           padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;">
-    Reload
-  </button>
-</div>
-
 <!-- SERVICE WORKER -->
 <script>
   if ('serviceWorker' in navigator) {
-    // Capture BEFORE registration — true means a prior SW was controlling this page,
-    // so any SW_UPDATED message is a real update, not a first-install activation.
-    const hadController = !!navigator.serviceWorker.controller;
-
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('service-worker.js')
         .then(reg => console.log('SW registered:', reg.scope))
         .catch(err => console.error('SW failed:', err));
-    });
-
-    // Only show the "New version" banner when it truly is an update
-    navigator.serviceWorker.addEventListener('message', event => {
-      if (event.data && event.data.type === 'SW_UPDATED' && hadController) {
-        const banner = document.getElementById('sw-update-banner');
-        if (banner) banner.style.display = 'flex';
-      }
     });
   }
 </script>
