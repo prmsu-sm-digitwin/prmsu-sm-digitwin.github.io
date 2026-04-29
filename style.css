@@ -74,12 +74,16 @@
     transform: translateX(20px);
     transition: opacity 0.25s ease, transform 0.25s ease;
     scrollbar-width: none;
+    /* iOS fix: visibility:hidden fully removes the page from hit-testing and
+       GPU compositing — opacity:0 alone still lets WebGL/text bleed through on touch */
+    visibility: hidden;
   }
   .page::-webkit-scrollbar { display: none; }
   .page.active {
     opacity: 1;
     pointer-events: all;
     transform: translateX(0);
+    visibility: visible;
   }
 
   .nav-btn {
@@ -1053,7 +1057,9 @@
   }
 
 
-/* Three.js canvas, overlays, GPS btn, utility */
+/* =============================================================
+   OUR ADDITIONS — Three.js canvas, overlays, GPS btn, utility
+   ============================================================= */
 
 /* Utility */
 .hidden { display: none !important; }
@@ -1074,16 +1080,16 @@
   z-index: 0;
 }
 
+/* Zoom controls sit above the canvas */
 .map-controls {
   z-index: 3;
-  margin-top: 50px; /* move controls below GPS button to avoid overlap */
 }
 .map-ctrl-btn {
   cursor: pointer;
   user-select: none;
 }
 
-/* pathbar when navigating*/
+/* ── Path bar (shown while navigating) ── */
 .map-overlay-bar {
   position: absolute;
   top: 10px;
@@ -1205,6 +1211,7 @@
 }
 .building-info-close:hover { background: rgba(0,0,0,0.12); }
 
+/* Category badge */
 .category-badge {
   display: inline-block;
   padding: 2px 9px;
@@ -1222,6 +1229,7 @@
 .category-badge.facility       { background: #e6f4ea; color: #188038; border-color: rgba(24,128,56,0.3); }
 .category-badge.court          { background: #e6f4ea; color: #188038; border-color: rgba(24,128,56,0.3); }
 
+/* Building panel content */
 .building-info-title {
   font-family: 'Playfair Display', serif;
   font-size: 18px;
@@ -1237,6 +1245,7 @@
   margin-bottom: 14px;
 }
 
+/* Navigate Here button */
 .navigate-btn {
   width: 100%;
   padding: 13px;
