@@ -6,7 +6,7 @@ const CACHE_NAME = 'prmsu-digitwin-v4';
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './css/style.css',       // ← correct path (was ./style.css — caused offline CSS failure)
+  './style.css',       // ← correct path (was ./style.css — caused offline CSS failure)
   './script.js',
   './manifest.json',
   './js/pathfinding.js',
