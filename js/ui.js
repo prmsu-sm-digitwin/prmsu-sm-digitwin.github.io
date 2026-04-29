@@ -195,6 +195,13 @@ function populateBuildingSheet(buildings) {
 function onSceneReady(data) {
   campusBuildings = data.buildings;
   populateBuildingSheet(campusBuildings);
+
+  // Auto-enable GPS on app load so the blue dot appears immediately
+  gpsEnabled = true;
+  const btn = document.getElementById('gps-btn');
+  if (btn) btn.classList.add('gps-active');
+  if (typeof setGPSEnabled === 'function') setGPSEnabled(true);
+  console.log('[ui] GPS auto-started on scene ready');
 }
 
 
