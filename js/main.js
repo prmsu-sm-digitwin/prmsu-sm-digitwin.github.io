@@ -1,10 +1,3 @@
-// ============================================================
-// js/main.js  —  PRMSU SM Digital Twin
-// Three.js scene: ground, roads, buildings, camera, controls
-// Reads data/campus.json  |  calls pathfinding.js + gps.js
-// ============================================================
-
-// ── globals ──────────────────────────────────────────────────
 let scene, camera, renderer, raycaster, mouse;
 let campusData = null;
 let buildingMeshes = [];       // { mesh, data }
@@ -13,7 +6,6 @@ let waypointMap = {};          // id → waypoint object (for pathfinding + gps)
 let gpsMarker = null;
 let currentGPSPosition = null;   // { x, z } in Three.js scene coords — updated by gps.js
 
-// ── boot ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   initScene();
   loadCampus();
@@ -21,7 +13,7 @@ window.addEventListener('DOMContentLoaded', () => {
   animate();
 });
 
-// ── Three.js scene setup ──────────────────────────────────────
+// Three.js scene setup
 function initScene() {
   const canvas = document.getElementById('three-canvas');
 
@@ -60,7 +52,7 @@ function onResize() {
   renderer.setSize(w, h);
 }
 
-// ── load campus.json and build scene ─────────────────────────
+//load campus.json and build scene
 function loadCampus() {
   fetch('data/campus.json')
     .then(r => r.json())
@@ -76,7 +68,7 @@ function loadCampus() {
       buildBuildings(data.buildings);
       positionCamera(data.camera);
 
-      // Kick off GPS blue dot (gps.js)
+      // GPS blue dot (gps.js)
       if (typeof initGPS === 'function') initGPS(data);
 
       // Notify ui.js that the scene is ready
@@ -85,7 +77,6 @@ function loadCampus() {
     .catch(err => console.error('Failed to load campus.json:', err));
 }
 
-// ── ground plane ─────────────────────────────────────────────
 function buildGround(g) {
   let material;
   if (g.texture) {
@@ -105,9 +96,6 @@ function buildGround(g) {
   scene.add(ground);
 }
 
-// ── road strips (OSM style) ───────────────────────────────────
-// Draws a flat box strip between two waypoints.
-// Zone 1 / Zone 2 edges are wider; cross-path edges are narrower.
 function buildRoads(waypoints) {
   // Determine which edges belong to each zone (for width/color)
   const zone1Chain = [
@@ -153,7 +141,6 @@ function buildRoads(waypoints) {
 
       buildRoadStrip(ax, az, bx, bz, roadWidth, mat);
 
-      // Center dashed line on main roads
       if (isMain) {
         buildCenterLine(ax, az, bx, bz);
       }
@@ -175,14 +162,13 @@ function buildRoadStrip(ax, az, bx, bz, width, mat) {
     mat
   );
   strip.position.set((ax+bx)/2, 0.15, (az+bz)/2);
-  // Rotate to align with the edge direction (Three.js Z is forward, X is right)
+  // Three.js Z is forward, X is right
   strip.rotation.y = -Math.atan2(dz, dx);
   strip.receiveShadow = true;
   scene.add(strip);
 }
 
 function buildCenterLine(ax, az, bx, bz) {
-  // Dashed center line using small thin boxes spaced along the edge
   const dx = bx - ax, dz = bz - az;
   const length = Math.sqrt(dx*dx + dz*dz);
   const angle = -Math.atan2(dz, dx);
@@ -201,7 +187,6 @@ function buildCenterLine(ax, az, bx, bz) {
   }
 }
 
-// ── buildings ─────────────────────────────────────────────────
 function buildBuildings(buildings) {
   buildingMeshes = [];
 
@@ -231,7 +216,6 @@ function spawnBox(bldg) {
   mesh.userData = { buildingId: bldg.id };
   scene.add(mesh);
 
-  // Slightly darker roof cap
   const roofColor = darkenColor(color, 0.75);
   const roof = new THREE.Mesh(
     new THREE.BoxGeometry(width + 0.5, 0.5, depth + 0.5),
@@ -244,7 +228,7 @@ function spawnBox(bldg) {
 }
 
 function loadGLB(bldg) {
-  // GLBLoader is available if you add the Three.js GLTFLoader script.
+  // GLBLoader is available pag na add yung Three.js GLTFLoader script.
   // Stub — will be wired up when Jonathan/Shane deliver their Meshroom exports.
   console.log(`GLB swap ready for: ${bldg.id} → ${bldg.meshFile}`);
   // Fallback to box while model loads
@@ -258,7 +242,6 @@ function darkenColor(hex, factor) {
   return (r << 16) | (g << 8) | b;
 }
 
-// ── camera setup ──────────────────────────────────────────────
 // camOffset = camera.position - camera.lookAt, stored on first load.
 // Every pan/zoom preserves this offset so the tilt angle never resets.
 let camOffset = { x: -200, y: 220, z: 200 }; // safe default; overwritten by positionCamera
@@ -266,17 +249,14 @@ let camOffset = { x: -200, y: 220, z: 200 }; // safe default; overwritten by pos
 function positionCamera(cam) {
   camera.position.set(cam.position.x, cam.position.y, cam.position.z);
   camera.lookAt(cam.lookAt.x, cam.lookAt.y, cam.lookAt.z);
-  // Sync lookTarget to the JSON value
   lookTarget.x = cam.lookAt.x;
   lookTarget.y = cam.lookAt.y;
   lookTarget.z = cam.lookAt.z;
-  // Store the exact offset from this initial pose
   camOffset.x = cam.position.x - cam.lookAt.x;
   camOffset.y = cam.position.y - cam.lookAt.y;
   camOffset.z = cam.position.z - cam.lookAt.z;
 }
 
-// ── tap/click to select building ─────────────────────────────
 function onPointerDown(e) {
   if (!campusData) return;
 
@@ -325,15 +305,13 @@ function deselectBuilding() {
     }
   });
   if (typeof hideBuildingInfo === 'function') hideBuildingInfo();
-  // ← Do NOT clearPath() here — path must persist while user pans the map
+  //  Do NOT clearPath() here — path must persist while user pans the map
 }
 
-// ── A* path rendering ─────────────────────────────────────────
-// Called from ui.js when user taps "Navigate here"
 function navigateTo(targetBuildingId) {
   if (!campusData) return;
 
-  // Origin: nearest waypoint to user's GPS position, or main_gate as fallback
+  // Origin: nearest waypoint to user's GPS position or main_gate as fallback
   let originWpId = 'main_gate';
   if (currentGPSPosition) {
     let bestId = null, bestDist = Infinity;
@@ -404,7 +382,6 @@ function drawPath(waypointIds, fromPos) {
     scene.add(strip);
   }
 
-  // Waypoint junction dots
   const dotMat = new THREE.MeshBasicMaterial({ color: 0xf39c12 });
   waypointIds.forEach(id => {
     const wp = waypointMap[id];
@@ -415,7 +392,7 @@ function drawPath(waypointIds, fromPos) {
     scene.add(dot);
   });
 
-  // Destination marker — tall red pin so it's easy to spot
+  // Destination marker tall red pin so it's easy to spot
   const lastWp = waypointMap[waypointIds[waypointIds.length - 1]];
   if (lastWp) {
     const pinMat = new THREE.MeshBasicMaterial({ color: 0xe74c3c });
@@ -439,12 +416,12 @@ function clearPath() {
     if (obj.material) obj.material.dispose();
     scene.remove(obj);
   });
-  pathLine = null; // kept for backwards compat
+  pathLine = null; 
 
   if (typeof hidePathInfo === 'function') hidePathInfo();
 }
 
-// ── GPS blue dot (called from gps.js) ────────────────────────
+// GPS blue dot (called from gps.js)
 function updateGPSMarker(x, z, isOnCampus) {
   // null means GPS was turned off — just hide the marker
   if (x === null || z === null) {
@@ -467,8 +444,6 @@ function updateGPSMarker(x, z, isOnCampus) {
   gpsMarker.position.set(x, 2.5, z);
 }
 
-// ── pan + zoom controls ───────────────────────────────────────
-// Tap detection: only fire building select if pointer barely moved (< 12 px)
 const TAP_THRESHOLD = 12;
 let _tapX = 0, _tapY = 0;
 
@@ -503,7 +478,7 @@ function initControls() {
 
 // Pan state
 const pan = { active: false, lastX: 0, lastY: 0 };
-// Look-at target (what the camera orbits around / pans over)
+// what the camera orbits around / pans over
 const lookTarget = { x: 700, y: 0, z: -80 };
 
 function panStart(e) {
@@ -521,7 +496,7 @@ function panMove(e) {
   pan.lastX = cx;
   pan.lastY = cy;
 
-  // Pan speed scales with camera height
+
   const speed = camOffset.y * 0.002;
   lookTarget.x -= dx * speed;
   lookTarget.z -= dy * speed * 0.6;
@@ -584,7 +559,7 @@ function zoomCamera(newY) {
 }
 
 function updateCameraFromTarget() {
-  // Camera = lookTarget + stored offset — tilt angle never changes
+  // tilt angle never changes
   camera.position.set(
     lookTarget.x + camOffset.x,
     lookTarget.y + camOffset.y,
@@ -593,8 +568,7 @@ function updateCameraFromTarget() {
   camera.lookAt(lookTarget.x, lookTarget.y, lookTarget.z);
 }
 
-// ── render loop ───────────────────────────────────────────────
-// Only render when map page is visible — prevents sky-blue canvas bleeding
+// Only render when map page is visible  prevents sky-blue canvas bleeding
 // through on other pages (iOS treats opacity:0 layers differently from display:none)
 function animate() {
   requestAnimationFrame(animate);
@@ -604,11 +578,10 @@ function animate() {
   }
 }
 
-// ── Zoom button helpers (called by HTML onclick) ─────────────
 function zoomIn()  { zoomCamera(camera ? camera.position.y - 40 : 220); }
 function zoomOut() { zoomCamera(camera ? camera.position.y + 40 : 220); }
 
-// ── public API (called by ui.js / pathfinding.js / gps.js) ───
+// public API (called by ui.js / pathfinding.js / gps.js) 
 // navigateTo(buildingId)   — draw A* path to building
 // clearPath()              — remove path line
 // updateGPSMarker(x, z)   — move blue dot
