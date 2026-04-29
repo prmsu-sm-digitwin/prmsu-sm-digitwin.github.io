@@ -1,12 +1,13 @@
 // service-worker.js — PRMSU SM Digital Twin 
 // Bump CACHE_NAME version whenever files change
+// 'prmsu-digitwin-v1.0.5'
 
-const CACHE_NAME = 'prmsu-digitwin-v1.0.5';
+const CACHE_NAME = 'prmsu-digitwin-v1.0.7';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './style.css',       
+  './style.css',         
   './script.js',
   './manifest.json',
   './js/pathfinding.js',
@@ -14,6 +15,10 @@ const STATIC_ASSETS = [
   './js/ui.js',
   './js/main.js',
   './data/campus.json',
+  './images/admin-building.png',
+  './images/university-gate.jpg',
+  './images/Legend_Map.png',
+  './images/Legend_Markings.png',
   'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
 ];
