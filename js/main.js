@@ -331,7 +331,8 @@ function deselectBuilding() {
 // ── A* path rendering ─────────────────────────────────────────
 // Called from ui.js when user taps "Navigate here"
 function navigateTo(targetBuildingId) {
-  if (!campusData) return;
+  _navToast('navigateTo called: ' + targetBuildingId);
+  if (!campusData) { _navToast('FAIL: campusData null'); return; }
 
   // Origin: nearest waypoint to user's GPS position, or main_gate as fallback
   let originWpId = 'main_gate';
@@ -346,25 +347,40 @@ function navigateTo(targetBuildingId) {
     if (bestId) originWpId = bestId;
   }
   const targetBldg = campusData.buildings.find(b => b.id === targetBuildingId);
-  if (!targetBldg) return;
+  if (!targetBldg) { _navToast('FAIL: building not found: ' + targetBuildingId); return; }
   const targetWpId = targetBldg.entryWaypoint;
+  _navToast('Routing ' + originWpId + ' → ' + targetWpId);
 
   // A* is in pathfinding.js
-  if (typeof findPath !== 'function') {
-    console.warn('pathfinding.js not loaded yet');
-    return;
-  }
+  if (typeof findPath !== 'function') { _navToast('FAIL: findPath missing'); return; }
+
   const pathIds = findPath(waypointMap, originWpId, targetWpId);
   if (!pathIds || pathIds.length === 0) {
-    console.warn('No path found');
+    _navToast('FAIL: no path found ' + originWpId + '→' + targetWpId);
     return;
   }
+  _navToast('Path OK: ' + pathIds.length + ' nodes');
 
   // Pass GPS position so drawPath can draw a connector from the blue dot to path start
   drawPath(pathIds, currentGPSPosition);
 
   // Tell ui.js to show path info
   if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg);
+}
+
+// Temporary debug toast — remove after diagnosing
+function _navToast(msg) {
+  console.log('[nav]', msg);
+  let t = document.getElementById('_nav_debug_toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_nav_debug_toast';
+    t.style.cssText = 'position:fixed;top:60px;left:8px;right:8px;background:rgba(0,0,0,0.85);color:#fff;font-size:12px;font-family:monospace;padding:8px 12px;border-radius:8px;z-index:99999;white-space:pre-wrap;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => t.remove(), 5000);
 }
 
 function drawPath(waypointIds, fromPos) {
