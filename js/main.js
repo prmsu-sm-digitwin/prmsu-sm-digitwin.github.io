@@ -360,19 +360,37 @@ function navigateTo(targetBuildingId) {
     return;
   }
 
-  drawPath(pathIds);
+  // Pass GPS position so drawPath can draw a connector from the blue dot to path start
+  drawPath(pathIds, currentGPSPosition);
 
   // Tell ui.js to show path info
   if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg);
 }
 
-function drawPath(waypointIds) {
+function drawPath(waypointIds, fromPos) {
   clearPath();
 
   // Use flat box strips instead of THREE.Line — linewidth is ignored on iOS/WebGL.
   // Same technique as buildRoadStrip but raised higher and orange-colored.
   const pathMat  = new THREE.MeshBasicMaterial({ color: 0xf39c12 }); // orange
   const stripW   = 3.5; // width of path strip in scene units
+
+  // If user is on campus, draw a connector from the GPS blue dot to the first waypoint
+  if (fromPos && waypointIds.length > 0) {
+    const firstWp = waypointMap[waypointIds[0]];
+    if (firstWp) {
+      const dx = firstWp.position.x - fromPos.x;
+      const dz = firstWp.position.z - fromPos.z;
+      const length = Math.sqrt(dx * dx + dz * dz);
+      if (length > 0.5) {
+        const connector = new THREE.Mesh(new THREE.BoxGeometry(length, 0.5, stripW), pathMat);
+        connector.position.set((fromPos.x + firstWp.position.x) / 2, 0.6, (fromPos.z + firstWp.position.z) / 2);
+        connector.rotation.y = -Math.atan2(dz, dx);
+        connector.userData.isPathDot = true;
+        scene.add(connector);
+      }
+    }
+  }
 
   for (let i = 0; i < waypointIds.length - 1; i++) {
     const a = waypointMap[waypointIds[i]];
@@ -435,14 +453,15 @@ function clearPath() {
 }
 
 // ── GPS blue dot (called from gps.js) ────────────────────────
-function updateGPSMarker(x, z) {
+function updateGPSMarker(x, z, isOnCampus) {
   // null means GPS was turned off — just hide the marker
   if (x === null || z === null) {
     if (gpsMarker) gpsMarker.visible = false;
     currentGPSPosition = null;
     return;
   }
-  currentGPSPosition = { x, z };   // store for navigateTo()
+  // Only use as nav origin when actually inside campus bounds (not clamped)
+  currentGPSPosition = isOnCampus ? { x, z } : null;
   if (!gpsMarker) {
     // Blue sphere
     gpsMarker = new THREE.Mesh(
