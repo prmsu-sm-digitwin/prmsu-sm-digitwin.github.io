@@ -55,6 +55,15 @@
 
     <!--MAIN PAGE-->
     <div class="page active" id="page-main">
+      <!-- Pull-to-refresh indicator. #page-main scrolls internally (the outer
+           page/body never scroll), so the browser's own native pull-to-refresh
+           never triggers here — this is a small hand-rolled replacement. -->
+      <div id="ptr-indicator" style="position:absolute; top:0; left:50%; width:44px; height:44px;
+           margin-left:-22px; border-radius:50%; background:#1A4B8C; display:flex;
+           align-items:center; justify-content:center; z-index:500; pointer-events:none;
+           box-shadow:0 4px 14px rgba(0,0,0,0.35); transform:translateY(-60px);">
+        <span id="ptr-arrow" style="color:#F5C842; font-size:20px; line-height:1;">&#8595;</span>
+      </div>
       <div class="main-hero">
         <img src="images/university-gate.jpg" alt="University Gate" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45;">
         <div class="hero-gate-text"></div>
@@ -436,55 +445,85 @@
 <!-- SERVICE WORKER -->
 <script>
   if ('serviceWorker' in navigator) {
-    // Registered as soon as this listener is added — independent of window
-    // 'load' timing below — so a new version activating right after a deploy
-    // is never missed while we're still waiting for the page's load event.
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data && event.data.type === 'SW_UPDATED') {
-        showUpdateBanner();
-      }
-    });
-
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('service-worker.js')
         .then(reg => console.log('SW registered:', reg.scope))
         .catch(err => console.error('SW failed:', err));
     });
   }
+</script>
 
-  // "New version available — tap to update" banner.
-  // service-worker.js broadcasts SW_UPDATED to every open tab once a new
-  // version finishes activating; this is what actually shows that to the user
-  // and reloads the page when they tap it.
-  function showUpdateBanner() {
-    if (document.getElementById('update-banner')) return; // already showing
+<!-- PULL-TO-REFRESH (Homepage only) -->
+<!-- #page-main is the element that actually scrolls (the page/body never do),
+     so there is no native browser pull-to-refresh to lean on here — this is a
+     small custom version of the same gesture: pull down from the very top,
+     past a threshold, and release to reload the app (picking up any new
+     service worker / cached files the same way a manual refresh would). -->
+<script>
+  (function () {
+    const page = document.getElementById('page-main');
+    const indicator = document.getElementById('ptr-indicator');
+    const arrow = document.getElementById('ptr-arrow');
+    if (!page || !indicator || !arrow) return;
 
-    const banner = document.createElement('div');
-    banner.id = 'update-banner';
-    banner.textContent = 'A new version is available — tap to update';
-    banner.style.cssText = [
-      'position:fixed',
-      'top:0',
-      'left:0',
-      'right:0',
-      'background:#1A4B8C',
-      'color:#fff',
-      'font-family:"DM Sans",sans-serif',
-      'font-size:14px',
-      'font-weight:600',
-      'text-align:center',
-      'padding:14px 20px',
-      'z-index:10000',
-      'cursor:pointer',
-      'box-shadow:0 2px 12px rgba(0,0,0,0.3)',
-    ].join(';');
+    const PULL_THRESHOLD = 70;  // px of finger travel needed to arm the refresh
+    const MAX_PULL = 100;       // indicator caps out here so it can't fly off-screen
+    const RESISTANCE = 2.2;     // finger has to travel further than the indicator moves
 
-    banner.addEventListener('click', () => {
-      window.location.reload();
+    let startY = null;
+    let pulling = false;
+    let armed = false;
+
+    function reset() {
+      indicator.style.transition = 'transform 0.2s ease';
+      indicator.style.transform = 'translateY(-60px)';
+      arrow.style.transform = 'rotate(0deg)';
+      pulling = false;
+      startY = null;
+      armed = false;
+    }
+
+    page.addEventListener('touchstart', (e) => {
+      // Only start tracking a pull if we're already at the very top of the
+      // page and it's a single finger — otherwise this is a normal scroll.
+      if (page.scrollTop > 0 || e.touches.length !== 1) return;
+      startY = e.touches[0].clientY;
+      pulling = true;
+      armed = false;
+      indicator.style.transition = 'none';
+    }, { passive: true });
+
+    page.addEventListener('touchmove', (e) => {
+      if (!pulling || startY === null) return;
+      const deltaY = e.touches[0].clientY - startY;
+      if (deltaY <= 0) {
+        // Finger moved back up (or never moved down) — not a pull, let the
+        // browser handle this touch normally.
+        indicator.style.transform = 'translateY(-60px)';
+        return;
+      }
+      // Once it's clearly a downward pull from the top, take over the
+      // gesture so the page itself doesn't rubber-band/scroll underneath it.
+      e.preventDefault();
+      const pull = Math.min(deltaY / RESISTANCE, MAX_PULL);
+      indicator.style.transform = `translateY(${pull - 60}px)`;
+      armed = pull >= PULL_THRESHOLD;
+      arrow.style.transform = armed ? 'rotate(180deg)' : 'rotate(0deg)';
+    }, { passive: false });
+
+    page.addEventListener('touchend', () => {
+      if (pulling && armed) {
+        // Hold the indicator visible while the reload kicks in.
+        indicator.style.transition = 'transform 0.2s ease';
+        indicator.style.transform = 'translateY(10px)';
+        window.location.reload();
+      } else {
+        reset();
+      }
     });
 
-    document.body.appendChild(banner);
-  }
+    page.addEventListener('touchcancel', reset);
+  })();
 </script>
 
 <script src="script.js"></script>
