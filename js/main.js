@@ -591,10 +591,11 @@ function panMove(e) {
 function panEnd() { pan.active = false; }
 
 // Zoom + rotate state (two-finger gesture does both at once, like most map apps)
-let pinchStartDist  = null;
-let pinchStartY     = null;
-let twoFingerLastX  = null;
-let twoFingerLastY  = null;
+let pinchStartDist    = null;
+let pinchStartY       = null;
+let twoFingerLastX    = null;
+let twoFingerLastY    = null;
+let twoFingerLastDist = null;
 
 function onTouchStart(e) {
   if (e.touches.length === 2) {
@@ -602,8 +603,9 @@ function onTouchStart(e) {
     pinchStartDist = getTouchDist(e.touches);
     pinchStartY    = camera.position.y;
     const mid = getTouchMidpoint(e.touches);
-    twoFingerLastX = mid.x;
-    twoFingerLastY = mid.y;
+    twoFingerLastX    = mid.x;
+    twoFingerLastY    = mid.y;
+    twoFingerLastDist = pinchStartDist;
     pan.active = false; // cancel single-finger pan during a two-finger gesture
   }
 }
@@ -619,22 +621,37 @@ function onTouchMove(e) {
 
     // Dragging both fingers together (not apart/together, which is the pinch above)
     // rotates the view: sideways = spin around lookTarget, up/down = tilt the angle.
+    // Gated below so a plain pinch doesn't also spin the camera — it's basically
+    // impossible to hold two fingers at a perfectly fixed distance while pinching,
+    // and that tiny natural wobble was accumulating frame after frame into a real,
+    // unwanted rotation.
     const mid = getTouchMidpoint(e.touches);
     if (twoFingerLastX !== null) {
       const dx = mid.x - twoFingerLastX;
       const dy = mid.y - twoFingerLastY;
-      rotateCamera(-dx * ROTATE_SPEED, dy * TILT_SPEED);
+      const midMove  = Math.sqrt(dx * dx + dy * dy);
+      const distMove = Math.abs(dist - twoFingerLastDist);
+
+      // Only treat it as a rotate/tilt once the fingers are clearly sliding
+      // together and not just pinching: midpoint movement has to both clear a
+      // small dead zone AND outweigh however much the pinch distance changed
+      // this same frame.
+      if (midMove > 4 && midMove > distMove * 1.5) {
+        rotateCamera(-dx * ROTATE_SPEED, dy * TILT_SPEED);
+      }
     }
-    twoFingerLastX = mid.x;
-    twoFingerLastY = mid.y;
+    twoFingerLastX    = mid.x;
+    twoFingerLastY    = mid.y;
+    twoFingerLastDist = dist;
   }
 }
 
 function onTouchEnd() {
-  pinchStartDist = null;
-  pinchStartY    = null;
-  twoFingerLastX = null;
-  twoFingerLastY = null;
+  pinchStartDist    = null;
+  pinchStartY       = null;
+  twoFingerLastX    = null;
+  twoFingerLastY    = null;
+  twoFingerLastDist = null;
 }
 
 function onWheel(e) {
