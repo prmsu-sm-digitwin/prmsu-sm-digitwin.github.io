@@ -1,5 +1,14 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Kill the default mobile browser tap-highlight rectangle (the translucent
+   blue box that flashes over buttons/links on touch) so it doesn't show over
+   our own button styling. -webkit-tap-highlight-color is Safari/Chrome-specific;
+   user-select just prevents an accidental text-selection halo on a fast tap. */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
   :root {
     --maroon: #1A4B8C;
     --maroon-dark: #0F3060;
