@@ -81,7 +81,7 @@
               <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
             </svg>
           </div>
-          <span class="btn-label">3D Map Navigation</span>
+          <span class="btn-label">Navigation Map</span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="main-nav-btn" onclick="goTo('legend')">
@@ -108,7 +108,7 @@
     </div>
 
 
-    <!--3D MAP NAVIGATION PAGE-->
+    <!--NAVIGATION PAGE-->
     <div class="page" id="page-map">
       <div class="inner-top-bar">
         <div class="inner-top-logo">
@@ -120,7 +120,7 @@
           </div>
           <div class="inner-top-logo-text">
             <span class="inner-top-logo-name">PRMSU SM Digital Twin</span>
-            <span class="inner-top-logo-sub">3D MAP NAVIGATION</span>
+            <span class="inner-top-logo-sub">NAVIGATION MAP</span>
           </div>
         </div>
         <button class="inner-hamburger-btn" onclick="openSidebar('map')">
@@ -400,7 +400,7 @@
               <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
             </svg>
           </div>
-          <span class="sidebar-nav-label">3D Map Navigation</span>
+          <span class="sidebar-nav-label">Navigation Map</span>
         </div>
         <div class="sidebar-nav-item" id="s-legend" onclick="sidebarGoTo('legend')">
           <div class="sidebar-nav-icon">
@@ -448,6 +448,7 @@
 
 <!-- Three.js library -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="js/vendor/GLTFLoader.js"></script>
 
 <!-- Our app scripts -->
 <script defer src="js/pathfinding.js"></script>

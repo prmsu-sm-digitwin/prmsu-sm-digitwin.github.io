@@ -121,6 +121,12 @@ function buildRoads(waypoints) {
   const matMain  = new THREE.MeshLambertMaterial({ color: 0x9a9a9a }); // gray tarmac
   const matPath  = new THREE.MeshLambertMaterial({ color: 0xc0b090 }); // beige path
 
+  // The unpaved path sits below the main road's height so wherever they cross,
+  // the main road renders on top instead of the two fighting for the same
+  // z-height (which looked like the path clipping/cutting through the road).
+  const ROAD_Y_MAIN = 0.15;
+  const ROAD_Y_PATH = 0.00;
+
   // Track drawn edges so we don't double-draw
   const drawn = new Set();
 
@@ -138,13 +144,36 @@ function buildRoads(waypoints) {
       const isMain = mainEdges.has(key);
       const roadWidth = isMain ? 7 : 3.5;
       const mat = isMain ? matMain : matPath;
+      const roadY = isMain ? ROAD_Y_MAIN : ROAD_Y_PATH;
 
-      buildRoadStrip(ax, az, bx, bz, roadWidth, mat);
+      buildRoadStrip(ax, az, bx, bz, roadWidth, mat, roadY);
 
       if (isMain) {
         buildCenterLine(ax, az, bx, bz);
       }
     });
+  });
+
+  // Plug the seams: each edge above is its own flat rectangle with a flat end,
+  // so anywhere 2+ edges meet at an angle (a bend or a fork) the ends don't
+  // line up — you get a gap or an overlapping notch. A small flat circle at
+  // every junction covers that seam regardless of the angle between edges.
+  waypoints.forEach(wp => {
+    if (wp.neighbors.length < 2) return; // dead end — nothing to seam here
+
+    const hasMainEdge = wp.neighbors.some(nid => mainEdges.has(edgeKey(wp.id, nid)));
+    const width = hasMainEdge ? 7 : 3.5;
+    const mat = hasMainEdge ? matMain : matPath;
+    const jointY = hasMainEdge ? ROAD_Y_MAIN : ROAD_Y_PATH;
+
+    const joint = new THREE.Mesh(
+      new THREE.CircleGeometry(width / 2, 16),
+      mat
+    );
+    joint.rotation.x = -Math.PI / 2;
+    joint.position.set(wp.position.x, jointY, wp.position.z);
+    joint.receiveShadow = true;
+    scene.add(joint);
   });
 }
 
@@ -152,7 +181,7 @@ function edgeKey(a, b) {
   return [a, b].sort().join('|');
 }
 
-function buildRoadStrip(ax, az, bx, bz, width, mat) {
+function buildRoadStrip(ax, az, bx, bz, width, mat, y) {
   const dx = bx - ax, dz = bz - az;
   const length = Math.sqrt(dx*dx + dz*dz);
   if (length < 0.1) return;
@@ -161,7 +190,7 @@ function buildRoadStrip(ax, az, bx, bz, width, mat) {
     new THREE.BoxGeometry(length, 0.3, width),
     mat
   );
-  strip.position.set((ax+bx)/2, 0.15, (az+bz)/2);
+  strip.position.set((ax+bx)/2, y, (az+bz)/2);
   // Three.js Z is forward, X is right
   strip.rotation.y = -Math.atan2(dz, dx);
   strip.receiveShadow = true;
@@ -192,7 +221,7 @@ function buildBuildings(buildings) {
 
   buildings.forEach(bldg => {
     // If a real mesh file exists, load the GLB. Otherwise spawn a box.
-    if (bldg.meshFile) {
+    if (bldg.glbModel) {
       loadGLB(bldg);
     } else {
       spawnBox(bldg);
@@ -228,11 +257,36 @@ function spawnBox(bldg) {
 }
 
 function loadGLB(bldg) {
-  // GLBLoader is available pag na add yung Three.js GLTFLoader script.
-  // Stub — will be wired up when Jonathan/Shane deliver their Meshroom exports.
-  console.log(`GLB swap ready for: ${bldg.id} → ${bldg.meshFile}`);
-  // Fallback to box while model loads
-  spawnBox(bldg);
+  // GLTFLoader is loaded via js/vendor/GLTFLoader.js (matches r128 core).
+  // Loads Jonathan/Shane's Agisoft Metashape GLB exports.
+  const loader = new THREE.GLTFLoader();
+
+  loader.load(
+    bldg.glbModel,
+    (gltf) => {
+      const model = gltf.scene;
+      model.position.set(bldg.position.x, 0, bldg.position.z);
+      model.rotation.y = THREE.MathUtils.degToRad(bldg.rotation || 0);
+      model.userData = { buildingId: bldg.id };
+
+      model.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          child.userData.buildingId = bldg.id;
+        }
+      });
+
+      scene.add(model);
+      buildingMeshes.push({ mesh: model, data: bldg });
+      console.log(`GLB loaded: ${bldg.id} → ${bldg.glbModel}`);
+    },
+    undefined,
+    (err) => {
+      console.error(`Failed to load GLB for ${bldg.id} (${bldg.glbModel}):`, err);
+      spawnBox(bldg); // fall back to graybox if the model fails to load
+    }
+  );
 }
 
 function darkenColor(hex, factor) {
@@ -270,27 +324,40 @@ function onPointerDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
   const meshes = buildingMeshes.map(b => b.mesh);
-  const hits = raycaster.intersectObjects(meshes, false);
+  // recursive: true so hits register on meshes inside a loaded GLTF group, not just single boxes
+  const hits = raycaster.intersectObjects(meshes, true);
 
   if (hits.length > 0) {
-    const hit = hits[0].object;
-    const bObj = buildingMeshes.find(b => b.mesh === hit);
+    let hit = hits[0].object;
+    while (hit && !hit.userData?.buildingId && hit.parent) hit = hit.parent;
+    const bId = hit?.userData?.buildingId;
+    const bObj = buildingMeshes.find(b => b.data.id === bId);
     if (bObj) selectBuilding(bObj.data);
+    else deselectBuilding();
   } else {
     deselectBuilding();
+  }
+}
+
+// Sets emissive highlight on a mesh, or every emissive-capable mesh inside a GLTF group
+function setEmissive(meshObj, hex) {
+  if (meshObj.isMesh && meshObj.material && meshObj.material.emissive !== undefined) {
+    meshObj.material.emissive.setHex(hex);
+  } else if (meshObj.traverse) {
+    meshObj.traverse(child => {
+      if (child.isMesh && child.material && child.material.emissive !== undefined) {
+        child.material.emissive.setHex(hex);
+      }
+    });
   }
 }
 
 function selectBuilding(bldg) {
   selectedBuilding = bldg;
 
-  // Highlight selected box (slight emissive)
+  // Highlight selected building (slight emissive) — works for boxes and loaded GLB models
   buildingMeshes.forEach(b => {
-    if (b.mesh.material.emissive !== undefined) {
-      b.mesh.material.emissive.setHex(
-        b.data.id === bldg.id ? 0x444444 : 0x000000
-      );
-    }
+    setEmissive(b.mesh, b.data.id === bldg.id ? 0x444444 : 0x000000);
   });
 
   // Tell ui.js to show the info panel
@@ -300,9 +367,7 @@ function selectBuilding(bldg) {
 function deselectBuilding() {
   selectedBuilding = null;
   buildingMeshes.forEach(b => {
-    if (b.mesh.material.emissive !== undefined) {
-      b.mesh.material.emissive.setHex(0x000000);
-    }
+    setEmissive(b.mesh, 0x000000);
   });
   if (typeof hideBuildingInfo === 'function') hideBuildingInfo();
   //  Do NOT clearPath() here — path must persist while user pans the map
@@ -440,6 +505,13 @@ function updateGPSMarker(x, z, isOnCampus) {
     gpsMarker.userData.isGPS = true;
     scene.add(gpsMarker);
   }
+  // Off campus: hide it instead of showing it clamped to the bounding-box edge —
+  // the ground is an irregular quad, not a rectangle, so a clamped position can
+  // land outside the visible green area and look like it's floating off the map.
+  if (!isOnCampus) {
+    gpsMarker.visible = false;
+    return;
+  }
   gpsMarker.visible = true;
   gpsMarker.position.set(x, 2.5, z);
 }
@@ -477,12 +549,15 @@ function initControls() {
 }
 
 // Pan state
-const pan = { active: false, lastX: 0, lastY: 0 };
+const pan = { active: false, lastX: 0, lastY: 0, mode: 'pan' };
 // what the camera orbits around / pans over
 const lookTarget = { x: 700, y: 0, z: -80 };
 
 function panStart(e) {
   pan.active = true;
+  // Shift+drag rotates instead of panning — a one-pointer stand-in for the
+  // two-finger rotate gesture below, so rotation is also testable with a mouse.
+  pan.mode = e.shiftKey ? 'rotate' : 'pan';
   pan.lastX = e.clientX ?? (e.touches?.[0]?.clientX ?? 0);
   pan.lastY = e.clientY ?? (e.touches?.[0]?.clientY ?? 0);
 }
@@ -496,6 +571,10 @@ function panMove(e) {
   pan.lastX = cx;
   pan.lastY = cy;
 
+  if (pan.mode === 'rotate') {
+    rotateCamera(-dx * ROTATE_SPEED, dy * TILT_SPEED);
+    return;
+  }
 
   const speed = camOffset.y * 0.002;
   lookTarget.x -= dx * speed;
@@ -511,16 +590,21 @@ function panMove(e) {
 
 function panEnd() { pan.active = false; }
 
-// Zoom state
-let pinchStartDist = null;
-let pinchStartY    = null;
+// Zoom + rotate state (two-finger gesture does both at once, like most map apps)
+let pinchStartDist  = null;
+let pinchStartY     = null;
+let twoFingerLastX  = null;
+let twoFingerLastY  = null;
 
 function onTouchStart(e) {
   if (e.touches.length === 2) {
     e.preventDefault();
     pinchStartDist = getTouchDist(e.touches);
     pinchStartY    = camera.position.y;
-    pan.active = false; // cancel pan during pinch
+    const mid = getTouchMidpoint(e.touches);
+    twoFingerLastX = mid.x;
+    twoFingerLastY = mid.y;
+    pan.active = false; // cancel single-finger pan during a two-finger gesture
   }
 }
 
@@ -532,10 +616,26 @@ function onTouchMove(e) {
       const scale = pinchStartDist / dist;
       zoomCamera(pinchStartY * scale);
     }
+
+    // Dragging both fingers together (not apart/together, which is the pinch above)
+    // rotates the view: sideways = spin around lookTarget, up/down = tilt the angle.
+    const mid = getTouchMidpoint(e.touches);
+    if (twoFingerLastX !== null) {
+      const dx = mid.x - twoFingerLastX;
+      const dy = mid.y - twoFingerLastY;
+      rotateCamera(-dx * ROTATE_SPEED, dy * TILT_SPEED);
+    }
+    twoFingerLastX = mid.x;
+    twoFingerLastY = mid.y;
   }
 }
 
-function onTouchEnd() { pinchStartDist = null; pinchStartY = null; }
+function onTouchEnd() {
+  pinchStartDist = null;
+  pinchStartY    = null;
+  twoFingerLastX = null;
+  twoFingerLastY = null;
+}
 
 function onWheel(e) {
   e.preventDefault();
@@ -548,6 +648,13 @@ function getTouchDist(touches) {
   return Math.sqrt(dx*dx + dy*dy);
 }
 
+function getTouchMidpoint(touches) {
+  return {
+    x: (touches[0].clientX + touches[1].clientX) / 2,
+    y: (touches[0].clientY + touches[1].clientY) / 2
+  };
+}
+
 function zoomCamera(newY) {
   const clampedY = Math.max(50, Math.min(500, newY));
   // Scale the whole offset so the tilt angle is preserved at every zoom level
@@ -555,6 +662,31 @@ function zoomCamera(newY) {
   camOffset.x *= scale;
   camOffset.y  = clampedY;
   camOffset.z *= scale;
+  updateCameraFromTarget();
+}
+
+// Requested by the thesis coordinator (2026-08-29): Navigate Now's camera can now
+// orbit around lookTarget instead of being locked to one fixed top-down angle.
+// camOffset is treated as a spherical vector (radius r, elevation theta, azimuth phi)
+// so rotating only ever changes direction, never magnitude — zoom (above) still
+// controls distance/height independently.
+const MIN_ELEVATION = THREE.MathUtils.degToRad(25); // floor: camera can never graze/dip into the ground plane
+const MAX_ELEVATION = THREE.MathUtils.degToRad(85); // ceiling: never flips to a straight-down, disorienting view
+const ROTATE_SPEED = 0.006;  // radians per pixel of horizontal drag
+const TILT_SPEED   = 0.004;  // radians per pixel of vertical drag
+
+function rotateCamera(deltaAzimuth, deltaElevation) {
+  const r = Math.sqrt(camOffset.x ** 2 + camOffset.y ** 2 + camOffset.z ** 2);
+  let theta = Math.asin(camOffset.y / r);              // elevation above the horizontal plane
+  let phi   = Math.atan2(camOffset.z, camOffset.x);    // azimuth around the vertical (Y) axis
+
+  phi   += deltaAzimuth;
+  theta = Math.max(MIN_ELEVATION, Math.min(MAX_ELEVATION, theta + deltaElevation));
+
+  camOffset.x = r * Math.cos(theta) * Math.cos(phi);
+  camOffset.y = r * Math.sin(theta);
+  camOffset.z = r * Math.cos(theta) * Math.sin(phi);
+
   updateCameraFromTarget();
 }
 

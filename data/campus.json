@@ -680,7 +680,9 @@
         "depth": 20,
         "height": 8
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "quad_entry"
     },
     {
@@ -702,7 +704,9 @@
         "depth": 12,
         "height": 6
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "sc_entry"
     },
     {
@@ -724,7 +728,9 @@
         "depth": 30,
         "height": 10
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "gab_entry"
     },
     {
@@ -746,7 +752,9 @@
         "depth": 20,
         "height": 8
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "z1_int6"
     },
     {
@@ -768,7 +776,9 @@
         "depth": 30,
         "height": 10
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "lib_entry"
     },
     {
@@ -790,13 +800,15 @@
         "depth": 30,
         "height": 10
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "asb_entry"
     },
     {
       "id": "admin",
       "name": "Admin Building",
-      "category": "admin",
+      "category": "facility",
       "description": "University administration building",
       "color": "#c0392b",
       "latLng": {
@@ -812,7 +824,9 @@
         "depth": 30,
         "height": 10
       },
-      "meshFile": null,
+      "glbModel": "models/ADMINYELLOW.glb",
+      "texturedModel": null,
+      "rotation": 160,
       "entryWaypoint": "admin_entry"
     },
     {
@@ -834,7 +848,9 @@
         "depth": 20,
         "height": 8
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "canteen_entry"
     },
     {
@@ -856,7 +872,9 @@
         "depth": 20,
         "height": 8
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "chm1_entry"
     },
     {
@@ -878,7 +896,9 @@
         "depth": 12,
         "height": 6
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "chm2_entry"
     },
     {
@@ -900,7 +920,9 @@
         "depth": 30,
         "height": 10
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "cte_bsed_entry"
     },
     {
@@ -922,7 +944,9 @@
         "depth": 12,
         "height": 6
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "lhs_entry"
     },
     {
@@ -944,7 +968,9 @@
         "depth": 20,
         "height": 8
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "z2_wp6"
     },
     {
@@ -966,7 +992,9 @@
         "depth": 12,
         "height": 6
       },
-      "meshFile": null,
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
       "entryWaypoint": "z2_wp7"
     }
   ]
