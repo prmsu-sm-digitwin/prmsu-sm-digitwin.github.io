@@ -9,6 +9,20 @@
   -webkit-touch-callout: none;
 }
 
+/* The actual source of the persistent blue box: browsers draw a default
+   focus outline on a button/link once it's been tapped, and it stays until
+   focus moves elsewhere — unlike the tap-highlight above, which only
+   flashes for an instant. Nothing here ever reset it, so every tap left that
+   outline sitting on screen. Removed for mouse/touch; kept (as a gold ring)
+   for real keyboard navigation via :focus-visible, so accessibility isn't lost. */
+*:focus {
+  outline: none;
+}
+*:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
   :root {
     --maroon: #1A4B8C;
     --maroon-dark: #0F3060;
