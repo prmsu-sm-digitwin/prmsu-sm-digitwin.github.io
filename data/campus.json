@@ -7,9 +7,9 @@
   },
   "ground": {
     "width": 1100,
-    "depth": 400,
+    "depth": 450,
     "offsetX": 500,
-    "offsetZ": -80,
+    "offsetZ": -105,
     "texture": null,
     "color": "#7cb87a",
     "_note": "texture=null uses solid color. Change to 'images/campus-topdown.jpg' later."
@@ -30,7 +30,7 @@
   "bounds": {
     "minX": -50,
     "maxX": 1050,
-    "minZ": -230,
+    "minZ": -280,
     "maxZ": 80,
     "_note": "Used by gps.js to clamp blue dot to scene area"
   },
@@ -80,7 +80,8 @@
       },
       "neighbors": [
         "inner_gate",
-        "z1_int2"
+        "z1_int2",
+        "z3_start"
       ]
     },
     {
@@ -657,6 +658,37 @@
       },
       "neighbors": [
         "z2_end"
+      ]
+    },
+    {
+      "id": "z3_start",
+      "label": "Zone 3 Start",
+      "latLng": {
+        "lat": 14.969390418463242,
+        "lng": 120.1950518382871
+      },
+      "position": {
+        "x": 431.8,
+        "z": -98.3
+      },
+      "neighbors": [
+        "z1_int1",
+        "z3_wp1"
+      ]
+    },
+    {
+      "id": "z3_wp1",
+      "label": "Z3 Path 1",
+      "latLng": {
+        "lat": 14.971131826211318,
+        "lng": 120.19960932640669
+      },
+      "position": {
+        "x": 922.4,
+        "z": -292.8
+      },
+      "neighbors": [
+        "z3_start"
       ]
     }
   ],
