@@ -272,7 +272,11 @@
     transition: background 0.2s, border-color 0.2s, transform 0.1s;
     letter-spacing: 0.02em;
   }
-  .main-nav-btn:hover, .main-nav-btn:active {
+  /* .is-pressed (not :active) drives this on purpose -- see the JS in
+   script.js: mobile Chrome can leave :active permanently "stuck" matched
+   on a button that navigates the page away mid-tap, since the matching
+   touchend/mouseup never gets delivered while it's hidden. */
+.main-nav-btn:hover, .main-nav-btn.is-pressed {
     background: var(--gold-pale);
     border-color: var(--gold);
     transform: translateY(-1px);

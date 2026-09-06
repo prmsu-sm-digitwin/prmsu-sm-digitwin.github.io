@@ -207,7 +207,37 @@ function sidebarGoTo(pageId) {
   });
 })();
 
+// Homepage nav buttons (Navigation Map / Legend / About) use a JS-driven
+// `.is-pressed` class instead of CSS `:active` for their pressed look (see
+// style.css). Reason: tapping one of these calls goTo() synchronously,
+// which hides the button's page immediately -- so on some mobile Chrome
+// builds the matching touchend/mouseup never gets delivered while it's
+// hidden, and `:active` stays permanently matched. The next time that page
+// is shown again (e.g. via the hardware/gesture back button), the button
+// looks stuck "pressed" (pale gold fill) even though nothing is touching
+// it. `.is-pressed` is fully JS-controlled so it can't get stuck: it's
+// cleared on every touchend/touchcancel/mouseup/mouseleave, on every
+// popstate, and defensively at the top of every goTo() call too.
+function clearMainNavPress() {
+  document.querySelectorAll('.main-nav-btn.is-pressed').forEach(function (b) {
+    b.classList.remove('is-pressed');
+  });
+}
+(function () {
+  function press(e) {
+    var btn = e.target.closest && e.target.closest('.main-nav-btn');
+    if (btn) btn.classList.add('is-pressed');
+  }
+  document.addEventListener('touchstart', press, { passive: true });
+  document.addEventListener('mousedown', press);
+  document.addEventListener('touchend', clearMainNavPress);
+  document.addEventListener('touchcancel', clearMainNavPress);
+  document.addEventListener('mouseup', clearMainNavPress);
+  document.addEventListener('mouseleave', clearMainNavPress);
+})();
+
 function goTo(pageId, _fromPopState) {
+  clearMainNavPress();
   const prev = document.getElementById('page-' + current);
   const next = document.getElementById('page-' + pageId);
   if (!next || pageId === current) return;
@@ -243,6 +273,7 @@ window.addEventListener('popstate', function (e) {
   const sidebarEl = document.getElementById('sidebar-overlay');
   const vmqEl = document.getElementById('vmq-overlay');
 
+  clearMainNavPress();
   sidebarOverlayOpen = !!state.sidebar;
   vmqOverlayOpen = !!state.vmq;
   sidebarEl.classList.toggle('open', sidebarOverlayOpen);
