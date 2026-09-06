@@ -189,11 +189,22 @@
 
         
         <div class="map-search-panel" id="map-sheet">
-          <div class="sheet-search-bar" id="sheet-search-bar" onclick="sheetToggle()">
+          <div class="sheet-search-bar" id="sheet-search-bar" onclick="document.getElementById('building-search-input').focus()">
             <svg class="sheet-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
-            <span class="sheet-search-text">Search campus buildings…</span>
+            <input
+              type="text"
+              id="building-search-input"
+              class="sheet-search-input"
+              placeholder="Search campus buildings…"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              oninput="if (typeof filterBuildingSheet === 'function') filterBuildingSheet(this.value)"
+              onfocus="if (typeof sheetEnsureOpen === 'function') sheetEnsureOpen()"
+            >
           </div>
 
           <div class="sheet-panel" id="sheet-panel">

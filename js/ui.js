@@ -110,6 +110,18 @@ function toggleGPS() {
 }
 
 
+// Live-filters the building sheet as the user types in the search bar.
+// Reuses the same renderer populateBuildingSheet() already uses for the
+// full list — an empty query just re-shows everything.
+function filterBuildingSheet(query) {
+  if (!campusData || !campusData.buildings) return;
+  const q = query.trim().toLowerCase();
+  const filtered = !q
+    ? campusData.buildings
+    : campusData.buildings.filter(b => (b.name || '').toLowerCase().includes(q));
+  populateBuildingSheet(filtered);
+}
+
 // Called by onSceneReady() with the full campus data object
 function populateBuildingSheet(buildings) {
   const container = document.getElementById('building-sheet-list');

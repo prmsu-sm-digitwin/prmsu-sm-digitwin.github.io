@@ -134,6 +134,14 @@ function sidebarGoTo(pageId) {
     else snapTo('collapsed');
   };
 
+  // Used by the search input's focus handler: open the sheet if it's
+  // collapsed, but (unlike sheetToggle) never closes an already-open one —
+  // tapping back into the input to keep typing shouldn't collapse the
+  // results list out from under the keyboard.
+  window.sheetEnsureOpen = function() {
+    if (currentSnap === 'collapsed') snapTo('mid');
+  };
+
   function initSheet() {
     panel  = document.getElementById('sheet-panel');
     handle = document.getElementById('sheet-handle');

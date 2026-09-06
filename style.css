@@ -387,6 +387,21 @@
     font-family: 'DM Sans', sans-serif;
     font-weight: 400;
   }
+  .sheet-search-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: var(--text-main);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  .sheet-search-input::placeholder {
+    color: #8E8E93;
+  }
   .sheet-panel {
     pointer-events: all;
     background: #fff;
