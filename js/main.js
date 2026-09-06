@@ -576,9 +576,17 @@ function panMove(e) {
     return;
   }
 
+  // Pan direction has to rotate along with the camera's current azimuth, not
+  // stay locked to the world's raw X/Z axes. The old dx-→x, dy-→z mapping only
+  // looked right at the one fixed angle the app used to be locked to before
+  // rotation existed; at other azimuths (most noticeably near top-down) it
+  // makes vertical drags pan sideways and vice versa. Rotating the drag by
+  // the camera's azimuth (phi) keeps "drag right = ground slides right" and
+  // "drag down = ground slides down" true from whatever angle you're viewing.
+  const phi = Math.atan2(camOffset.z, camOffset.x);
   const speed = camOffset.y * 0.002;
-  lookTarget.x -= dx * speed;
-  lookTarget.z -= dy * speed * 0.6;
+  lookTarget.x -= (Math.sin(phi) * dx + Math.cos(phi) * dy * 0.6) * speed;
+  lookTarget.z -= (-Math.cos(phi) * dx + Math.sin(phi) * dy * 0.6) * speed;
 
   // Clamp to campus bounds
   const b = campusData.bounds;
