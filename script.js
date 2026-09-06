@@ -13,8 +13,19 @@ const vmqData = {
   }
 };
 
-let history = ['main'];
 let current = 'main';
+let sidebarOverlayOpen = false;
+let vmqOverlayOpen = false;
+
+// The Android hardware/gesture back button (and, further down, a custom
+// iOS edge-swipe gesture) both act on window.history -- not on a variable
+// we invent ourselves. The old code named its own page stack `history`,
+// which shadowed window.history and could never have been wired to the
+// real back button. Every page/overlay change below pushes a real state,
+// and the popstate listener re-renders the UI to match wherever the user
+// lands -- so backing out of a page/sidebar/modal just works, and the app
+// only exits when there's genuinely nothing left to go back to.
+window.history.replaceState({ page: 'main', sidebar: false, vmq: false }, '', '#main');
 
 function updateNav(pageId) {
   const isMain = pageId === 'main';
@@ -31,18 +42,34 @@ function openSidebar(fromPage) {
     if (el) el.classList.toggle('active-item', id === fromPage);
   });
   document.getElementById('sidebar-overlay').classList.add('open');
+  sidebarOverlayOpen = true;
+  // Opening the drawer is its own history entry, so one back press (or one
+  // hardware/gesture back) closes it instead of quitting the app outright.
+  window.history.pushState({ page: current, sidebar: true, vmq: false }, '', '#sidebar');
 }
 function closeSidebar(e) {
   if (e.target === document.getElementById('sidebar-overlay')) {
-    document.getElementById('sidebar-overlay').classList.remove('open');
+    window.history.back();
   }
 }
 function closeSidebarBtn() {
-  document.getElementById('sidebar-overlay').classList.remove('open');
+  window.history.back();
 }
 function sidebarGoTo(pageId) {
   document.getElementById('sidebar-overlay').classList.remove('open');
-  goTo(pageId);
+  sidebarOverlayOpen = false;
+  const prevEl = document.getElementById('page-' + current);
+  const nextEl = document.getElementById('page-' + pageId);
+  if (nextEl && pageId !== current) {
+    prevEl.classList.remove('active');
+    nextEl.classList.add('active');
+    current = pageId;
+    updateNav(pageId);
+  }
+  // Replace the "sidebar open" entry with the destination page rather than
+  // pushing a new one, so back from here goes to wherever you were before
+  // opening the drawer instead of popping the drawer back open.
+  window.history.replaceState({ page: pageId, sidebar: false, vmq: false }, '', '#' + pageId);
 }
 
 (function () {
@@ -161,8 +188,8 @@ function sidebarGoTo(pageId) {
   }
 
   var _goTo = window.goTo;
-  window.goTo = function(p) {
-    _goTo(p);
+  window.goTo = function(p, fromPopState) {
+    _goTo(p, fromPopState);
     if (p === 'map') {
       setTimeout(function() {
         var el = document.getElementById('sheet-panel');
@@ -180,35 +207,51 @@ function sidebarGoTo(pageId) {
   });
 })();
 
-function goTo(pageId) {
+function goTo(pageId, _fromPopState) {
   const prev = document.getElementById('page-' + current);
   const next = document.getElementById('page-' + pageId);
   if (!next || pageId === current) return;
 
   prev.classList.remove('active');
   next.classList.add('active');
-
-  if (pageId !== 'main') {
-    history.push(pageId);
-  } else {
-    history = ['main'];
-  }
   current = pageId;
   updateNav(pageId);
-}
 
-function goBack() {
-  if (history.length > 1) {
-    history.pop();
-    const prev = history[history.length - 1];
-    const prevEl = document.getElementById('page-' + current);
-    const nextEl = document.getElementById('page-' + prev);
-    prevEl.classList.remove('active');
-    nextEl.classList.add('active');
-    current = prev;
-    updateNav(prev);
+  // Only push a new history entry for a real forward navigation. When this
+  // call is the popstate handler replaying a back/forward move, the browser
+  // has already moved -- pushing again here would double up the stack.
+  if (!_fromPopState) {
+    window.history.pushState({ page: pageId, sidebar: false, vmq: false }, '', '#' + pageId);
   }
 }
+
+// Kept for anything that still wants to call "go back" programmatically --
+// just defers to the real back button so the popstate handler below is the
+// one and only place that decides what "back" renders.
+function goBack() {
+  window.history.back();
+}
+
+// Single source of truth for "what should the screen look like right now",
+// driven by whatever state the browser's history says we're on. This is what
+// makes the Android hardware/gesture back button step back through pages and
+// overlays instead of quitting the app -- and it's also what the iOS
+// edge-swipe gesture further down calls into via window.history.back().
+window.addEventListener('popstate', function (e) {
+  const state = e.state || { page: 'main', sidebar: false, vmq: false };
+
+  const sidebarEl = document.getElementById('sidebar-overlay');
+  const vmqEl = document.getElementById('vmq-overlay');
+
+  sidebarOverlayOpen = !!state.sidebar;
+  vmqOverlayOpen = !!state.vmq;
+  sidebarEl.classList.toggle('open', sidebarOverlayOpen);
+  vmqEl.classList.toggle('open', vmqOverlayOpen);
+
+  if (state.page && state.page !== current) {
+    goTo(state.page, true);
+  }
+});
 
 function toggleMenu() {
   goTo('main');
@@ -219,10 +262,12 @@ function openVmq(key) {
   document.getElementById('vmq-modal-title').textContent = data.title;
   document.getElementById('vmq-modal-text').textContent = data.text;
   document.getElementById('vmq-overlay').classList.add('open');
+  vmqOverlayOpen = true;
+  window.history.pushState({ page: current, sidebar: false, vmq: true }, '', '#vmq');
 }
 
 function closeVmq(e) {
   if (e.target === document.getElementById('vmq-overlay')) {
-    document.getElementById('vmq-overlay').classList.remove('open');
+    window.history.back();
   }
 }

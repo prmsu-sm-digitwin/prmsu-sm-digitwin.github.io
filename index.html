@@ -47,6 +47,15 @@
 
 <div id="app">
 
+  <!-- iOS edge-swipe-back indicator (see script near the closing </body>).
+       Hidden off-screen to the left until a swipe from the edge drags it in. -->
+  <div id="swipe-back-indicator" style="position:fixed; top:50%; left:0; width:40px; height:40px;
+       margin-top:-20px; border-radius:50%; background:#1A4B8C; display:flex;
+       align-items:center; justify-content:center; z-index:900; pointer-events:none;
+       box-shadow:0 4px 14px rgba(0,0,0,0.35); transform:translateX(-60px);">
+    <span id="swipe-back-arrow" style="color:#F5C842; font-size:20px; line-height:1; opacity:0.6;">&#8249;</span>
+  </div>
+
   <div class="top-bar">
     <span class="top-bar-url">prmsu-sm-digitwin.github.io</span>
   </div>
@@ -535,6 +544,96 @@
     });
 
     page.addEventListener('touchcancel', reset);
+  })();
+</script>
+
+<!-- IOS EDGE-SWIPE BACK GESTURE -->
+<!-- A standalone iOS home-screen PWA runs without Safari's UI chrome, so it
+     never gets Safari's edge-swipe-to-go-back gesture for free -- there is no
+     OS-level equivalent of Android's back button/gesture here. This recreates
+     just the gesture: drag in from the left screen edge, and once it's a clear
+     swipe to the right, releasing calls window.history.back(), which drives the
+     exact same popstate handling in script.js that the Android back button
+     uses. Android already has its own native edge-swipe-back at the OS level,
+     so this only runs on iOS. -->
+<script>
+  (function () {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (!isIOS) return;
+
+    const indicator = document.getElementById('swipe-back-indicator');
+    const arrow = document.getElementById('swipe-back-arrow');
+    if (!indicator || !arrow) return;
+
+    const EDGE_ZONE = 24;       // only track touches starting this close to the left edge
+    const SWIPE_THRESHOLD = 80; // px of horizontal travel needed to commit to "back"
+    const MAX_DRAG = 100;       // indicator caps out here so it can't fly off-screen
+    const RESISTANCE = 1.6;     // finger has to travel further than the indicator moves
+
+    let startX = null, startY = null;
+    let tracking = false;   // touch began in the edge zone, direction not decided yet
+    let committed = false;  // confirmed horizontal swipe -- now driving the indicator
+    let armed = false;
+
+    function reset() {
+      indicator.style.transition = 'transform 0.2s ease';
+      indicator.style.transform = 'translateX(-60px)';
+      arrow.style.opacity = '0.6';
+      tracking = false;
+      committed = false;
+      armed = false;
+      startX = null;
+      startY = null;
+    }
+
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      if (t.clientX > EDGE_ZONE) return;
+      // Nothing to go back to from the root screen -- don't track it at all.
+      const state = window.history.state;
+      if (state && state.page === 'main' && !state.sidebar && !state.vmq) return;
+
+      startX = t.clientX;
+      startY = t.clientY;
+      tracking = true;
+      committed = false;
+      indicator.style.transition = 'none';
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!tracking || startX === null) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+
+      if (!committed) {
+        // Wait until the gesture is clearly more horizontal than vertical before
+        // taking over -- otherwise this would fight normal vertical scrolling.
+        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+        if (Math.abs(dy) > Math.abs(dx)) { tracking = false; return; }
+        committed = true;
+      }
+      if (dx <= 0) { indicator.style.transform = 'translateX(-60px)'; return; }
+
+      e.preventDefault();
+      const drag = Math.min(dx / RESISTANCE, MAX_DRAG);
+      indicator.style.transform = `translateX(${drag - 60}px)`;
+      armed = drag >= SWIPE_THRESHOLD;
+      arrow.style.opacity = armed ? '1' : '0.6';
+    }, { passive: false });
+
+    document.addEventListener('touchend', () => {
+      if (committed && armed) {
+        indicator.style.transition = 'transform 0.15s ease';
+        indicator.style.transform = 'translateX(-10px)';
+        window.history.back();
+        setTimeout(reset, 200);
+      } else {
+        reset();
+      }
+    });
+
+    document.addEventListener('touchcancel', reset);
   })();
 </script>
 
