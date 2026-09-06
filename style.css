@@ -272,14 +272,25 @@
     transition: background 0.2s, border-color 0.2s, transform 0.1s;
     letter-spacing: 0.02em;
   }
-  /* .is-pressed (not :active) drives this on purpose -- see the JS in
-   script.js: mobile Chrome can leave :active permanently "stuck" matched
-   on a button that navigates the page away mid-tap, since the matching
-   touchend/mouseup never gets delivered while it's hidden. */
-.main-nav-btn:hover, .main-nav-btn.is-pressed {
+  /* .is-pressed (not :active) drives the tap feedback on purpose -- see the
+   JS in script.js: mobile Chrome can leave :active permanently "stuck"
+   matched on a button that navigates the page away mid-tap, since the
+   matching touchend/mouseup never gets delivered while it's hidden.
+   :hover has the exact same failure mode on touchscreens (a touch can
+   leave an element permanently matching :hover too, for the identical
+   reason) -- so :hover is scoped to devices that report real pointer
+   hover support and is never relied on for the actual tap feedback. */
+.main-nav-btn.is-pressed {
     background: var(--gold-pale);
     border-color: var(--gold);
     transform: translateY(-1px);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .main-nav-btn:hover {
+      background: var(--gold-pale);
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
   }
   .main-nav-btn .btn-icon {
     width: 32px;
