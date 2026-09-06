@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v1.4'; // Update this version whenever files change 
+const CACHE_NAME = 'prmsu-digitwin-v1.5'; // Update this version whenever files change 
 
 const STATIC_ASSETS = [
   './',

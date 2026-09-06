@@ -824,6 +824,13 @@
     color: var(--gold-light);
     font-weight: 500;
   }
+  .about-version {
+    font-size: 9px;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
 
   .vmq-overlay {
     display: none;
