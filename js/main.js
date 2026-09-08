@@ -107,9 +107,12 @@ function buildRoads(waypoints) {
     'z2_start','z2_wp1','z2_wp2','z2_wp3','z2_wp4',
     'z2_wp5','z2_wp6','z2_wp7','z2_end'
   ];
-  // Zone 3 paved road — coordinates coming in from Rin in stages, so this
-  // chain will keep growing as more segments arrive.
-  const zone3Chain = ['z1_int1', 'z3_start', 'z3_wp1'];
+  // Zone 3 paved road — full road now in (2026-09-08): the paved backbone
+  // runs z1_int1 -> z3_start -> z3_wp2 -> z3_wp3 -> z3_wp4 -> z3_wp1.
+  // z3_wp2/z3_wp3/z3_wp4 also each carry one unpaved spur toward Zone 2
+  // (z3_spur1/z3_spur2, and z3_wp4 -> z2_wp7 directly) via their neighbors
+  // list, not this chain, so those render as the narrower unpaved style.
+  const zone3Chain = ['z1_int1', 'z3_start', 'z3_wp2', 'z3_wp3', 'z3_wp4', 'z3_wp1'];
 
   const mainEdges  = new Set();
   const addChain = (chain) => {
