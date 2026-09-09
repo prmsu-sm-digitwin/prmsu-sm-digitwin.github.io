@@ -54,29 +54,28 @@
       "id": "inner_gate",
       "label": "Inner Gate",
       "latLng": {
-        "lat": 14.968298652468183,
-        "lng": 120.19544713601876
+        "lat": 14.968338544724217,
+        "lng": 120.1954265628017
       },
       "position": {
-        "x": 473.8,
-        "z": 23.6
+        "x": 472.1,
+        "z": 19.2
       },
       "neighbors": [
         "main_gate",
-        "z1_int1",
-        "canteen_entry"
+        "z1_int1"
       ]
     },
     {
       "id": "z1_int1",
       "label": "Z1 Int 1",
       "latLng": {
-        "lat": 14.968346018496462,
-        "lng": 120.19542906175793
+        "lat": 14.968345706223639,
+        "lng": 120.1954442126468
       },
       "position": {
-        "x": 471.9,
-        "z": 18.3
+        "x": 474,
+        "z": 18.4
       },
       "neighbors": [
         "inner_gate",
@@ -260,16 +259,18 @@
       "id": "z1_int12",
       "label": "Z1 Int 12",
       "latLng": {
-        "lat": 14.97002640371381,
-        "lng": 120.19994958854798
+        "lat": 14.970010754839029,
+        "lng": 120.19994027844989
       },
       "position": {
         "x": 958,
-        "z": -168.8
+        "z": -167.6
       },
       "neighbors": [
         "z1_int11",
-        "z2_end"
+        "z2_end",
+        "admin_entry",
+        "z1_int13"
       ]
     },
     {
@@ -392,7 +393,8 @@
       "neighbors": [
         "z2_wp5",
         "z2_wp7",
-        "z1_int10"
+        "z1_int10",
+        "LHS_Faculty_and_CCIT_2-4_Entry"
       ]
     },
     {
@@ -427,22 +429,22 @@
       "neighbors": [
         "z2_wp7",
         "z1_int12",
-        "admin_entry"
+        "admin_entry",
+        "z3_wp1"
       ]
     },
     {
       "id": "canteen_entry",
       "label": "Canteen Entry",
       "latLng": {
-        "lat": 14.968780439236212,
-        "lng": 120.19526105367062
+        "lat": 14.968779872126039,
+        "lng": 120.19527328783114
       },
       "position": {
-        "x": 453.8,
+        "x": 455.6,
         "z": -30.1
       },
       "neighbors": [
-        "inner_gate",
         "z2_start"
       ]
     },
@@ -635,12 +637,12 @@
       "id": "lhs_entry",
       "label": "LHS Entry",
       "latLng": {
-        "lat": 14.969861503215753,
-        "lng": 120.19817322055322
+        "lat": 14.969808442480385,
+        "lng": 120.19811677076983
       },
       "position": {
-        "x": 767,
-        "z": -150.4
+        "x": 761.7,
+        "z": -145
       },
       "neighbors": [
         "z2_wp5"
@@ -658,7 +660,8 @@
         "z": -188.8
       },
       "neighbors": [
-        "z2_end"
+        "z2_end",
+        "z1_int12"
       ]
     },
     {
@@ -762,16 +765,60 @@
       "id": "z3_wp1",
       "label": "Z3 Path 1",
       "latLng": {
-        "lat": 14.971131826211318,
-        "lng": 120.19960932640669
+        "lat": 14.970920265265502,
+        "lng": 120.19964580471857
       },
       "position": {
-        "x": 922.4,
-        "z": -292.8
+        "x": 926.3,
+        "z": -269.2
       },
       "neighbors": [
-        "z3_wp4"
+        "z3_wp4",
+        "z2_end"
       ]
+    },
+    {
+      "id": "z1_int13",
+      "label": "Z1 Int 13",
+      "latLng": {
+        "lat": 14.969858299948553,
+        "lng": 120.20025473798279
+      },
+      "position": {
+        "x": 991.9,
+        "z": -150.6
+      },
+      "neighbors": [
+        "z1_int12"
+      ]
+    },
+    {
+      "id": "LHS_Faculty_and_CCIT_2-4_Entry",
+      "label": "LHS Faculty / CCIT Entry",
+      "latLng": {
+        "lat": 14.969912884915285,
+        "lng": 120.19887029084244
+      },
+      "position": {
+        "x": 842.8,
+        "z": -156.7
+      },
+      "neighbors": [
+        "z2_wp6"
+      ]
+    },
+    {
+      "id": "CCIT_Entry",
+      "label": "CCIT Main Entry",
+      "latLng": {
+        "lat": 14.970102959144075,
+        "lng": 120.19947302202448
+      },
+      "position": {
+        "x": 907.7,
+        "z": -177.9
+      },
+      "neighbors": []
     }
   ],
   "buildings": [
@@ -926,12 +973,12 @@
       "description": "University administration building",
       "color": "#c0392b",
       "latLng": {
-        "lat": 14.970205221778164,
-        "lng": 120.20003922758869
+        "lat": 14.9702560361942,
+        "lng": 120.200199452491
       },
       "position": {
-        "x": 989,
-        "z": -183.3
+        "x": 985.9,
+        "z": -195
       },
       "size": {
         "width": 40,
@@ -940,7 +987,7 @@
       },
       "glbModel": "models/ADMINYELLOW.glb",
       "texturedModel": null,
-      "rotation": 160,
+      "rotation": 69,
       "entryWaypoint": "admin_entry"
     },
     {
@@ -950,12 +997,12 @@
       "description": "Campus canteen",
       "color": "#27ae60",
       "latLng": {
-        "lat": 14.968801594093382,
-        "lng": 120.19528272398298
+        "lat": 14.968816574810571,
+        "lng": 120.19540148144289
       },
       "position": {
-        "x": 456.2,
-        "z": -32.4
+        "x": 469.4,
+        "z": -34.2
       },
       "size": {
         "width": 25,
@@ -964,7 +1011,7 @@
       },
       "glbModel": null,
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 75,
       "entryWaypoint": "canteen_entry"
     },
     {
@@ -1046,12 +1093,12 @@
       "description": "Laboratory High School",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.96972192298314,
-        "lng": 120.19821810489631
+        "lat": 14.969894380473438,
+        "lng": 120.19810376562081
       },
       "position": {
-        "x": 765.7,
-        "z": -156.4
+        "x": 760.3,
+        "z": -154.6
       },
       "size": {
         "width": 15,
@@ -1060,7 +1107,7 @@
       },
       "glbModel": null,
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 90,
       "entryWaypoint": "lhs_entry"
     },
     {
@@ -1070,12 +1117,12 @@
       "description": "LHS Faculty and CCIT Classrooms",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.969946351126277,
-        "lng": 120.19887218828903
+        "lat": 14.970000907777326,
+        "lng": 120.19883298290499
       },
       "position": {
-        "x": 842.2,
-        "z": -159.8
+        "x": 838.8,
+        "z": -166.5
       },
       "size": {
         "width": 25,
@@ -1084,7 +1131,7 @@
       },
       "glbModel": null,
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 160,
       "entryWaypoint": "z2_wp6"
     },
     {
@@ -1094,12 +1141,12 @@
       "description": "College of Communication & Information Technology",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.970116306267327,
-        "lng": 120.19934809033998
+        "lat": 14.970170098201148,
+        "lng": 120.19944143809116
       },
       "position": {
-        "x": 893.4,
-        "z": -178.8
+        "x": 904.3,
+        "z": -185.4
       },
       "size": {
         "width": 15,
@@ -1108,8 +1155,138 @@
       },
       "glbModel": null,
       "texturedModel": null,
+      "rotation": 336,
+      "entryWaypoint": "CCIT_Entry"
+    },
+    {
+      "id": "admin_court",
+      "name": "Admin Court",
+      "category": "court",
+      "description": "Court beside the Admin Building",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.969868420038036,
+        "lng": 120.20037780882039
+      },
+      "position": {
+        "x": 1005.1,
+        "z": -151.7
+      },
+      "size": {
+        "width": 20,
+        "depth": 15,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "z2_wp7"
+      "entryWaypoint": "z1_int13"
     }
+  ],
+  "pavedEdges": [
+    [
+      "main_gate",
+      "inner_gate"
+    ],
+    [
+      "inner_gate",
+      "z1_int1"
+    ],
+    [
+      "z1_int1",
+      "z1_int2"
+    ],
+    [
+      "z1_int2",
+      "z1_int3"
+    ],
+    [
+      "z1_int3",
+      "z1_int4"
+    ],
+    [
+      "z1_int4",
+      "z1_int5"
+    ],
+    [
+      "z1_int5",
+      "z1_int6"
+    ],
+    [
+      "z1_int6",
+      "z1_int7"
+    ],
+    [
+      "z1_int7",
+      "z1_int8"
+    ],
+    [
+      "z1_int8",
+      "z1_int9"
+    ],
+    [
+      "z1_int9",
+      "z1_int10"
+    ],
+    [
+      "z1_int10",
+      "z1_int11"
+    ],
+    [
+      "z1_int11",
+      "z1_int12"
+    ],
+    [
+      "z2_start",
+      "z2_wp1"
+    ],
+    [
+      "z2_wp1",
+      "z2_wp2"
+    ],
+    [
+      "z2_wp2",
+      "z2_wp3"
+    ],
+    [
+      "z2_wp3",
+      "z2_wp4"
+    ],
+    [
+      "z2_wp4",
+      "z2_wp5"
+    ],
+    [
+      "z2_wp5",
+      "z2_wp6"
+    ],
+    [
+      "z2_wp6",
+      "z2_wp7"
+    ],
+    [
+      "z2_wp7",
+      "z2_end"
+    ],
+    [
+      "z1_int1",
+      "z3_start"
+    ],
+    [
+      "z3_start",
+      "z3_wp2"
+    ],
+    [
+      "z3_wp2",
+      "z3_wp3"
+    ],
+    [
+      "z3_wp3",
+      "z3_wp4"
+    ],
+    [
+      "z3_wp4",
+      "z3_wp1"
+    ]
   ]
 }

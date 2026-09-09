@@ -97,32 +97,14 @@ function buildGround(g) {
 }
 
 function buildRoads(waypoints) {
-  // Determine which edges belong to each zone (for width/color)
-  const zone1Chain = [
-    'main_gate','inner_gate','z1_int1','z1_int2','z1_int3',
-    'z1_int4','z1_int5','z1_int6','z1_int7','z1_int8',
-    'z1_int9','z1_int10','z1_int11','z1_int12'
-  ];
-  const zone2Chain = [
-    'z2_start','z2_wp1','z2_wp2','z2_wp3','z2_wp4',
-    'z2_wp5','z2_wp6','z2_wp7','z2_end'
-  ];
-  // Zone 3 paved road — full road now in (2026-09-08): the paved backbone
-  // runs z1_int1 -> z3_start -> z3_wp2 -> z3_wp3 -> z3_wp4 -> z3_wp1.
-  // z3_wp2/z3_wp3/z3_wp4 also each carry one unpaved spur toward Zone 2
-  // (z3_spur1/z3_spur2, and z3_wp4 -> z2_wp7 directly) via their neighbors
-  // list, not this chain, so those render as the narrower unpaved style.
-  const zone3Chain = ['z1_int1', 'z3_start', 'z3_wp2', 'z3_wp3', 'z3_wp4', 'z3_wp1'];
-
-  const mainEdges  = new Set();
-  const addChain = (chain) => {
-    for (let i = 0; i < chain.length - 1; i++) {
-      mainEdges.add(edgeKey(chain[i], chain[i+1]));
-    }
-  };
-  addChain(zone1Chain);
-  addChain(zone2Chain);
-  addChain(zone3Chain);
+  // Which edges render "paved" (wide gray) vs the default "unpaved" (narrow
+  // beige) now lives in the data itself — campus.json's top-level
+  // "pavedEdges" array, a list of [waypointId, waypointId] pairs — instead
+  // of being hardcoded here. Edit it with campus-editor.html (or by hand)
+  // rather than touching this function whenever a road changes.
+  const mainEdges = new Set(
+    (campusData.pavedEdges || []).map(([a, b]) => edgeKey(a, b))
+  );
 
   // Materials
   const matMain  = new THREE.MeshLambertMaterial({ color: 0x9a9a9a }); // gray tarmac
