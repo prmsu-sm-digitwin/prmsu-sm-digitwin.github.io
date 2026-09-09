@@ -511,12 +511,35 @@
 
 
 <!-- SERVICE WORKER -->
+<!-- The worker's activate handler (service-worker.js) already broadcasts
+     {type:'SW_UPDATED'} to every open tab once a new version has taken over
+     -- but until now nothing was listening for it. Without this, a person
+     could pull-to-refresh and still be running the OLD cached files: that
+     reload can be served by the outgoing service worker before the new one
+     finishes activating, so it silently takes a *second* reload to actually
+     land. This makes the update land on the very next load automatically
+     instead of relying on a person happening to refresh twice. sessionStorage
+     (not a plain variable) survives the reload itself, so the guard still
+     works after the page we're about to reload comes back up; it's cleared
+     right after use so a genuinely new update later can still trigger it. -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('service-worker.js')
         .then(reg => console.log('SW registered:', reg.scope))
         .catch(err => console.error('SW failed:', err));
+    });
+
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'SW_UPDATED') {
+        if (sessionStorage.getItem('sw_reloading')) return; // already mid-reload, don't loop
+        sessionStorage.setItem('sw_reloading', '1');
+        window.location.reload();
+      }
+    });
+
+    window.addEventListener('load', () => {
+      sessionStorage.removeItem('sw_reloading');
     });
   }
 </script>

@@ -42,6 +42,11 @@ window.history.pushState({ page: 'main', sidebar: false, vmq: false }, '', '#mai
 // runaway loop that walks back through the whole browser history.
 let leavingApp = false;
 
+// Used only by sidebarGoTo below, to hand one specific popstate off to a
+// pending history.pushState instead of letting the normal handler render it.
+let suppressPop = false;
+let pendingPush = null;
+
 function updateNav(pageId) {
   const isMain = pageId === 'main';
   document.querySelector('.nav-btn.nav-home').style.color =
@@ -73,6 +78,14 @@ function closeSidebarBtn() {
 function sidebarGoTo(pageId) {
   document.getElementById('sidebar-overlay').classList.remove('open');
   sidebarOverlayOpen = false;
+
+  // sidebarContext is which page the drawer was opened FROM (set by
+  // openSidebar). If that's an inner page, not Home, the history stack right
+  // now is [...,home, thatInnerPage, sidebarMarker] -- thatInnerPage's own
+  // entry from the earlier Home->thatInnerPage navigation is still sitting
+  // there underneath the marker.
+  const openedFromInner = sidebarContext !== 'main';
+
   const prevEl = document.getElementById('page-' + current);
   const nextEl = document.getElementById('page-' + pageId);
   if (nextEl && pageId !== current) {
@@ -81,9 +94,35 @@ function sidebarGoTo(pageId) {
     current = pageId;
     updateNav(pageId);
   }
-  // Replace the "sidebar open" entry with the destination page rather than
-  // pushing a new one, so back from here goes to wherever you were before
-  // opening the drawer instead of popping the drawer back open.
+
+  if (openedFromInner) {
+    // Simply replacing the marker (like the plain case below) would leave
+    // thatInnerPage's entry buried directly under the new destination, so one
+    // back press from here would resurrect THAT page instead of reaching
+    // Home -- unlike every page reached from the home screen. The drawer is a
+    // flat, global menu: picking a destination from it should always put Home
+    // directly underneath, no matter which inner page it was opened from.
+    //
+    // Fix: physically step back past both the marker and the old inner page
+    // in one jump (2 entries), landing on Home's own original entry, then (as
+    // long as we're not headed to Home itself) push the real destination
+    // fresh on top of it -- collapsing the stack back down to exactly one
+    // level deep, same as navigating there directly from the home screen.
+    // history.go() is asynchronous, so the actual bookkeeping can only happen
+    // once its popstate confirms the browser really finished moving --
+    // suppressPop hands that one popstate off to the block below instead of
+    // letting the normal handler render it (the DOM above already shows the
+    // right page, so there's nothing left to render).
+    suppressPop = true;
+    pendingPush = (pageId === 'main') ? null : { page: pageId, sidebar: false, vmq: false };
+    window.history.go(-2);
+    return;
+  }
+
+  // Opened from Home: no buried entry to worry about, so this is just the
+  // simple case -- replace the "sidebar open" entry with the destination
+  // page rather than pushing a new one, so back from here goes to Home
+  // instead of popping the drawer back open.
   window.history.replaceState({ page: pageId, sidebar: false, vmq: false }, '', '#' + pageId);
 }
 
@@ -283,6 +322,19 @@ function goBack() {
 // overlays instead of quitting the app -- and it's also what the iOS
 // edge-swipe gesture further down calls into via window.history.back().
 window.addEventListener('popstate', function (e) {
+  // Hand-off from sidebarGoTo's collapse above: this popstate is just the
+  // history.go(-2) landing back on Home confirming it actually happened --
+  // the visible page was already updated synchronously before that call, so
+  // there's nothing to render here, only the deferred pushState (if any).
+  if (suppressPop) {
+    suppressPop = false;
+    if (pendingPush) {
+      window.history.pushState(pendingPush, '', '#' + pendingPush.page);
+      pendingPush = null;
+    }
+    return;
+  }
+
   // Root guard. A popstate that carries no state at all, or that lands on the
   // startup sentinel, means there is nothing of this app's own left behind us.
   if (!e.state || e.state.root) {
