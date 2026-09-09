@@ -762,10 +762,10 @@
         "z2_wp7",
         "agritech_1_entry",
         "agritech_2_entry",
-        "mitos_magsaysay_entry",
         "motorpool_garage_entry",
         "organic_mango_center_entry",
-        "regional_mango_center_entry"
+        "regional_mango_center_entry",
+        "college_of_agriculture_entry"
       ]
     },
     {
@@ -907,7 +907,8 @@
         "z": -241.9
       },
       "neighbors": [
-        "z3_wp4"
+        "z3_wp4",
+        "agritech_1_door"
       ]
     },
     {
@@ -926,21 +927,6 @@
       ]
     },
     {
-      "id": "mitos_magsaysay_entry",
-      "label": "Mitos Magsaysay Building Entry",
-      "latLng": {
-        "lat": 14.97070192665805,
-        "lng": 120.19853010190123
-      },
-      "position": {
-        "x": 806.2,
-        "z": -244.8
-      },
-      "neighbors": [
-        "z3_wp4"
-      ]
-    },
-    {
       "id": "motorpool_garage_entry",
       "label": "Motorpool Garage Entry",
       "latLng": {
@@ -952,7 +938,8 @@
         "z": -270.8
       },
       "neighbors": [
-        "z3_wp4"
+        "z3_wp4",
+        "motorpool_garage_door"
       ]
     },
     {
@@ -967,7 +954,8 @@
         "z": -265.5
       },
       "neighbors": [
-        "z3_wp4"
+        "z3_wp4",
+        "organic_mango_center_door"
       ]
     },
     {
@@ -982,7 +970,8 @@
         "z": -283.5
       },
       "neighbors": [
-        "z3_wp1"
+        "z3_wp1",
+        "rmtu_rd_center_door"
       ]
     },
     {
@@ -997,7 +986,8 @@
         "z": -360.8
       },
       "neighbors": [
-        "z3_wp4"
+        "z3_wp4",
+        "regional_mango_center_door"
       ]
     },
     {
@@ -1014,6 +1004,112 @@
       "neighbors": [
         "z3_wp5",
         "z4_end"
+      ]
+    },
+    {
+      "id": "agritech_1_door",
+      "label": "Agriculture Technology (Agri-Tech) Door",
+      "latLng": {
+        "lat": 14.970613767458332,
+        "lng": 120.19850719917639
+      },
+      "position": {
+        "x": 803.7,
+        "z": -235.0
+      },
+      "neighbors": [
+        "agritech_1_entry"
+      ]
+    },
+    {
+      "id": "motorpool_garage_door",
+      "label": "Motorpool Garage Door",
+      "latLng": {
+        "lat": 14.970840651469489,
+        "lng": 120.1991738868238
+      },
+      "position": {
+        "x": 875.5,
+        "z": -260.3
+      },
+      "neighbors": [
+        "motorpool_garage_entry"
+      ]
+    },
+    {
+      "id": "organic_mango_center_door",
+      "label": "RMTU Organic Mango Center Door",
+      "latLng": {
+        "lat": 14.971055289883127,
+        "lng": 120.1989486964384
+      },
+      "position": {
+        "x": 851.3,
+        "z": -284.3
+      },
+      "neighbors": [
+        "organic_mango_center_entry"
+      ]
+    },
+    {
+      "id": "rmtu_rd_center_door",
+      "label": "RMTU Research and Development Center Door",
+      "latLng": {
+        "lat": 14.971163946296558,
+        "lng": 120.19926226043063
+      },
+      "position": {
+        "x": 885.0,
+        "z": -296.4
+      },
+      "neighbors": [
+        "rmtu_rd_center_entry"
+      ]
+    },
+    {
+      "id": "regional_mango_center_door",
+      "label": "Regional Mango Center Door",
+      "latLng": {
+        "lat": 14.97170375675042,
+        "lng": 120.19926175249016
+      },
+      "position": {
+        "x": 885.0,
+        "z": -356.7
+      },
+      "neighbors": [
+        "regional_mango_center_entry"
+      ]
+    },
+    {
+      "id": "college_of_agriculture_entry",
+      "label": "College of Agriculture Entry",
+      "latLng": {
+        "lat": 14.97070192665805,
+        "lng": 120.19853010190123
+      },
+      "position": {
+        "x": 806.2,
+        "z": -244.8
+      },
+      "neighbors": [
+        "z3_wp4",
+        "college_of_agriculture_door"
+      ]
+    },
+    {
+      "id": "college_of_agriculture_door",
+      "label": "College of Agriculture Door",
+      "latLng": {
+        "lat": 14.970830226521034,
+        "lng": 120.19848544092358
+      },
+      "position": {
+        "x": 801.4,
+        "z": -259.1
+      },
+      "neighbors": [
+        "college_of_agriculture_entry"
       ]
     }
   ],
@@ -1400,7 +1496,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "agritech_1_entry"
+      "entryWaypoint": "agritech_1_door"
     },
     {
       "id": "agritech_2",
@@ -1427,30 +1523,6 @@
       "entryWaypoint": "agritech_2_entry"
     },
     {
-      "id": "mitos_magsaysay",
-      "name": "Mitos Magsaysay Building",
-      "category": "academic",
-      "description": "Mitos Magsaysay Building",
-      "color": "#4a90d9",
-      "latLng": {
-        "lat": 14.970883012759575,
-        "lng": 120.19846524928141
-      },
-      "position": {
-        "x": 799.2,
-        "z": -265.0
-      },
-      "size": {
-        "width": 25,
-        "depth": 20,
-        "height": 8
-      },
-      "glbModel": null,
-      "texturedModel": null,
-      "rotation": 0,
-      "entryWaypoint": "mitos_magsaysay_entry"
-    },
-    {
       "id": "motorpool_garage",
       "name": "Motorpool Garage",
       "category": "facility",
@@ -1472,7 +1544,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "motorpool_garage_entry"
+      "entryWaypoint": "motorpool_garage_door"
     },
     {
       "id": "organic_mango_center",
@@ -1496,7 +1568,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "organic_mango_center_entry"
+      "entryWaypoint": "organic_mango_center_door"
     },
     {
       "id": "rmtu_rd_center",
@@ -1520,7 +1592,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "rmtu_rd_center_entry"
+      "entryWaypoint": "rmtu_rd_center_door"
     },
     {
       "id": "regional_mango_center",
@@ -1544,7 +1616,31 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "regional_mango_center_entry"
+      "entryWaypoint": "regional_mango_center_door"
+    },
+    {
+      "id": "college_of_agriculture",
+      "name": "College of Agriculture",
+      "category": "academic",
+      "description": "College of Agriculture (formerly labeled Mitos Magsaysay Building)",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.970929640105034,
+        "lng": 120.19843147251237
+      },
+      "position": {
+        "x": 795.6,
+        "z": -270.2
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "college_of_agriculture_door"
     }
   ],
   "pavedEdges": [
