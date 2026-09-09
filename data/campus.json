@@ -47,6 +47,22 @@
         "z": 0
       },
       "neighbors": [
+        "inner_gate"
+      ]
+    },
+    {
+      "id": "inner_gate",
+      "label": "Inner Gate",
+      "latLng": {
+        "lat": 14.968338544724217,
+        "lng": 120.1954265628017
+      },
+      "position": {
+        "x": 472.1,
+        "z": 19.2
+      },
+      "neighbors": [
+        "main_gate",
         "z1_int1"
       ]
     },
@@ -62,9 +78,9 @@
         "z": 18.4
       },
       "neighbors": [
+        "inner_gate",
         "z1_int2",
-        "z3_start",
-        "main_gate"
+        "z3_start"
       ]
     },
     {
@@ -288,7 +304,8 @@
       "neighbors": [
         "z2_start",
         "z2_wp2",
-        "z1_int3"
+        "z1_int3",
+        "chm1_branch"
       ]
     },
     {
@@ -497,12 +514,12 @@
       "id": "asb_path_start",
       "label": "ASB Path Start",
       "latLng": {
-        "lat": 14.96982545104151,
-        "lng": 120.19937641234607
+        "lat": 14.969793673802615,
+        "lng": 120.19938703363772
       },
       "position": {
-        "x": 897.3,
-        "z": -146.9
+        "x": 897.6,
+        "z": -142.9
       },
       "neighbors": [
         "z1_int11",
@@ -513,12 +530,12 @@
       "id": "asb_entry",
       "label": "ASB Entry",
       "latLng": {
-        "lat": 14.969293709709499,
-        "lng": 120.19945444324017
+        "lat": 14.969225824656533,
+        "lng": 120.19948792739092
       },
       "position": {
-        "x": 905.7,
-        "z": -87.5
+        "x": 908.4,
+        "z": -79.6
       },
       "neighbors": [
         "asb_path_start"
@@ -528,14 +545,15 @@
       "id": "chm1_branch",
       "label": "CHM1 Branch",
       "latLng": {
-        "lat": 14.968919521364748,
-        "lng": 120.19618736401921
+        "lat": 14.968881789794041,
+        "lng": 120.19621905256247
       },
       "position": {
-        "x": 554,
-        "z": -45.7
+        "x": 554.9,
+        "z": -45
       },
       "neighbors": [
+        "z2_wp1",
         "chm1_entry",
         "quad_entry"
       ]
@@ -716,12 +734,12 @@
       "id": "z3_spur2",
       "label": "Z3-Zone 2 Link B (unpaved)",
       "latLng": {
-        "lat": 14.969616872370873,
-        "lng": 120.19807218168748
+        "lat": 14.969595621364116,
+        "lng": 120.1980783931497
       },
       "position": {
-        "x": 756.9,
-        "z": -123.6
+        "x": 757.6,
+        "z": -121.2
       },
       "neighbors": [
         "z3_wp3"
@@ -758,20 +776,19 @@
       "neighbors": [
         "z3_wp4",
         "z2_end",
-        "z3_oval_end",
-        "z4_wp1"
+        "z3_wp5"
       ]
     },
     {
       "id": "z1_int13",
       "label": "Z1 Int 13",
       "latLng": {
-        "lat": 14.96982545104151,
-        "lng": 120.20059332271839
+        "lat": 14.969755626422154,
+        "lng": 120.20031556989295
       },
       "position": {
-        "x": 1028.3,
-        "z": -146.9
+        "x": 998.4,
+        "z": -139.1
       },
       "neighbors": [
         "z1_int12"
@@ -781,12 +798,12 @@
       "id": "LHS_Faculty_and_CCIT_2-4_Entry",
       "label": "LHS Faculty / CCIT Entry",
       "latLng": {
-        "lat": 14.96999195590305,
-        "lng": 120.1988394854795
+        "lat": 14.969912884915285,
+        "lng": 120.19887029084244
       },
       "position": {
-        "x": 839.5,
-        "z": -165.5
+        "x": 842.8,
+        "z": -156.7
       },
       "neighbors": [
         "z2_wp6"
@@ -796,16 +813,14 @@
       "id": "CCIT_Entry",
       "label": "CCIT Main Entry",
       "latLng": {
-        "lat": 14.970130709954331,
-        "lng": 120.19946001687546
+        "lat": 14.970102959144075,
+        "lng": 120.19947302202448
       },
       "position": {
-        "x": 906.3,
-        "z": -181
+        "x": 907.7,
+        "z": -177.9
       },
-      "neighbors": [
-        "CCIT_Entry_Start"
-      ]
+      "neighbors": []
     },
     {
       "id": "z4_start",
@@ -837,7 +852,7 @@
       "neighbors": [
         "z4_start",
         "z4_end",
-        "z3_wp1"
+        "z3_wp5"
       ]
     },
     {
@@ -853,6 +868,23 @@
       },
       "neighbors": [
         "z4_wp1",
+        "z3_oval_end"
+      ]
+    },
+    {
+      "id": "z3_wp5",
+      "label": "Z3 Path 5",
+      "latLng": {
+        "lat": 14.970906837454086,
+        "lng": 120.1996532362323
+      },
+      "position": {
+        "x": 927.1,
+        "z": -267.7
+      },
+      "neighbors": [
+        "z4_wp1",
+        "z3_wp1",
         "z3_oval_end"
       ]
     },
@@ -956,8 +988,8 @@
         "z": -388.3
       },
       "neighbors": [
-        "z4_end",
-        "z3_wp1"
+        "z3_wp5",
+        "z4_end"
       ]
     },
     {
@@ -1063,21 +1095,6 @@
       },
       "neighbors": [
         "college_of_agriculture_entry"
-      ]
-    },
-    {
-      "id": "CCIT_Entry_Start",
-      "label": "ccit main start",
-      "latLng": {
-        "lat": 14.970103854331503,
-        "lng": 120.1994739509637
-      },
-      "position": {
-        "x": 907.8,
-        "z": -178
-      },
-      "neighbors": [
-        "CCIT_Entry"
       ]
     }
   ],
@@ -1425,12 +1442,12 @@
       "description": "Court beside the Admin Building",
       "color": "#27ae60",
       "latLng": {
-        "lat": 14.969820079916945,
-        "lng": 120.20067692724778
+        "lat": 14.969755626422154,
+        "lng": 120.20041032169293
       },
       "position": {
-        "x": 1037.3,
-        "z": -146.3
+        "x": 1008.6,
+        "z": -139.1
       },
       "size": {
         "width": 20,
@@ -1473,12 +1490,12 @@
       "description": "Agriculture Technology building (2nd building)",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.970666032036053,
-        "lng": 120.19881161730304
+        "lat": 14.970668960591563,
+        "lng": 120.19881666267813
       },
       "position": {
-        "x": 836.5,
-        "z": -240.8
+        "x": 837,
+        "z": -241.1
       },
       "size": {
         "width": 15,
@@ -1492,7 +1509,7 @@
     },
     {
       "id": "motorpool_garage",
-      "name": "Motorpool",
+      "name": "Motorpool Garage",
       "category": "facility",
       "description": "Motorpool Garage",
       "color": "#27ae60",
@@ -1613,6 +1630,14 @@
   ],
   "pavedEdges": [
     [
+      "main_gate",
+      "inner_gate"
+    ],
+    [
+      "inner_gate",
+      "z1_int1"
+    ],
+    [
       "z1_int1",
       "z1_int2"
     ],
@@ -1719,10 +1744,6 @@
     [
       "z3_start",
       "z4_start"
-    ],
-    [
-      "main_gate",
-      "z1_int1"
     ]
   ]
 }
