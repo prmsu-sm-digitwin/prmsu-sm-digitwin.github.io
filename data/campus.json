@@ -80,7 +80,7 @@
       "neighbors": [
         "inner_gate",
         "z1_int2",
-        "z3_start"
+        "z1_int1b"
       ]
     },
     {
@@ -96,8 +96,8 @@
       },
       "neighbors": [
         "z1_int1",
-        "z1_int3",
-        "z2_start"
+        "z2_start",
+        "z1_int2b"
       ]
     },
     {
@@ -112,9 +112,9 @@
         "z": -28.4
       },
       "neighbors": [
-        "z1_int2",
         "z1_int4",
-        "z2_wp1"
+        "z2_wp1",
+        "z1_int2b"
       ]
     },
     {
@@ -287,7 +287,8 @@
       "neighbors": [
         "z1_int2",
         "z2_wp1",
-        "canteen_entry"
+        "canteen_entry",
+        "chm1_branch"
       ]
     },
     {
@@ -556,7 +557,8 @@
       "neighbors": [
         "z2_wp1",
         "chm1_entry",
-        "quad_entry"
+        "quad_entry",
+        "z2_start"
       ]
     },
     {
@@ -677,9 +679,9 @@
         "z": -98.3
       },
       "neighbors": [
-        "z1_int1",
         "z3_wp2",
-        "z4_start"
+        "z4_start",
+        "z1_int1b"
       ]
     },
     {
@@ -1113,6 +1115,38 @@
       },
       "neighbors": [
         "college_of_agriculture_entry"
+      ]
+    },
+    {
+      "id": "z1_int2b",
+      "label": "z1_int2b",
+      "latLng": {
+        "lat": 14.968677986302929,
+        "lng": 120.19623255299076
+      },
+      "position": {
+        "x": 567.91,
+        "z": 1.04
+      },
+      "neighbors": [
+        "z1_int2",
+        "z1_int3"
+      ]
+    },
+    {
+      "id": "z1_int1b",
+      "label": "z1_int1b",
+      "latLng": {
+        "lat": 14.968775303498772,
+        "lng": 120.19528286395253
+      },
+      "position": {
+        "x": 438.87,
+        "z": -23.16
+      },
+      "neighbors": [
+        "z1_int1",
+        "z3_start"
       ]
     }
   ],
@@ -1660,10 +1694,6 @@
       "z1_int2"
     ],
     [
-      "z1_int2",
-      "z1_int3"
-    ],
-    [
       "z1_int3",
       "z1_int4"
     ],
@@ -1732,10 +1762,6 @@
       "z2_end"
     ],
     [
-      "z1_int1",
-      "z3_start"
-    ],
-    [
       "z3_start",
       "z3_wp2"
     ],
@@ -1770,6 +1796,22 @@
     [
       "z2_start",
       "canteen_entry"
+    ],
+    [
+      "z1_int2",
+      "z1_int2b"
+    ],
+    [
+      "z1_int2b",
+      "z1_int3"
+    ],
+    [
+      "z1_int1",
+      "z1_int1b"
+    ],
+    [
+      "z1_int1b",
+      "z3_start"
     ]
   ]
 }
