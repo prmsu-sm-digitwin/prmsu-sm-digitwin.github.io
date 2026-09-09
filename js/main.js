@@ -113,7 +113,7 @@ function buildRoads(waypoints) {
   // The unpaved path sits below the main road's height so wherever they cross,
   // the main road renders on top instead of the two fighting for the same
   // z-height (which looked like the path clipping/cutting through the road).
-  const ROAD_Y_MAIN = 0.15;
+  const ROAD_Y_MAIN = 0.20;
   const ROAD_Y_PATH = 0.00;
 
   // Track drawn edges so we don't double-draw
