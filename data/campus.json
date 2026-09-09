@@ -3,13 +3,13 @@
   "origin": {
     "lat": 14.968510420710322,
     "lng": 120.19104104076527,
-    "_note": "Main Gate — (0,0) in Three.js"
+    "_note": "Main Gate \u2014 (0,0) in Three.js"
   },
   "ground": {
-    "width": 1100,
-    "depth": 450,
-    "offsetX": 500,
-    "offsetZ": -105,
+    "width": 1225.4,
+    "depth": 667.3,
+    "offsetX": 562.7,
+    "offsetZ": -264.4,
     "texture": null,
     "color": "#7cb87a",
     "_note": "texture=null uses solid color. Change to 'images/campus-topdown.jpg' later."
@@ -28,10 +28,10 @@
     "_note": "Tilted top-down view. Adjust to reframe campus center."
   },
   "bounds": {
-    "minX": -50,
-    "maxX": 1050,
-    "minZ": -280,
-    "maxZ": 80,
+    "minX": -20,
+    "maxX": 1145.4,
+    "minZ": -568.1,
+    "maxZ": 39.2,
     "_note": "Used by gps.js to clamp blue dot to scene area"
   },
   "waypoints": [
@@ -758,7 +758,13 @@
       "neighbors": [
         "z3_wp3",
         "z3_wp1",
-        "z2_wp7"
+        "z2_wp7",
+        "agritech_1_entry",
+        "agritech_2_entry",
+        "mitos_magsaysay_entry",
+        "motorpool_garage_entry",
+        "organic_mango_center_entry",
+        "regional_mango_center_entry"
       ]
     },
     {
@@ -774,7 +780,9 @@
       },
       "neighbors": [
         "z3_wp4",
-        "z2_end"
+        "z2_end",
+        "z3_wp5",
+        "rmtu_rd_center_entry"
       ]
     },
     {
@@ -819,6 +827,174 @@
         "z": -177.9
       },
       "neighbors": []
+    },
+    {
+      "id": "z4_start",
+      "label": "Zone 4 Start",
+      "latLng": {
+        "lat": 14.970529370945412,
+        "lng": 120.1947119820379
+      },
+      "position": {
+        "x": 395.2,
+        "z": -225.5
+      },
+      "neighbors": [
+        "z4_wp1"
+      ]
+    },
+    {
+      "id": "z4_wp1",
+      "label": "Z4 Path 1",
+      "latLng": {
+        "lat": 14.972451977533705,
+        "lng": 120.19915771436288
+      },
+      "position": {
+        "x": 873.8,
+        "z": -440.3
+      },
+      "neighbors": [
+        "z4_start",
+        "z4_end",
+        "z3_wp5"
+      ]
+    },
+    {
+      "id": "z4_end",
+      "label": "Back Exit",
+      "latLng": {
+        "lat": 14.973416601800466,
+        "lng": 120.2014956202407
+      },
+      "position": {
+        "x": 1125.4,
+        "z": -548.1
+      },
+      "neighbors": [
+        "z4_wp1"
+      ]
+    },
+    {
+      "id": "z3_wp5",
+      "label": "Z3 Path 5",
+      "latLng": {
+        "lat": 14.971138887900445,
+        "lng": 120.19959109246389
+      },
+      "position": {
+        "x": 920.4,
+        "z": -293.6
+      },
+      "neighbors": [
+        "z4_wp1",
+        "z3_wp1"
+      ]
+    },
+    {
+      "id": "agritech_1_entry",
+      "label": "Agriculture Technology (Agri-Tech) Entry",
+      "latLng": {
+        "lat": 14.970571533091107,
+        "lng": 120.19855059665161
+      },
+      "position": {
+        "x": 808.4,
+        "z": -230.2
+      },
+      "neighbors": [
+        "z3_wp4"
+      ]
+    },
+    {
+      "id": "agritech_2_entry",
+      "label": "Agriculture Technology (Agri-Tech) 2 Entry",
+      "latLng": {
+        "lat": 14.970668960591563,
+        "lng": 120.19881666267813
+      },
+      "position": {
+        "x": 837.0,
+        "z": -241.1
+      },
+      "neighbors": [
+        "z3_wp4"
+      ]
+    },
+    {
+      "id": "mitos_magsaysay_entry",
+      "label": "Mitos Magsaysay Building Entry",
+      "latLng": {
+        "lat": 14.970883012759575,
+        "lng": 120.19846524928141
+      },
+      "position": {
+        "x": 799.2,
+        "z": -265.0
+      },
+      "neighbors": [
+        "z3_wp4"
+      ]
+    },
+    {
+      "id": "motorpool_garage_entry",
+      "label": "Motorpool Garage Entry",
+      "latLng": {
+        "lat": 14.970743763083766,
+        "lng": 120.19910819946242
+      },
+      "position": {
+        "x": 868.4,
+        "z": -249.5
+      },
+      "neighbors": [
+        "z3_wp4"
+      ]
+    },
+    {
+      "id": "organic_mango_center_entry",
+      "label": "RMTU Organic Mango Center Entry",
+      "latLng": {
+        "lat": 14.971143189549723,
+        "lng": 120.19889577934097
+      },
+      "position": {
+        "x": 845.6,
+        "z": -294.1
+      },
+      "neighbors": [
+        "z3_wp4"
+      ]
+    },
+    {
+      "id": "rmtu_rd_center_entry",
+      "label": "RMTU Research and Development Center Entry",
+      "latLng": {
+        "lat": 14.971225639874291,
+        "lng": 120.19922199595604
+      },
+      "position": {
+        "x": 880.7,
+        "z": -303.3
+      },
+      "neighbors": [
+        "z3_wp1"
+      ]
+    },
+    {
+      "id": "regional_mango_center_entry",
+      "label": "Regional Mango Center Entry",
+      "latLng": {
+        "lat": 14.971601190937468,
+        "lng": 120.19908169285405
+      },
+      "position": {
+        "x": 865.6,
+        "z": -345.3
+      },
+      "neighbors": [
+        "z3_wp4"
+      ]
     }
   ],
   "buildings": [
@@ -1181,6 +1357,174 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "z1_int13"
+    },
+    {
+      "id": "agritech_1",
+      "name": "Agriculture Technology (Agri-Tech)",
+      "category": "academic",
+      "description": "Agriculture Technology building",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.970571533091107,
+        "lng": 120.19855059665161
+      },
+      "position": {
+        "x": 808.4,
+        "z": -230.2
+      },
+      "size": {
+        "width": 15,
+        "depth": 12,
+        "height": 6
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "agritech_1_entry"
+    },
+    {
+      "id": "agritech_2",
+      "name": "Agriculture Technology (Agri-Tech) 2",
+      "category": "academic",
+      "description": "Agriculture Technology building (2nd building)",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.970668960591563,
+        "lng": 120.19881666267813
+      },
+      "position": {
+        "x": 837.0,
+        "z": -241.1
+      },
+      "size": {
+        "width": 15,
+        "depth": 12,
+        "height": 6
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "agritech_2_entry"
+    },
+    {
+      "id": "mitos_magsaysay",
+      "name": "Mitos Magsaysay Building",
+      "category": "academic",
+      "description": "Mitos Magsaysay Building",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.970883012759575,
+        "lng": 120.19846524928141
+      },
+      "position": {
+        "x": 799.2,
+        "z": -265.0
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "mitos_magsaysay_entry"
+    },
+    {
+      "id": "motorpool_garage",
+      "name": "Motorpool Garage",
+      "category": "facility",
+      "description": "Motorpool Garage",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.970743763083766,
+        "lng": 120.19910819946242
+      },
+      "position": {
+        "x": 868.4,
+        "z": -249.5
+      },
+      "size": {
+        "width": 25,
+        "depth": 20,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "motorpool_garage_entry"
+    },
+    {
+      "id": "organic_mango_center",
+      "name": "RMTU Organic Mango Center",
+      "category": "facility",
+      "description": "RMTU Organic Mango Center",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.971143189549723,
+        "lng": 120.19889577934097
+      },
+      "position": {
+        "x": 845.6,
+        "z": -294.1
+      },
+      "size": {
+        "width": 40,
+        "depth": 30,
+        "height": 10
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "organic_mango_center_entry"
+    },
+    {
+      "id": "rmtu_rd_center",
+      "name": "RMTU Research and Development Center",
+      "category": "facility",
+      "description": "RMTU R & D Center",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.971225639874291,
+        "lng": 120.19922199595604
+      },
+      "position": {
+        "x": 880.7,
+        "z": -303.3
+      },
+      "size": {
+        "width": 15,
+        "depth": 12,
+        "height": 6
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "rmtu_rd_center_entry"
+    },
+    {
+      "id": "regional_mango_center",
+      "name": "Regional Mango Center",
+      "category": "facility",
+      "description": "Regional Mango Center (two floors)",
+      "color": "#27ae60",
+      "latLng": {
+        "lat": 14.971601190937468,
+        "lng": 120.19908169285405
+      },
+      "position": {
+        "x": 865.6,
+        "z": -345.3
+      },
+      "size": {
+        "width": 40,
+        "depth": 30,
+        "height": 20
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "regional_mango_center_entry"
     }
   ],
   "pavedEdges": [
@@ -1287,6 +1631,14 @@
     [
       "z3_wp4",
       "z3_wp1"
+    ],
+    [
+      "z4_start",
+      "z4_wp1"
+    ],
+    [
+      "z4_wp1",
+      "z4_end"
     ]
   ]
 }
