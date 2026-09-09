@@ -37,7 +37,7 @@ let sidebarContext = 'map';
 function openSidebar(fromPage) {
   sidebarContext = fromPage;
 
-  ['main','map','legend','about'].forEach(id => {
+  ['main','map','directory','legend','about'].forEach(id => {
     const el = document.getElementById('s-' + id);
     if (el) el.classList.toggle('active-item', id === fromPage);
   });

@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v2.10'; // Update this version whenever files change 
+const CACHE_NAME = 'prmsu-digitwin-v2.11'; // Update this version whenever files change 
 
 const STATIC_ASSETS = [
   './',
@@ -12,6 +12,7 @@ const STATIC_ASSETS = [
   './js/gps.js',
   './js/ui.js',
   './js/main.js',
+  './js/directory.js',
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
   './models/ADMINYELLOW.glb',

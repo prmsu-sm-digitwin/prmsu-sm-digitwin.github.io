@@ -102,6 +102,15 @@
           <span class="btn-label">Navigation Map</span>
           <span class="btn-arrow">›</span>
         </button>
+        <button class="main-nav-btn" onclick="goTo('directory')">
+          <div class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>
+            </svg>
+          </div>
+          <span class="btn-label">Campus Directory</span>
+          <span class="btn-arrow">›</span>
+        </button>
         <button class="main-nav-btn" onclick="goTo('legend')">
           <div class="btn-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -270,6 +279,55 @@
 
 
     <!--ABOUT PAGE-->
+    <!--CAMPUS DIRECTORY PAGE-->
+    <!-- The category blocks inside #directory-content are generated at runtime
+         from DIRECTORY_DATA in js/directory.js. To add buildings or a whole new
+         category, edit that array only — nothing here needs to change. -->
+    <div class="page" id="page-directory">
+      <div class="inner-top-bar">
+        <div class="inner-top-logo">
+          <div class="inner-top-logo-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>
+            </svg>
+          </div>
+          <div class="inner-top-logo-text">
+            <span class="inner-top-logo-name">PRMSU SM Digital Twin</span>
+            <span class="inner-top-logo-sub">CAMPUS DIRECTORY</span>
+          </div>
+        </div>
+        <button class="inner-hamburger-btn" onclick="openSidebar('directory')">
+          <div class="ham-line"></div>
+          <div class="ham-line"></div>
+          <div class="ham-line"></div>
+        </button>
+      </div>
+
+      <div class="directory-title-bar"><span>Campus Directory</span></div>
+
+      <div class="directory-content" id="directory-content"></div>
+
+      <div class="directory-bottom-nav">
+        <button class="dir-nav-btn" onclick="openSidebar('directory')" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/>
+            <line x1="4" y1="17" x2="20" y2="17"/>
+          </svg>
+        </button>
+        <button class="dir-nav-btn" onclick="goTo('main')" aria-label="Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </button>
+        <button class="dir-nav-btn" onclick="goBack()" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <div class="page" id="page-about">
       <div class="page-header-bar">
         <button class="page-back-btn" onclick="goTo('main')">‹</button>
@@ -431,6 +489,14 @@
             </svg>
           </div>
           <span class="sidebar-nav-label">Navigation Map</span>
+        </div>
+        <div class="sidebar-nav-item" id="s-directory" onclick="sidebarGoTo('directory')">
+          <div class="sidebar-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>
+            </svg>
+          </div>
+          <span class="sidebar-nav-label">Campus Directory</span>
         </div>
         <div class="sidebar-nav-item" id="s-legend" onclick="sidebarGoTo('legend')">
           <div class="sidebar-nav-icon">
@@ -648,6 +714,7 @@
 <script defer src="js/gps.js"></script>
 <script defer src="js/ui.js"></script>
 <script defer src="js/main.js"></script>
+<script defer src="js/directory.js"></script>
 
 </body>
 </html>

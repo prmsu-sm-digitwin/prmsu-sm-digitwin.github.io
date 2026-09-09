@@ -1532,3 +1532,268 @@
 }
 .navigate-btn:hover  { background: var(--maroon-light); }
 .navigate-btn:active { background: var(--maroon-dark);  }
+/* ==========================================================================
+   CAMPUS DIRECTORY PAGE
+   Carousel browsing of campus buildings, grouped by category. All of the
+   markup these rules style is generated at runtime from DIRECTORY_DATA in
+   js/directory.js — nothing here is tied to a specific category or to how
+   many buildings exist, so adding more never needs a CSS change.
+   ========================================================================== */
+
+  .directory-title-bar {
+    background: var(--white);
+    padding: 13px 14px;
+    text-align: center;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .directory-title-bar span {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--maroon-dark);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .directory-content {
+    flex: 1;
+    padding: 12px 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ---- one category block ---- */
+  .dir-cat {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 12px 10px;
+    box-shadow: 0 2px 10px rgba(26,75,140,0.06);
+  }
+
+  /* The "overlay title" from the blueprint — sits above its carousel. */
+  .dir-cat-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--maroon-dark);
+    letter-spacing: 0.03em;
+    margin-bottom: 10px;
+    padding-left: 9px;
+    border-left: 3px solid var(--gold);
+    line-height: 1.3;
+  }
+
+  /* ---- carousel stage: peeks + arrows sit over the viewport ---- */
+  .dir-stage {
+    position: relative;
+    padding: 0 26px;   /* room for the arrows + peek blocks at both edges */
+  }
+
+  /* The low-opacity gray blocks at each edge that hint at the next
+     showcase sitting just off-screen. */
+  .dir-peek {
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    width: 14px;
+    border-radius: 5px;
+    background: var(--maroon-dark);
+    opacity: 0.13;
+    pointer-events: none;
+  }
+  .dir-peek-left  { left: 8px; }
+  .dir-peek-right { right: 8px; }
+
+  .dir-viewport {
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .dir-track {
+    display: flex;
+    will-change: transform;
+    transition: transform 0.42s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  .dir-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    display: flex;
+    align-items: stretch;
+    gap: 11px;
+  }
+
+  /* ---- photo side ---- */
+  .dir-photo {
+    flex: 0 0 46%;
+    aspect-ratio: 4 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--maroon-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dir-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .dir-photo-ph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 8px;
+  }
+  .dir-photo-ph svg { width: 24px; height: 24px; }
+  .dir-photo-ph span {
+    font-size: 9.5px;
+    letter-spacing: 0.03em;
+    line-height: 1.3;
+  }
+
+  /* ---- text side ---- */
+  .dir-info {
+    flex: 1 1 auto;
+    min-width: 0;          /* lets long words wrap instead of stretching the slide */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 2px 0;
+  }
+  .dir-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--maroon-dark);
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .dir-text {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+  }
+
+  /* ---- arrows ---- */
+  .dir-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 46px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--maroon);
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+  .dir-arrow span { pointer-events: none; margin-top: -3px; }
+  .dir-arrow-left  { left: 0; }
+  .dir-arrow-right { right: 0; }
+  .dir-arrow:active {
+    background: rgba(26,75,140,0.10);
+    color: var(--maroon-dark);
+  }
+
+  /* ---- dots + counter ---- */
+  .dir-dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  .dir-dot {
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(26,75,140,0.22);
+    cursor: pointer;
+    transition: background 0.2s ease, width 0.2s ease;
+  }
+  .dir-dot.is-active {
+    width: 16px;
+    border-radius: 3px;
+    background: var(--gold);
+  }
+  .dir-counter {
+    text-align: center;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    margin-top: 5px;
+  }
+
+  .dir-empty {
+    padding: 22px 12px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
+    background: var(--cream);
+    border-radius: 8px;
+  }
+
+  /* ---- bottom bar (menu / home / back), as drawn in the blueprint ---- */
+  .directory-bottom-nav {
+    height: var(--nav-h);
+    flex-shrink: 0;
+    background: var(--maroon-dark);
+    border-top: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+  }
+  .dir-nav-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    width: 52px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+  .dir-nav-btn svg { width: 20px; height: 20px; }
+  .dir-nav-btn:active {
+    background: rgba(255,255,255,0.12);
+    color: var(--gold-light);
+  }
+
+  /* Wider screens get a roomier photo and slightly larger type. */
+  @media (min-width: 480px) {
+    .dir-photo { flex-basis: 44%; }
+    .dir-name  { font-size: 14px; }
+    .dir-text  { font-size: 12px; }
+  }
+
+  /* Respect a system "reduce motion" setting — the slide jumps instead of
+     animating rather than being disorienting. */
+  @media (prefers-reduced-motion: reduce) {
+    .dir-track { transition: none; }
+  }
