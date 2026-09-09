@@ -6,9 +6,9 @@
     "_note": "Main Gate \u2014 (0,0) in Three.js"
   },
   "ground": {
-    "width": 1225.4,
+    "width": 1269.1,
     "depth": 667.3,
-    "offsetX": 562.7,
+    "offsetX": 584.5,
     "offsetZ": -264.4,
     "texture": null,
     "color": "#7cb87a",
@@ -29,7 +29,7 @@
   },
   "bounds": {
     "minX": -20,
-    "maxX": 1145.4,
+    "maxX": 1189.1,
     "minZ": -568.1,
     "maxZ": 39.2,
     "_note": "Used by gps.js to clamp blue dot to scene area"
@@ -677,7 +677,8 @@
       },
       "neighbors": [
         "z1_int1",
-        "z3_wp2"
+        "z3_wp2",
+        "z4_start"
       ]
     },
     {
@@ -840,7 +841,8 @@
         "z": -225.5
       },
       "neighbors": [
-        "z4_wp1"
+        "z4_wp1",
+        "z3_start"
       ]
     },
     {
@@ -872,7 +874,8 @@
         "z": -548.1
       },
       "neighbors": [
-        "z4_wp1"
+        "z4_wp1",
+        "z3_oval_end"
       ]
     },
     {
@@ -888,19 +891,20 @@
       },
       "neighbors": [
         "z4_wp1",
-        "z3_wp1"
+        "z3_wp1",
+        "z3_oval_end"
       ]
     },
     {
       "id": "agritech_1_entry",
       "label": "Agriculture Technology (Agri-Tech) Entry",
       "latLng": {
-        "lat": 14.970571533091107,
-        "lng": 120.19855059665161
+        "lat": 14.970675734434293,
+        "lng": 120.19849182547073
       },
       "position": {
-        "x": 808.4,
-        "z": -230.2
+        "x": 802.1,
+        "z": -241.9
       },
       "neighbors": [
         "z3_wp4"
@@ -925,12 +929,12 @@
       "id": "mitos_magsaysay_entry",
       "label": "Mitos Magsaysay Building Entry",
       "latLng": {
-        "lat": 14.970883012759575,
-        "lng": 120.19846524928141
+        "lat": 14.97070192665805,
+        "lng": 120.19853010190123
       },
       "position": {
-        "x": 799.2,
-        "z": -265.0
+        "x": 806.2,
+        "z": -244.8
       },
       "neighbors": [
         "z3_wp4"
@@ -940,12 +944,12 @@
       "id": "motorpool_garage_entry",
       "label": "Motorpool Garage Entry",
       "latLng": {
-        "lat": 14.970743763083766,
-        "lng": 120.19910819946242
+        "lat": 14.970934575039962,
+        "lng": 120.1991473092561
       },
       "position": {
-        "x": 868.4,
-        "z": -249.5
+        "x": 872.6,
+        "z": -270.8
       },
       "neighbors": [
         "z3_wp4"
@@ -955,12 +959,12 @@
       "id": "organic_mango_center_entry",
       "label": "RMTU Organic Mango Center Entry",
       "latLng": {
-        "lat": 14.971143189549723,
-        "lng": 120.19889577934097
+        "lat": 14.970886812817136,
+        "lng": 120.1990037726563
       },
       "position": {
-        "x": 845.6,
-        "z": -294.1
+        "x": 857.2,
+        "z": -265.5
       },
       "neighbors": [
         "z3_wp4"
@@ -970,12 +974,12 @@
       "id": "rmtu_rd_center_entry",
       "label": "RMTU Research and Development Center Entry",
       "latLng": {
-        "lat": 14.971225639874291,
-        "lng": 120.19922199595604
+        "lat": 14.971047948575132,
+        "lng": 120.19931525610703
       },
       "position": {
-        "x": 880.7,
-        "z": -303.3
+        "x": 890.7,
+        "z": -283.5
       },
       "neighbors": [
         "z3_wp1"
@@ -985,15 +989,31 @@
       "id": "regional_mango_center_entry",
       "label": "Regional Mango Center Entry",
       "latLng": {
-        "lat": 14.971601190937468,
-        "lng": 120.19908169285405
+        "lat": 14.971740086219514,
+        "lng": 120.19938614240004
       },
       "position": {
-        "x": 865.6,
-        "z": -345.3
+        "x": 898.3,
+        "z": -360.8
       },
       "neighbors": [
         "z3_wp4"
+      ]
+    },
+    {
+      "id": "z3_oval_end",
+      "label": "Zone 3 End (near Oval)",
+      "latLng": {
+        "lat": 14.971986827896323,
+        "lng": 120.20190166678721
+      },
+      "position": {
+        "x": 1169.1,
+        "z": -388.3
+      },
+      "neighbors": [
+        "z3_wp5",
+        "z4_end"
       ]
     }
   ],
@@ -1639,6 +1659,10 @@
     [
       "z4_wp1",
       "z4_end"
+    ],
+    [
+      "z3_start",
+      "z4_start"
     ]
   ]
 }
