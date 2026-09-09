@@ -25,7 +25,22 @@ let vmqOverlayOpen = false;
 // and the popstate listener re-renders the UI to match wherever the user
 // lands -- so backing out of a page/sidebar/modal just works, and the app
 // only exits when there's genuinely nothing left to go back to.
-window.history.replaceState({ page: 'main', sidebar: false, vmq: false }, '', '#main');
+// Two entries are installed at startup instead of one:
+//   entry 0 - a "root" sentinel (it also renders Home if we ever land on it)
+//   entry 1 - Home itself
+// The spare entry underneath is what makes it impossible for a back press to
+// quit the app from the middle of an inner page. Without it, any situation
+// that leaves the stack shallower than the app assumes -- a relaunch, a
+// refresh, or the browser trimming entries in an installed PWA -- means the
+// back press that should have stepped Home instead falls off the bottom and
+// closes the app. With it, back from an inner page always reaches Home first,
+// and it is the press *from Home* that closes the app.
+window.history.replaceState({ page: 'main', sidebar: false, vmq: false, root: true }, '', '#main');
+window.history.pushState({ page: 'main', sidebar: false, vmq: false }, '', '#main');
+
+// One-shot latch so the "let the app close" path below can never turn into a
+// runaway loop that walks back through the whole browser history.
+let leavingApp = false;
 
 function updateNav(pageId) {
   const isMain = pageId === 'main';
@@ -268,23 +283,24 @@ function goBack() {
 // overlays instead of quitting the app -- and it's also what the iOS
 // edge-swipe gesture further down calls into via window.history.back().
 window.addEventListener('popstate', function (e) {
-  // Root guard. Every entry this app creates carries a state object, so a
-  // popstate with no state means we've stepped off the bottom of our own
-  // history onto an entry that belongs to the browser, not to us. That can
-  // happen when the installed PWA is relaunched or refreshed while sitting on
-  // an inner page: the stack beneath the current page is shallower than the
-  // app assumes, and the next back press quits outright from the middle of a
-  // page instead of stepping home. Catch that case, render the homepage, and
-  // put one of our own entries back underneath -- so back from an inner page
-  // always lands on Home first, and it's the back press *from Home* that
-  // closes the app, matching every other page.
-  if (!e.state) {
+  // Root guard. A popstate that carries no state at all, or that lands on the
+  // startup sentinel, means there is nothing of this app's own left behind us.
+  if (!e.state || e.state.root) {
     if (current !== 'main') {
+      // We were on an inner page, so this back press was meant to step Home --
+      // not to quit. Render Home and put an entry back underneath us.
       goTo('main', true);
       window.history.pushState({ page: 'main', sidebar: false, vmq: false }, '', '#main');
       return;
     }
-    // Already on Home with nothing of ours behind us: let it close normally.
+    // Already on Home. Backing out of the app from here is the correct thing,
+    // so step off our own sentinel and let it close. The latch keeps this to a
+    // single hop, so in a normal browser tab it can never run away backwards
+    // through the user's own history.
+    if (e.state && e.state.root && !leavingApp) {
+      leavingApp = true;
+      window.history.back();
+    }
     return;
   }
 
