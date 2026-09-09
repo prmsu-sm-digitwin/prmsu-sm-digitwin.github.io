@@ -164,11 +164,6 @@ const DIRECTORY_DATA = [
 
     var stage = el('div', 'dir-stage', section);
 
-    // The low-opacity gray blocks at each edge — they hint that another
-    // showcase sits just off-screen on either side.
-    el('div', 'dir-peek dir-peek-left', stage);
-    el('div', 'dir-peek dir-peek-right', stage);
-
     var viewport = el('div', 'dir-viewport', stage);
     var track = el('div', 'dir-track', viewport);
     items.forEach(function (item) { buildSlide(item, track); });

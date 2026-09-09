@@ -268,7 +268,27 @@ function goBack() {
 // overlays instead of quitting the app -- and it's also what the iOS
 // edge-swipe gesture further down calls into via window.history.back().
 window.addEventListener('popstate', function (e) {
-  const state = e.state || { page: 'main', sidebar: false, vmq: false };
+  // Root guard. Every entry this app creates carries a state object, so a
+  // popstate with no state means we've stepped off the bottom of our own
+  // history onto an entry that belongs to the browser, not to us. That can
+  // happen when the installed PWA is relaunched or refreshed while sitting on
+  // an inner page: the stack beneath the current page is shallower than the
+  // app assumes, and the next back press quits outright from the middle of a
+  // page instead of stepping home. Catch that case, render the homepage, and
+  // put one of our own entries back underneath -- so back from an inner page
+  // always lands on Home first, and it's the back press *from Home* that
+  // closes the app, matching every other page.
+  if (!e.state) {
+    if (current !== 'main') {
+      goTo('main', true);
+      window.history.pushState({ page: 'main', sidebar: false, vmq: false }, '', '#main');
+      return;
+    }
+    // Already on Home with nothing of ours behind us: let it close normally.
+    return;
+  }
+
+  const state = e.state;
 
   const sidebarEl = document.getElementById('sidebar-overlay');
   const vmqEl = document.getElementById('vmq-overlay');

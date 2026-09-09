@@ -1589,23 +1589,8 @@
   /* ---- carousel stage: peeks + arrows sit over the viewport ---- */
   .dir-stage {
     position: relative;
-    padding: 0 26px;   /* room for the arrows + peek blocks at both edges */
+    padding: 0 26px;   /* room for the arrows at both edges */
   }
-
-  /* The low-opacity gray blocks at each edge that hint at the next
-     showcase sitting just off-screen. */
-  .dir-peek {
-    position: absolute;
-    top: 8px;
-    bottom: 8px;
-    width: 14px;
-    border-radius: 5px;
-    background: var(--maroon-dark);
-    opacity: 0.13;
-    pointer-events: none;
-  }
-  .dir-peek-left  { left: 8px; }
-  .dir-peek-right { right: 8px; }
 
   .dir-viewport {
     overflow: hidden;
@@ -1753,36 +1738,6 @@
     color: var(--text-light);
     background: var(--cream);
     border-radius: 8px;
-  }
-
-  /* ---- bottom bar (menu / home / back), as drawn in the blueprint ---- */
-  .directory-bottom-nav {
-    height: var(--nav-h);
-    flex-shrink: 0;
-    background: var(--maroon-dark);
-    border-top: 2px solid var(--gold);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 0 10px;
-  }
-  .dir-nav-btn {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.65);
-    cursor: pointer;
-    width: 52px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.18s ease, color 0.18s ease;
-  }
-  .dir-nav-btn svg { width: 20px; height: 20px; }
-  .dir-nav-btn:active {
-    background: rgba(255,255,255,0.12);
-    color: var(--gold-light);
   }
 
   /* Wider screens get a roomier photo and slightly larger type. */
