@@ -113,7 +113,13 @@ function buildRoads(waypoints) {
   // The unpaved path sits below the main road's height so wherever they cross,
   // the main road renders on top instead of the two fighting for the same
   // z-height (which looked like the path clipping/cutting through the road).
-  const ROAD_Y_MAIN = 0.20;
+  // Each road strip is a BoxGeometry with 0.3 total height (0.15 half-height
+  // above/below its y), so the gap between ROAD_Y_MAIN and ROAD_Y_PATH must
+  // be at least 0.3 or the two boxes still physically overlap and z-fight
+  // wherever a path crosses the main road (this is what "clipping" was,
+  // even after an earlier bump from 0.15 to 0.20 — 0.20 still isn't enough
+  // margin, only 0.10 short of the minimum). 0.40 gives a safe 0.10 margin.
+  const ROAD_Y_MAIN = 0.40;
   const ROAD_Y_PATH = 0.00;
 
   // Track drawn edges so we don't double-draw
