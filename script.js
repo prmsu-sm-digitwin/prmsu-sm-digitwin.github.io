@@ -57,7 +57,7 @@ let sidebarContext = 'map';
 function openSidebar(fromPage) {
   sidebarContext = fromPage;
 
-  ['main','map','directory','legend','about'].forEach(id => {
+  ['main','map','directory','about'].forEach(id => {
     const el = document.getElementById('s-' + id);
     if (el) el.classList.toggle('active-item', id === fromPage);
   });
@@ -261,7 +261,7 @@ function sidebarGoTo(pageId) {
   });
 })();
 
-// Homepage nav buttons (Navigation Map / Legend / About) use a JS-driven
+// Homepage nav buttons (Navigation Map / Campus Directory / About) use a JS-driven
 // `.is-pressed` class instead of CSS `:active` for their pressed look (see
 // style.css). Reason: tapping one of these calls goTo() synchronously,
 // which hides the button's page immediately -- so on some mobile Chrome

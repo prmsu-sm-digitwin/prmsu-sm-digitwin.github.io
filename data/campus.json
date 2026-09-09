@@ -412,7 +412,8 @@
         "z2_wp6",
         "z2_end",
         "z1_int11",
-        "z3_wp4"
+        "z3_wp4",
+        "CCIT_Entry"
       ]
     },
     {
@@ -759,7 +760,13 @@
       "neighbors": [
         "z3_wp3",
         "z3_wp1",
-        "z2_wp7"
+        "z2_wp7",
+        "agritech_1_entry",
+        "agritech_2_entry",
+        "college_of_agriculture_entry",
+        "motorpool_garage_entry",
+        "organic_mango_center_entry",
+        "regional_mango_center_entry"
       ]
     },
     {
@@ -776,7 +783,8 @@
       "neighbors": [
         "z3_wp4",
         "z2_end",
-        "z3_wp5"
+        "z3_wp5",
+        "rmtu_rd_center_entry"
       ]
     },
     {
@@ -820,7 +828,9 @@
         "x": 907.7,
         "z": -177.9
       },
-      "neighbors": []
+      "neighbors": [
+        "z2_wp7"
+      ]
     },
     {
       "id": "z4_start",
@@ -900,7 +910,8 @@
         "z": -237.5
       },
       "neighbors": [
-        "agritech_1_door"
+        "agritech_1_door",
+        "z3_wp4"
       ]
     },
     {
@@ -914,7 +925,9 @@
         "x": 837,
         "z": -241.1
       },
-      "neighbors": []
+      "neighbors": [
+        "z3_wp4"
+      ]
     },
     {
       "id": "motorpool_garage_entry",
@@ -928,7 +941,8 @@
         "z": -258
       },
       "neighbors": [
-        "motorpool_garage_door"
+        "motorpool_garage_door",
+        "z3_wp4"
       ]
     },
     {
@@ -943,7 +957,8 @@
         "z": -255.5
       },
       "neighbors": [
-        "organic_mango_center_door"
+        "organic_mango_center_door",
+        "z3_wp4"
       ]
     },
     {
@@ -958,7 +973,8 @@
         "z": -262
       },
       "neighbors": [
-        "rmtu_rd_center_door"
+        "rmtu_rd_center_door",
+        "z3_wp1"
       ]
     },
     {
@@ -973,7 +989,8 @@
         "z": -360.8
       },
       "neighbors": [
-        "regional_mango_center_door"
+        "regional_mango_center_door",
+        "z3_wp4"
       ]
     },
     {
@@ -1079,7 +1096,8 @@
         "z": -240.1
       },
       "neighbors": [
-        "college_of_agriculture_door"
+        "college_of_agriculture_door",
+        "z3_wp4"
       ]
     },
     {
@@ -1744,6 +1762,14 @@
     [
       "z3_start",
       "z4_start"
+    ],
+    [
+      "z1_int2",
+      "z2_start"
+    ],
+    [
+      "z2_start",
+      "canteen_entry"
     ]
   ]
 }
