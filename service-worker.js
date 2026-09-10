@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v2.29'; // Update this version whenever files change 
+const CACHE_NAME = 'prmsu-digitwin-v2.30'; // Update this version whenever files change 
 
 const STATIC_ASSETS = [
   './',
@@ -27,8 +27,16 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('[SW] Caching static assets');
-      // Cache one by one so a single failure doesn't break the whole install
-      return Promise.allSettled(STATIC_ASSETS.map(url => cache.add(url)));
+      // Cache one by one so a single failure doesn't break the whole install.
+      // { cache: 'reload' } forces each fetch to bypass the browser's own
+      // HTTP cache -- without this, cache.add(url) can silently reuse an
+      // HTTP-cached (stale) response even though CACHE_NAME just changed,
+      // which is why a bumped version sometimes still shows old data.json
+      // content until a hard refresh. This makes a version bump actually
+      // guarantee a fresh network fetch for every asset, every time.
+      return Promise.allSettled(
+        STATIC_ASSETS.map(url => cache.add(new Request(url, { cache: 'reload' })))
+      );
     })
   );
   self.skipWaiting();
