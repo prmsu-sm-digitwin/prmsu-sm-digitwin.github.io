@@ -80,8 +80,7 @@
       "neighbors": [
         "inner_gate",
         "z1_int2",
-        "z3_start",
-        "canteen_pathway"
+        "z3_start"
       ]
     },
     {
@@ -731,7 +730,9 @@
       "neighbors": [
         "z3_wp2",
         "z3_wp4",
-        "z3_spur2"
+        "z3_spur2",
+        "agritech_1_entry",
+        "college_of_agriculture_entry"
       ]
     },
     {
@@ -764,29 +765,33 @@
         "z3_wp3",
         "z3_wp1",
         "z2_wp7",
-        "agritech_1_entry",
         "agritech_2_entry",
-        "college_of_agriculture_entry",
         "motorpool_garage_entry",
-        "organic_mango_center_entry"
+        "organic_mango_center_entry",
+        "college_of_agriculture_entry",
+        "agritech_1_entry",
+        "z3_wp5",
+        "rmtu_rd_center_entry"
       ]
     },
     {
       "id": "z3_wp1",
       "label": "Z3 Path 1",
       "latLng": {
-        "lat": 14.970910418203797,
-        "lng": 120.19964859153622
+        "lat": 14.970921160452928,
+        "lng": 120.1996420889617
       },
       "position": {
-        "x": 926.6,
-        "z": -268.1
+        "x": 925.9,
+        "z": -269.3
       },
       "neighbors": [
         "z3_wp4",
         "z2_end",
         "z3_wp5",
-        "rmtu_rd_center_entry"
+        "rmtu_rd_center_entry",
+        "motorpool_garage_entry",
+        "organic_mango_center_entry"
       ]
     },
     {
@@ -887,18 +892,21 @@
       "id": "z3_wp5",
       "label": "Z3 Path 5",
       "latLng": {
-        "lat": 14.970922950827784,
-        "lng": 120.19964394684014
+        "lat": 14.970925636390067,
+        "lng": 120.19965602304994
       },
       "position": {
-        "x": 926.1,
-        "z": -269.5
+        "x": 927.4,
+        "z": -269.8
       },
       "neighbors": [
         "z4_wp1",
         "z3_wp1",
         "z3_oval_end",
-        "regional_mango_center_entry"
+        "regional_mango_center_entry",
+        "z3_wp4",
+        "motorpool_garage_entry",
+        "organic_mango_center_entry"
       ]
     },
     {
@@ -914,6 +922,7 @@
       },
       "neighbors": [
         "agritech_1_door",
+        "z3_wp3",
         "z3_wp4"
       ]
     },
@@ -945,7 +954,9 @@
       },
       "neighbors": [
         "motorpool_garage_door",
-        "z3_wp4"
+        "z3_wp4",
+        "z3_wp5",
+        "z3_wp1"
       ]
     },
     {
@@ -961,23 +972,26 @@
       },
       "neighbors": [
         "organic_mango_center_door",
-        "z3_wp4"
+        "z3_wp4",
+        "z3_wp1",
+        "z3_wp5"
       ]
     },
     {
       "id": "rmtu_rd_center_entry",
       "label": "RMTU Research and Development Center Entry",
       "latLng": {
-        "lat": 14.970855811770711,
-        "lng": 120.19936433613627
+        "lat": 14.970862078082705,
+        "lng": 120.1993661940147
       },
       "position": {
-        "x": 896,
-        "z": -262
+        "x": 896.2,
+        "z": -262.7
       },
       "neighbors": [
         "rmtu_rd_center_door",
-        "z3_wp1"
+        "z3_wp1",
+        "z3_wp4"
       ]
     },
     {
@@ -1100,6 +1114,7 @@
       },
       "neighbors": [
         "college_of_agriculture_door",
+        "z3_wp3",
         "z3_wp4"
       ]
     },
@@ -1161,8 +1176,7 @@
         "z": -29.8
       },
       "neighbors": [
-        "canteen_entry",
-        "z1_int1"
+        "canteen_entry"
       ]
     },
     {
