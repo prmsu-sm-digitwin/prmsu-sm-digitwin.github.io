@@ -80,7 +80,8 @@
       "neighbors": [
         "inner_gate",
         "z1_int2",
-        "z3_start"
+        "z3_start",
+        "canteen_pathway"
       ]
     },
     {
@@ -1160,7 +1161,8 @@
         "z": -29.8
       },
       "neighbors": [
-        "canteen_entry"
+        "canteen_entry",
+        "z1_int1"
       ]
     },
     {
