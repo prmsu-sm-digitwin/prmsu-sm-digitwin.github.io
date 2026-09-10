@@ -1809,5 +1809,20 @@
       "z1_int1",
       "z3_start"
     ]
+  ],
+  "ovals": [
+    {
+      "id": "main_oval",
+      "label": "Running Oval",
+      "center": {
+        "x": 1074.95,
+        "z": -283.93
+      },
+      "majorAxis": 138.53,
+      "minorAxis": 89.12,
+      "trackWidth": 8,
+      "rotation": -18.83,
+      "_note": "center, size (infield 122.5m x 73.1m + 8m trackWidth per side), and rotation (-18.83 deg) all derived from the 4 real corner lat/lng points Rin measured on the satellite photo, converted via the local (unrotated, 1:1 meter) equirectangular projection anchored at z3_wp5 (same method used for the center point, cross-checked against 5 nearby waypoints to ~1.3m). The corner-derived center (14.971052803, 120.20102959) matched the independently-given center point (14.971048266, 120.20104404) to within ~0.5m, confirming both are reliable. Supersedes the earlier ft-measurement-based majorAxis/minorAxis/rotation, which were an axis-aligned bounding-box estimate skewed by the oval's true rotation."
+    }
   ]
 }

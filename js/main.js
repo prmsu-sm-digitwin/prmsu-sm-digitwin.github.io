@@ -65,6 +65,7 @@ function loadCampus() {
 
       buildGround(data.ground);
       buildRoads(data.waypoints);
+      (data.ovals || []).forEach(buildOval);
       buildBuildings(data.buildings);
       positionCamera(data.camera);
 
@@ -75,6 +76,57 @@ function loadCampus() {
       if (typeof onSceneReady === 'function') onSceneReady(data);
     })
     .catch(err => console.error('Failed to load campus.json:', err));
+}
+
+// Draws a running-track oval procedurally (stadium shape: two straight
+// sides + two semicircular ends), the same way roads/ground are drawn from
+// data instead of a modeled/GLB asset. `oval` comes from campusData.ovals:
+// { center:{x,z}, majorAxis, minorAxis, trackWidth, rotation (degrees) }.
+function buildOval(oval) {
+  const { center, majorAxis, minorAxis, trackWidth, rotation } = oval;
+  const radius = minorAxis / 2;
+  const straight = Math.max(0, majorAxis - minorAxis);
+  const halfStraight = straight / 2;
+
+  function stadiumShape(halfLen, r) {
+    const shape = new THREE.Shape();
+    shape.moveTo(-halfLen, r);
+    shape.lineTo(halfLen, r);
+    shape.absarc(halfLen, 0, r, Math.PI / 2, -Math.PI / 2, true);
+    shape.lineTo(-halfLen, -r);
+    shape.absarc(-halfLen, 0, r, -Math.PI / 2, Math.PI / 2, true);
+    return shape;
+  }
+
+  const group = new THREE.Group();
+
+  // Outer track ring (reddish rubberized-track color)
+  const trackMat = new THREE.MeshLambertMaterial({ color: 0xb5651d });
+  const trackMesh = new THREE.Mesh(
+    new THREE.ShapeGeometry(stadiumShape(halfStraight, radius)),
+    trackMat
+  );
+  trackMesh.rotation.x = -Math.PI / 2;
+  trackMesh.position.y = 0.03;
+  trackMesh.receiveShadow = true;
+  group.add(trackMesh);
+
+  // Inner infield (green), inset by the track width so the ring still shows
+  const innerR = Math.max(0.1, radius - trackWidth);
+  const innerHalfStraight = Math.max(0, halfStraight - trackWidth);
+  const fieldMat = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
+  const fieldMesh = new THREE.Mesh(
+    new THREE.ShapeGeometry(stadiumShape(innerHalfStraight, innerR)),
+    fieldMat
+  );
+  fieldMesh.rotation.x = -Math.PI / 2;
+  fieldMesh.position.y = 0.05;
+  fieldMesh.receiveShadow = true;
+  group.add(fieldMesh);
+
+  group.position.set(center.x, 0, center.z);
+  group.rotation.y = THREE.MathUtils.degToRad(rotation || 0);
+  scene.add(group);
 }
 
 function buildGround(g) {
