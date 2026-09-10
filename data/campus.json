@@ -166,7 +166,8 @@
         "z1_int5",
         "z1_int7",
         "z2_wp4",
-        "gab_entry"
+        "gab_entry",
+        "beed_entry"
       ]
     },
     {
@@ -305,8 +306,7 @@
       "neighbors": [
         "z2_start",
         "z2_wp2",
-        "z1_int3",
-        "chm1_branch"
+        "z1_int3"
       ]
     },
     {
@@ -439,15 +439,16 @@
       "id": "canteen_entry",
       "label": "Canteen Entry",
       "latLng": {
-        "lat": 14.968779872126039,
-        "lng": 120.19527328783114
+        "lat": 14.968821945935137,
+        "lng": 120.19553339081149
       },
       "position": {
-        "x": 455.6,
-        "z": -30.1
+        "x": 483.6,
+        "z": -34.8
       },
       "neighbors": [
-        "z2_start"
+        "z2_start",
+        "canteen_pathway"
       ]
     },
     {
@@ -477,8 +478,7 @@
         "z": -55.1
       },
       "neighbors": [
-        "z1_int6",
-        "beed_entry"
+        "z1_int6"
       ]
     },
     {
@@ -548,15 +548,14 @@
       "id": "chm1_branch",
       "label": "CHM1 Branch",
       "latLng": {
-        "lat": 14.968881789794041,
-        "lng": 120.19621905256247
+        "lat": 14.968921311739605,
+        "lng": 120.1961929376545
       },
       "position": {
-        "x": 554.9,
-        "z": -45
+        "x": 554.6,
+        "z": -45.9
       },
       "neighbors": [
-        "z2_wp1",
         "chm1_entry",
         "quad_entry",
         "z2_start"
@@ -641,12 +640,12 @@
       "id": "lhs_entry",
       "label": "LHS Entry",
       "latLng": {
-        "lat": 14.969808442480385,
-        "lng": 120.19811677076983
+        "lat": 14.96983261254093,
+        "lng": 120.19812234440512
       },
       "position": {
-        "x": 761.7,
-        "z": -145
+        "x": 762.3,
+        "z": -147.7
       },
       "neighbors": [
         "z2_wp5"
@@ -738,12 +737,12 @@
       "id": "z3_spur2",
       "label": "Z3-Zone 2 Link B (unpaved)",
       "latLng": {
-        "lat": 14.969595621364116,
-        "lng": 120.1980783931497
+        "lat": 14.969610606058879,
+        "lng": 120.19805917653846
       },
       "position": {
-        "x": 757.6,
-        "z": -121.2
+        "x": 755.5,
+        "z": -122.9
       },
       "neighbors": [
         "z3_wp3"
@@ -768,8 +767,7 @@
         "agritech_2_entry",
         "college_of_agriculture_entry",
         "motorpool_garage_entry",
-        "organic_mango_center_entry",
-        "regional_mango_center_entry"
+        "organic_mango_center_entry"
       ]
     },
     {
@@ -794,12 +792,12 @@
       "id": "z1_int13",
       "label": "Z1 Int 13",
       "latLng": {
-        "lat": 14.969755626422154,
-        "lng": 120.20031556989295
+        "lat": 14.969873791162602,
+        "lng": 120.20041310851057
       },
       "position": {
-        "x": 998.4,
-        "z": -139.1
+        "x": 1008.9,
+        "z": -152.3
       },
       "neighbors": [
         "z1_int12"
@@ -888,17 +886,18 @@
       "id": "z3_wp5",
       "label": "Z3 Path 5",
       "latLng": {
-        "lat": 14.970906837454086,
-        "lng": 120.1996532362323
+        "lat": 14.970922950827784,
+        "lng": 120.19964394684014
       },
       "position": {
-        "x": 927.1,
-        "z": -267.7
+        "x": 926.1,
+        "z": -269.5
       },
       "neighbors": [
         "z4_wp1",
         "z3_wp1",
-        "z3_oval_end"
+        "z3_oval_end",
+        "regional_mango_center_entry"
       ]
     },
     {
@@ -993,7 +992,7 @@
       },
       "neighbors": [
         "regional_mango_center_door",
-        "z3_wp4"
+        "z3_wp5"
       ]
     },
     {
@@ -1122,12 +1121,12 @@
       "id": "z1_int2b",
       "label": "z1_int2b",
       "latLng": {
-        "lat": 14.968677986302929,
-        "lng": 120.19623255299076
+        "lat": 14.968603520202794,
+        "lng": 120.19629047627214
       },
       "position": {
-        "x": 567.91,
-        "z": 1.04
+        "x": 565.1,
+        "z": -10.4
       },
       "neighbors": [
         "z1_int2",
@@ -1146,8 +1145,36 @@
         "z": -20.4
       },
       "neighbors": [
-        "gab_entry"
+        "z1_int6"
       ]
+    },
+    {
+      "id": "canteen_pathway",
+      "label": "Canteen Entrance",
+      "latLng": {
+        "lat": 14.968777371024572,
+        "lng": 120.19528115317273
+      },
+      "position": {
+        "x": 456.4,
+        "z": -29.8
+      },
+      "neighbors": [
+        "canteen_entry"
+      ]
+    },
+    {
+      "id": "wp_new_2",
+      "label": "New Waypoint",
+      "latLng": {
+        "lat": 14.969089283371465,
+        "lng": 120.19654825770264
+      },
+      "position": {
+        "x": 592.9,
+        "z": -64.7
+      },
+      "neighbors": []
     }
   ],
   "buildings": [
@@ -1326,12 +1353,12 @@
       "description": "Campus canteen",
       "color": "#27ae60",
       "latLng": {
-        "lat": 14.968816574810571,
-        "lng": 120.19540148144289
+        "lat": 14.968827317059702,
+        "lng": 120.19550738051346
       },
       "position": {
-        "x": 469.4,
-        "z": -34.2
+        "x": 480.8,
+        "z": -35.4
       },
       "size": {
         "width": 25,
@@ -1422,12 +1449,12 @@
       "description": "Laboratory High School",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.969894380473438,
-        "lng": 120.19810376562081
+        "lat": 14.969867524850608,
+        "lng": 120.19811305501297
       },
       "position": {
-        "x": 760.3,
-        "z": -154.6
+        "x": 761.3,
+        "z": -151.6
       },
       "size": {
         "width": 15,
@@ -1470,12 +1497,12 @@
       "description": "College of Communication & Information Technology",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.970170098201148,
-        "lng": 120.19944143809116
+        "lat": 14.970173678950857,
+        "lng": 120.19944236703037
       },
       "position": {
-        "x": 904.3,
-        "z": -185.4
+        "x": 904.4,
+        "z": -185.8
       },
       "size": {
         "width": 15,
@@ -1494,12 +1521,12 @@
       "description": "Court beside the Admin Building",
       "color": "#27ae60",
       "latLng": {
-        "lat": 14.969755626422154,
-        "lng": 120.20041032169293
+        "lat": 14.969883638224307,
+        "lng": 120.2004985709184
       },
       "position": {
-        "x": 1008.6,
-        "z": -139.1
+        "x": 1018.1,
+        "z": -153.4
       },
       "size": {
         "width": 20,
@@ -1792,10 +1819,6 @@
     [
       "z1_int2",
       "z2_start"
-    ],
-    [
-      "z2_start",
-      "canteen_entry"
     ],
     [
       "z1_int2",
