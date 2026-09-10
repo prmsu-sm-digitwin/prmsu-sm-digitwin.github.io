@@ -80,8 +80,7 @@
       "neighbors": [
         "inner_gate",
         "z1_int2",
-        "z3_start",
-        "canteen_pathway"
+        "z3_start"
       ]
     },
     {
@@ -290,20 +289,19 @@
         "z1_int2",
         "z2_wp1",
         "canteen_entry",
-        "chm1_branch",
-        "z3_spur1"
+        "chm1_branch"
       ]
     },
     {
       "id": "z2_wp1",
       "label": "Z2 WP1",
       "latLng": {
-        "lat": 14.969019782356643,
-        "lng": 120.19653943198189
+        "lat": 14.968878464723684,
+        "lng": 120.19622624387499
       },
       "position": {
-        "x": 591.9,
-        "z": -56.9
+        "x": 592.6,
+        "z": -54.8
       },
       "neighbors": [
         "z2_start",
@@ -315,18 +313,17 @@
       "id": "z2_wp2",
       "label": "Z2 WP2",
       "latLng": {
-        "lat": 14.969114672223972,
-        "lng": 120.19684505298379
+        "lat": 14.96910725159843,
+        "lng": 120.19685100627915
       },
       "position": {
         "x": 624.8,
-        "z": -67.5
+        "z": -66.4
       },
       "neighbors": [
         "z2_wp1",
         "z2_wp3",
-        "chm2_entry",
-        "z3_spur1"
+        "chm2_entry"
       ]
     },
     {
@@ -344,8 +341,7 @@
         "z2_wp2",
         "z2_wp4",
         "z1_int5",
-        "cte_bsed_entry",
-        "z3_spur1"
+        "cte_bsed_entry"
       ]
     },
     {
@@ -552,18 +548,17 @@
       "id": "chm1_branch",
       "label": "CHM1 Branch",
       "latLng": {
-        "lat": 14.968932053988736,
-        "lng": 120.19618922189764
+        "lat": 14.968921311739605,
+        "lng": 120.1961929376545
       },
       "position": {
-        "x": 554.2,
-        "z": -47.1
+        "x": 554.6,
+        "z": -45.9
       },
       "neighbors": [
         "chm1_entry",
         "quad_entry",
-        "z2_start",
-        "z3_spur1"
+        "z2_start"
       ]
     },
     {
@@ -686,8 +681,7 @@
       "neighbors": [
         "z3_wp2",
         "z4_start",
-        "z1_int1",
-        "canteen_pathway"
+        "z1_int1"
       ]
     },
     {
@@ -711,19 +705,15 @@
       "id": "z3_spur1",
       "label": "Z3-Zone 2 Link A (unpaved)",
       "latLng": {
-        "lat": 14.969059170603458,
-        "lng": 120.19668248862108
+        "lat": 14.969058009630313,
+        "lng": 120.19668304699135
       },
       "position": {
-        "x": 607.3,
-        "z": -61.3
+        "x": 607.4,
+        "z": -61.2
       },
       "neighbors": [
-        "z3_wp2",
-        "chm1_branch",
-        "z2_start",
-        "z2_wp2",
-        "z2_wp3"
+        "z3_wp2"
       ]
     },
     {
@@ -740,7 +730,9 @@
       "neighbors": [
         "z3_wp2",
         "z3_wp4",
-        "z3_spur2"
+        "z3_spur2",
+        "agritech_1_entry",
+        "college_of_agriculture_entry"
       ]
     },
     {
@@ -773,29 +765,33 @@
         "z3_wp3",
         "z3_wp1",
         "z2_wp7",
-        "agritech_1_entry",
         "agritech_2_entry",
-        "college_of_agriculture_entry",
         "motorpool_garage_entry",
-        "organic_mango_center_entry"
+        "organic_mango_center_entry",
+        "z3_wp5",
+        "rmtu_rd_center_entry",
+        "agritech_1_entry",
+        "college_of_agriculture_entry"
       ]
     },
     {
       "id": "z3_wp1",
       "label": "Z3 Path 1",
       "latLng": {
-        "lat": 14.970910418203797,
-        "lng": 120.19964859153622
+        "lat": 14.970921160452928,
+        "lng": 120.1996420889617
       },
       "position": {
-        "x": 926.6,
-        "z": -268.1
+        "x": 925.9,
+        "z": -269.3
       },
       "neighbors": [
         "z3_wp4",
         "z2_end",
         "z3_wp5",
-        "rmtu_rd_center_entry"
+        "rmtu_rd_center_entry",
+        "motorpool_garage_entry",
+        "organic_mango_center_entry"
       ]
     },
     {
@@ -847,12 +843,12 @@
       "id": "z4_start",
       "label": "Zone 4 Start",
       "latLng": {
-        "lat": 14.970519221297923,
-        "lng": 120.19471499536262
+        "lat": 14.970529370945412,
+        "lng": 120.1947119820379
       },
       "position": {
-        "x": 395.5,
-        "z": -224.4
+        "x": 395.2,
+        "z": -225.5
       },
       "neighbors": [
         "z4_wp1",
@@ -896,33 +892,37 @@
       "id": "z3_wp5",
       "label": "Z3 Path 5",
       "latLng": {
-        "lat": 14.970922950827784,
-        "lng": 120.19964394684014
+        "lat": 14.970925636390067,
+        "lng": 120.19965602304994
       },
       "position": {
-        "x": 926.1,
-        "z": -269.5
+        "x": 927.4,
+        "z": -269.8
       },
       "neighbors": [
         "z4_wp1",
         "z3_wp1",
         "z3_oval_end",
-        "regional_mango_center_entry"
+        "regional_mango_center_entry",
+        "z3_wp4",
+        "motorpool_garage_entry",
+        "organic_mango_center_entry"
       ]
     },
     {
       "id": "agritech_1_entry",
       "label": "Agriculture Technology (Agri-Tech) Entry",
       "latLng": {
-        "lat": 14.970636490850943,
-        "lng": 120.1985041384227
+        "lat": 14.970639176413226,
+        "lng": 120.19849949372662
       },
       "position": {
-        "x": 803.4,
-        "z": -237.5
+        "x": 802.9,
+        "z": -237.8
       },
       "neighbors": [
         "agritech_1_door",
+        "z3_wp3",
         "z3_wp4"
       ]
     },
@@ -954,7 +954,9 @@
       },
       "neighbors": [
         "motorpool_garage_door",
-        "z3_wp4"
+        "z3_wp4",
+        "z3_wp5",
+        "z3_wp1"
       ]
     },
     {
@@ -970,23 +972,26 @@
       },
       "neighbors": [
         "organic_mango_center_door",
-        "z3_wp4"
+        "z3_wp4",
+        "z3_wp1",
+        "z3_wp5"
       ]
     },
     {
       "id": "rmtu_rd_center_entry",
       "label": "RMTU Research and Development Center Entry",
       "latLng": {
-        "lat": 14.970855811770711,
-        "lng": 120.19936433613627
+        "lat": 14.970862078082705,
+        "lng": 120.1993661940147
       },
       "position": {
-        "x": 896,
-        "z": -262
+        "x": 896.2,
+        "z": -262.7
       },
       "neighbors": [
         "rmtu_rd_center_door",
-        "z3_wp1"
+        "z3_wp1",
+        "z3_wp4"
       ]
     },
     {
@@ -1109,6 +1114,7 @@
       },
       "neighbors": [
         "college_of_agriculture_door",
+        "z3_wp3",
         "z3_wp4"
       ]
     },
@@ -1147,15 +1153,16 @@
       "id": "beed_entry",
       "label": "CTE BEED Entry",
       "latLng": {
-        "lat": 14.96869343218527,
-        "lng": 120.19763710106302
+        "lat": 14.96903231498063,
+        "lng": 120.19753153906406
       },
       "position": {
-        "x": 710.1,
-        "z": -20.4
+        "x": 698.7,
+        "z": -58.3
       },
       "neighbors": [
-        "z1_int6"
+        "z1_int6",
+        "beed_entry_door"
       ]
     },
     {
@@ -1170,9 +1177,35 @@
         "z": -29.8
       },
       "neighbors": [
-        "z1_int1",
-        "canteen_entry",
-        "z3_start"
+        "canteen_entry"
+      ]
+    },
+    {
+      "id": "wp_new_2",
+      "label": "New Waypoint",
+      "latLng": {
+        "lat": 14.969089283371465,
+        "lng": 120.19654825770264
+      },
+      "position": {
+        "x": 592.9,
+        "z": -64.7
+      },
+      "neighbors": []
+    },
+    {
+      "id": "beed_entry_door",
+      "label": "BEEED DOOR",
+      "latLng": {
+        "lat": 14.96869420777983,
+        "lng": 120.19763164504553
+      },
+      "position": {
+        "x": 709.5,
+        "z": -20.5
+      },
+      "neighbors": [
+        "beed_entry"
       ]
     }
   ],
@@ -1352,12 +1385,12 @@
       "description": "Campus canteen",
       "color": "#27ae60",
       "latLng": {
-        "lat": 14.968818365185426,
-        "lng": 120.19553803550757
+        "lat": 14.968827317059702,
+        "lng": 120.19550738051346
       },
       "position": {
-        "x": 484.1,
-        "z": -34.4
+        "x": 480.8,
+        "z": -35.4
       },
       "size": {
         "width": 25,
