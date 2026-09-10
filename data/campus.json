@@ -770,8 +770,7 @@
         "organic_mango_center_entry",
         "z3_wp5",
         "rmtu_rd_center_entry",
-        "agritech_1_entry",
-        "college_of_agriculture_entry"
+        "agritech_new_wp"
       ]
     },
     {
@@ -923,7 +922,7 @@
       "neighbors": [
         "agritech_1_door",
         "z3_wp3",
-        "z3_wp4"
+        "agritech_new_wp"
       ]
     },
     {
@@ -1115,7 +1114,7 @@
       "neighbors": [
         "college_of_agriculture_door",
         "z3_wp3",
-        "z3_wp4"
+        "agritech_new_wp"
       ]
     },
     {
@@ -1206,6 +1205,23 @@
       },
       "neighbors": [
         "beed_entry"
+      ]
+    },
+    {
+      "id": "agritech_new_wp",
+      "label": "agritech wp for path4",
+      "latLng": {
+        "lat": 14.9706902020966,
+        "lng": 120.19865091081876
+      },
+      "position": {
+        "x": 819.2,
+        "z": -243.5
+      },
+      "neighbors": [
+        "college_of_agriculture_entry",
+        "agritech_1_entry",
+        "z3_wp4"
       ]
     }
   ],
