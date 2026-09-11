@@ -315,12 +315,28 @@ function loadGLB(bldg) {
     bldg.glbModel,
     (gltf) => {
       const model = gltf.scene;
+
+      // Measure the model's native size (before any position/rotation/scale
+      // is applied) so it can be fit to the building's declared
+      // width/height/depth footprint — the same footprint the campus editor's
+      // resize handles and size fields control.
+      const nativeBox = new THREE.Box3().setFromObject(model);
+      const nativeSize = {
+        x: nativeBox.max.x - nativeBox.min.x,
+        y: nativeBox.max.y - nativeBox.min.y,
+        z: nativeBox.max.z - nativeBox.min.z,
+      };
+
       model.position.set(bldg.position.x, 0, bldg.position.z);
       model.rotation.y = THREE.MathUtils.degToRad(bldg.rotation || 0);
-      // Uniform scale correction for scans that came out the wrong real-world
-      // size (e.g. the scale reference used during photogrammetry was off).
-      // Defaults to 1 (no correction) when a building has no modelScale set.
-      model.scale.setScalar(bldg.modelScale || 1);
+      // Fit the model to the building's declared footprint per axis, then
+      // apply modelScale as an extra uniform correction on top — for a scan
+      // whose proportions are right but exported at the wrong real-world size.
+      const extra = bldg.modelScale || 1;
+      const sx = nativeSize.x > 1e-6 ? (bldg.size.width / nativeSize.x) * extra : extra;
+      const sy = nativeSize.y > 1e-6 ? (bldg.size.height / nativeSize.y) * extra : extra;
+      const sz = nativeSize.z > 1e-6 ? (bldg.size.depth / nativeSize.z) * extra : extra;
+      model.scale.set(sx, sy, sz);
       model.userData = { buildingId: bldg.id };
 
       model.traverse(child => {

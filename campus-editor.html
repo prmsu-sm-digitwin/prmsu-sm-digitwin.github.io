@@ -1052,11 +1052,18 @@
 
   // ---------- Selection & side panel ----------
   function selectItem(item) {
+    const prev = state.selected;
     state.selected = item;
     state.linkFirst = null;
     renderPanel();
     redraw();
-    if (item && item.type === 'building' && preview3D.isOpen) {
+    // Only auto-frame the 3D camera when the SELECTED BUILDING actually
+    // changes. Re-clicking (or starting a move-drag on) a building that
+    // was already selected must not yank the camera back to a close-up —
+    // that's what was causing the preview to keep "snapping to close up".
+    const isDifferentBuilding = item && item.type === 'building' &&
+      !(prev && prev.type === 'building' && prev.id === item.id);
+    if (isDifferentBuilding && preview3D.isOpen) {
       const bld = state.data.buildings.find(b => b.id === item.id);
       if (bld) preview3D.frameOn(bld);
     }
@@ -1342,6 +1349,7 @@
   // Lazily initialized on first open so nothing is spent if it's never used.
   const preview3D = (function () {
     let inited = false, ready = false, panelOpen = false;
+    let cameraPositioned = false; // true once the camera has been auto-framed at least once
     let scene3, camera3, renderer3, canvas3;
     let meshes = {};           // buildingId -> { group, kind: 'box'|'glb'|'box-fallback' }
     let roadGroup = null, groundMesh = null;
@@ -1484,7 +1492,7 @@
       buildGround3(d.ground);
       buildRoads3(d);
       d.buildings.forEach(rebuildBuilding);
-      frameFit(d);
+      if (!cameraPositioned) frameFit(d);
     }
 
     function buildGround3(g) {
@@ -1528,10 +1536,34 @@
     function loadGLBTemplate(path) {
       if (!glbCache[path]) {
         glbCache[path] = new Promise((resolve, reject) => {
-          new THREE.GLTFLoader().load(path, gltf => resolve(gltf.scene), undefined, reject);
+          new THREE.GLTFLoader().load(path, gltf => {
+            const scene = gltf.scene;
+            // Native (un-rotated, un-positioned, unscaled) bounding box, so
+            // the model can be fit to a building's declared width/height/depth
+            // footprint the same way js/main.js does.
+            const box = new THREE.Box3().setFromObject(scene);
+            const nativeSize = {
+              x: box.max.x - box.min.x,
+              y: box.max.y - box.min.y,
+              z: box.max.z - box.min.z,
+            };
+            resolve({ scene, nativeSize });
+          }, undefined, reject);
         });
       }
       return glbCache[path];
+    }
+
+    // Scales a cloned GLB instance to fit a building's declared footprint
+    // (per axis), with modelScale as an extra uniform correction on top —
+    // shared by rebuildBuilding (initial load) and syncTransform (live
+    // resize-handle drags).
+    function applyGlbScale(inst, bld, nativeSize) {
+      const extra = bld.modelScale || 1;
+      const sx = nativeSize.x > 1e-6 ? (bld.size.width / nativeSize.x) * extra : extra;
+      const sy = nativeSize.y > 1e-6 ? (bld.size.height / nativeSize.y) * extra : extra;
+      const sz = nativeSize.z > 1e-6 ? (bld.size.depth / nativeSize.z) * extra : extra;
+      inst.scale.set(sx, sy, sz);
     }
 
     function removeBuildingMesh(id) {
@@ -1576,14 +1608,16 @@
       group.userData.buildingId = bld.id;
 
       if (bld.glbModel) {
-        const rec = { group, kind: 'glb' };
+        const rec = { group, kind: 'glb', instance: null, nativeSize: null };
         meshes[bld.id] = rec;
         scene3.add(group);
         positionGroup(group, bld);
-        loadGLBTemplate(bld.glbModel).then(template => {
+        loadGLBTemplate(bld.glbModel).then(({ scene, nativeSize }) => {
           if (meshes[bld.id] !== rec) return; // superseded by a later edit
-          const inst = template.clone(true);
-          inst.scale.setScalar(bld.modelScale || 1);
+          const inst = scene.clone(true);
+          rec.instance = inst;
+          rec.nativeSize = nativeSize;
+          applyGlbScale(inst, bld, nativeSize);
           group.add(inst);
         }).catch(() => {
           if (meshes[bld.id] !== rec) return;
@@ -1600,9 +1634,11 @@
 
     // Cheap per-frame update during a drag: position/rotation always; for
     // box buildings (no glbModel) the box is small enough to just redo, so
-    // width/depth/height resizing shows up live too. GLB models are loaded
-    // at their exported scale and don't visually resize — matches the real
-    // map (main.js never scales a GLB by bldg.size either).
+    // width/depth/height resizing shows up live too. GLB models are rescaled
+    // per-axis to fit the current width/height/depth footprint (matches
+    // js/main.js's loadGLB) — if the model hasn't finished loading yet,
+    // rebuildBuilding's own .then() will apply the (by-then current) size
+    // once it resolves, so there's nothing to do here in that case.
     function syncTransform(bld) {
       if (!ready) return;
       const rec = meshes[bld.id];
@@ -1611,6 +1647,8 @@
       if (rec.kind === 'box' || rec.kind === 'box-fallback') {
         rec.group.children.filter(c => c.userData.isBoxBody).forEach(c => rec.group.remove(c));
         addBoxVisual(rec.group, bld);
+      } else if (rec.kind === 'glb' && rec.instance && rec.nativeSize) {
+        applyGlbScale(rec.instance, bld, rec.nativeSize);
       }
     }
 
@@ -1623,6 +1661,7 @@
       target.x = bld.position.x; target.y = (bld.size.height || 8) * 0.4; target.z = bld.position.z;
       radius = Math.max(20, Math.max(bld.size.width, bld.size.depth, 12) * 2.6);
       updateCamera3();
+      cameraPositioned = true;
       const title = document.getElementById('p3dTitle');
       if (title) title.textContent = bld.name || bld.id;
     }
@@ -1632,6 +1671,7 @@
       target.x = d.ground.offsetX; target.y = 0; target.z = d.ground.offsetZ;
       radius = Math.max(d.ground.width, d.ground.depth) * 0.55;
       updateCamera3();
+      cameraPositioned = true;
       const title = document.getElementById('p3dTitle');
       if (title) title.textContent = 'Campus overview';
     }
@@ -1643,7 +1683,7 @@
         ensureInit();
         if (first && state.data) fullRebuild();
         requestAnimationFrame(() => { onResize3(); updateCamera3(); });
-        if (state.selected && state.selected.type === 'building' && state.data) {
+        if (first && state.selected && state.selected.type === 'building' && state.data) {
           const bld = state.data.buildings.find(b => b.id === state.selected.id);
           if (bld) frameOn(bld);
         }
