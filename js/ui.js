@@ -116,9 +116,10 @@ function toggleGPS() {
 function filterBuildingSheet(query) {
   if (!campusData || !campusData.buildings) return;
   const q = query.trim().toLowerCase();
+  const searchable = campusData.buildings.filter(b => b.category !== 'housing');
   const filtered = !q
-    ? campusData.buildings
-    : campusData.buildings.filter(b => (b.name || '').toLowerCase().includes(q));
+    ? searchable
+    : searchable.filter(b => (b.name || '').toLowerCase().includes(q));
   populateBuildingSheet(filtered);
 }
 
@@ -191,7 +192,10 @@ function populateBuildingSheet(buildings) {
 // Called by main.js after campus.json loads at scene is built 
 
 function onSceneReady(data) {
-  campusBuildings = data.buildings;
+  // Housing buildings are intentionally excluded from the search / building
+  // sheet list — they are unconnected private-property markers, tappable in
+  // the 3D view only (see showBuildingInfo via raycast pick in main.js).
+  campusBuildings = data.buildings.filter(b => b.category !== 'housing');
   populateBuildingSheet(campusBuildings);
 
   // Auto-start GPS so the blue dot appears immediately without pressing the button

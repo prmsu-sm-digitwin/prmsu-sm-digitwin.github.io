@@ -1213,7 +1213,7 @@
       "name": "Multi-purpose Quad",
       "category": "court",
       "description": "Open quadrangle used for events",
-      "color": "#27ae60",
+      "color": "#202121",
       "latLng": {
         "lat": 14.96876957300278,
         "lng": 120.19624905153202
@@ -1261,7 +1261,7 @@
       "name": "Gabaldon Court",
       "category": "court",
       "description": "Gabaldon Court",
-      "color": "#5aab70",
+      "color": "#202121",
       "latLng": {
         "lat": 14.969009254602204,
         "lng": 120.19761360481161
@@ -1429,7 +1429,7 @@
       "name": "CHM 2",
       "category": "academic",
       "description": "College of Hospitality Management 2",
-      "color": "#cfd2d4",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.96927054066282,
         "lng": 120.1967062527351
@@ -1453,7 +1453,7 @@
       "name": "CTE (BSED)",
       "category": "academic",
       "description": "College of Teacher Education BSED",
-      "color": "#cfd2d4",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.969558203065242,
         "lng": 120.19723540641978
@@ -1477,7 +1477,7 @@
       "name": "LHS Building",
       "category": "academic",
       "description": "Laboratory High School",
-      "color": "#cfd2d4",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.969867524850608,
         "lng": 120.19811305501297
@@ -1501,7 +1501,7 @@
       "name": "LHS Faculty / CCIT",
       "category": "academic",
       "description": "LHS Faculty and CCIT Classrooms",
-      "color": "#cfd2d4",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.970000907777326,
         "lng": 120.19883298290499
@@ -1525,7 +1525,7 @@
       "name": "CCIT Main",
       "category": "academic",
       "description": "College of Communication & Information Technology",
-      "color": "#cfd2d4",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.970173678950857,
         "lng": 120.19944236703037
@@ -1549,7 +1549,7 @@
       "name": "Admin Court",
       "category": "court",
       "description": "Court beside the Admin Building",
-      "color": "#27ae60",
+      "color": "#202121",
       "latLng": {
         "lat": 14.969883638224307,
         "lng": 120.2004985709184
@@ -1573,7 +1573,7 @@
       "name": "Agriculture Technology (Agri-Tech)",
       "category": "academic",
       "description": "Agriculture Technology building",
-      "color": "#cfd2d4",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.970552343232745,
         "lng": 120.19850692524035
@@ -1597,7 +1597,7 @@
       "name": "Agriculture Technology (Agri-Tech) 2",
       "category": "academic",
       "description": "Agriculture Technology building (2nd building)",
-      "color": "#cfd2d4",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.970668960591563,
         "lng": 120.19881666267813
@@ -1716,8 +1716,8 @@
       "id": "college_of_agriculture",
       "name": "College of Agriculture",
       "category": "academic",
-      "description": "College of Agriculture (formerly labeled Mitos Magsaysay Building)",
-      "color": "#cfd2d4",
+      "description": "College of Agriculture",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.970836117647304,
         "lng": 120.19846326509722
@@ -1741,7 +1741,7 @@
       "name": "Housing 1",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.970724748842947,
         "lng": 120.19469208801726
@@ -1766,7 +1766,7 @@
       "name": "Housing 2",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.970815439748364,
         "lng": 120.19491471135967
@@ -1791,7 +1791,7 @@
       "name": "Housing 3",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.97089835711404,
         "lng": 120.19512660586632
@@ -1816,7 +1816,7 @@
       "name": "Housing 4",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.970994230278086,
         "lng": 120.19534118258193
@@ -1841,7 +1841,7 @@
       "name": "Housing 5",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.97112446565206,
         "lng": 120.19557129734459
@@ -1866,7 +1866,7 @@
       "name": "Housing 6",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.971985505432068,
         "lng": 120.19768259549502
@@ -1891,7 +1891,7 @@
       "name": "Housing 7",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.972094175269943,
         "lng": 120.19796208790754
@@ -1916,7 +1916,7 @@
       "name": "Housing 8",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.972311913719825,
         "lng": 120.19845877730407
@@ -1941,7 +1941,7 @@
       "name": "Housing 9",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.972418165858386,
         "lng": 120.19871978910763
@@ -1966,7 +1966,7 @@
       "name": "Housing 10",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.972506180720908,
         "lng": 120.19897177223258
@@ -1991,7 +1991,7 @@
       "name": "Housing 11",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.973371368322576,
         "lng": 120.20103415542587
@@ -2016,7 +2016,7 @@
       "name": "Housing 12",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.973471513762549,
         "lng": 120.2013020903906
@@ -2041,7 +2041,7 @@
       "name": "Executive House",
       "category": "housing",
       "description": "Executive residence",
-      "color": "#b4cbd9",
+      "color": "#2d4452",
       "latLng": {
         "lat": 14.96843342942306,
         "lng": 120.19487063658728
