@@ -1654,3 +1654,58 @@
   @media (prefers-reduced-motion: reduce) {
     .dir-track { transition: none; }
   }
+
+
+/* ── Legend overlay (minimalist map color key) ── */
+#legend-btn {
+  position: absolute;
+  left: 10px;
+  bottom: 78px;
+  width: 42px;
+  height: 42px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  color: var(--maroon);
+  transition: background 0.2s, color 0.2s;
+}
+#legend-btn svg { width: 18px; height: 18px; }
+#legend-btn.legend-active {
+  background: var(--maroon);
+  color: var(--white);
+  border-color: var(--maroon);
+}
+
+.legend-panel {
+  position: absolute;
+  left: 10px;
+  bottom: 128px;
+  z-index: 6;
+  width: min(78vw, 260px);
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.14);
+  transform-origin: bottom left;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.legend-panel.hidden {
+  display: block !important; /* override .hidden display:none — animate instead */
+  opacity: 0;
+  transform: scale(0.92) translateY(4px);
+  pointer-events: none;
+}
+.legend-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

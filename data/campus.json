@@ -7,9 +7,9 @@
   },
   "ground": {
     "width": 1269.1,
-    "depth": 667.3,
+    "depth": 760.3,
     "offsetX": 584.6,
-    "offsetZ": -264.4,
+    "offsetZ": -226.4,
     "texture": null,
     "color": "#7cb87a",
     "_note": "texture=null uses solid color. Change to 'images/campus-topdown.jpg' later."
@@ -30,8 +30,8 @@
   "bounds": {
     "minX": -20,
     "maxX": 1189.1,
-    "minZ": -568.1,
-    "maxZ": 39.2,
+    "minZ": -576.6,
+    "maxZ": 123.7,
     "_note": "Used by gps.js to clamp blue dot to scene area"
   },
   "waypoints": [
@@ -47,7 +47,8 @@
         "z": 0
       },
       "neighbors": [
-        "inner_gate"
+        "inner_gate",
+        "womendorm_entryroad"
       ]
     },
     {
@@ -63,7 +64,8 @@
       },
       "neighbors": [
         "main_gate",
-        "z1_int1"
+        "z1_int1",
+        "womendorm_entryroad"
       ]
     },
     {
@@ -81,7 +83,8 @@
         "inner_gate",
         "z1_int2",
         "z3_start",
-        "canteen_pathway"
+        "canteen_pathway",
+        "womendorm_entryroad"
       ]
     },
     {
@@ -272,7 +275,8 @@
         "z1_int11",
         "z2_end",
         "admin_entry",
-        "z1_int13"
+        "z1_int13",
+        "connector_z3_to_z1"
       ]
     },
     {
@@ -868,7 +872,8 @@
       "neighbors": [
         "z4_start",
         "z4_end",
-        "z3_wp5"
+        "z3_wp5",
+        "mensdorm_roadentry"
       ]
     },
     {
@@ -884,7 +889,8 @@
       },
       "neighbors": [
         "z4_wp1",
-        "z3_oval_end"
+        "z3_oval_end",
+        "mensdorm_roadentry"
       ]
     },
     {
@@ -1021,7 +1027,8 @@
       },
       "neighbors": [
         "z3_wp5",
-        "z4_end"
+        "z4_end",
+        "connector_z3_to_z1"
       ]
     },
     {
@@ -1204,6 +1211,87 @@
       },
       "neighbors": [
         "beed_entry"
+      ]
+    },
+    {
+      "id": "connector_z3_to_z1",
+      "label": "Connector z3 to z1",
+      "latLng": {
+        "lat": 14.970145032953173,
+        "lng": 120.20175728355542
+      },
+      "position": {
+        "x": 1153.6,
+        "z": -182.6
+      },
+      "neighbors": [
+        "z3_oval_end",
+        "z1_int12"
+      ]
+    },
+    {
+      "id": "mendorm_entrance",
+      "label": "Men's Dorm Entrance",
+      "latLng": {
+        "lat": 14.972636339564268,
+        "lng": 120.20025518884394
+      },
+      "position": {
+        "x": 991.9,
+        "z": -460.9
+      },
+      "neighbors": [
+        "mensdorm_roadentry"
+      ]
+    },
+    {
+      "id": "mensdorm_roadentry",
+      "label": "Men's Dorm Road Entry",
+      "latLng": {
+        "lat": 14.972864612358313,
+        "lng": 120.20016972643612
+      },
+      "position": {
+        "x": 982.7,
+        "z": -486.4
+      },
+      "neighbors": [
+        "mendorm_entrance",
+        "z4_wp1",
+        "z4_end"
+      ]
+    },
+    {
+      "id": "womendorm_entrance",
+      "label": "Women's Dorm Entrance",
+      "latLng": {
+        "lat": 14.967678394970859,
+        "lng": 120.19522626282249
+      },
+      "position": {
+        "x": 450.5,
+        "z": 92.9
+      },
+      "neighbors": [
+        "womendorm_entryroad"
+      ]
+    },
+    {
+      "id": "womendorm_entryroad",
+      "label": "Women's Dorm Road Entry",
+      "latLng": {
+        "lat": 14.9683412302865,
+        "lng": 120.19528815085859
+      },
+      "position": {
+        "x": 457.2,
+        "z": 18.9
+      },
+      "neighbors": [
+        "womendorm_entrance",
+        "z1_int1",
+        "inner_gate",
+        "main_gate"
       ]
     }
   ],
@@ -1437,7 +1525,7 @@
       "position": {
         "x": 609.3,
         "z": -84.6
-      }, 
+      },
       "size": {
         "width": 15,
         "depth": 12,
@@ -2043,12 +2131,12 @@
       "description": "Executive residence",
       "color": "#b4cbd9",
       "latLng": {
-        "lat": 14.96843342942306,
-        "lng": 120.19487063658728
+        "lat": 14.968475508400644,
+        "lng": 120.19486176775868
       },
       "position": {
-        "x": 411.4,
-        "z": 8.6
+        "x": 411.3,
+        "z": 3.9
       },
       "size": {
         "width": 10,
@@ -2060,6 +2148,54 @@
       "rotation": 0,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
+    },
+    {
+      "id": "men_dorm",
+      "name": "Men's Dormitory",
+      "category": "facility",
+      "description": "Dormitory for women.",
+      "color": "#4a4a4a",
+      "latLng": {
+        "lat": 14.972638347594943,
+        "lng": 120.20025121346927
+      },
+      "position": {
+        "x": 991.5,
+        "z": -461.1
+      },
+      "size": {
+        "width": 20,
+        "depth": 15,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null
+    },
+    {
+      "id": "women_dorm",
+      "name": "Women's Dormitory",
+      "category": "facility",
+      "description": "Dormitory for women.",
+      "color": "#4a4a4a",
+      "latLng": {
+        "lat": 14.967677001215199,
+        "lng": 120.1952255602973
+      },
+      "position": {
+        "x": 450.5,
+        "z": 93.1
+      },
+      "size": {
+        "width": 20,
+        "depth": 15,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null
     }
   ],
   "pavedEdges": [

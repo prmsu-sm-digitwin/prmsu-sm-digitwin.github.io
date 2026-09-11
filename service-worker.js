@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v2.41'; // Update this version whenever files change 
+const CACHE_NAME = 'prmsu-digitwin-v2.43'; // Update this version whenever files change 
 
 const STATIC_ASSETS = [
   './',
@@ -18,6 +18,7 @@ const STATIC_ASSETS = [
   './models/ADMINYELLOW.glb',
   './images/admin-building.png',
   './images/university-gate.jpg',
+  './images/LegendMap.png',
   'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
 ];

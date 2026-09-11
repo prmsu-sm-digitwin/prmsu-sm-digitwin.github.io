@@ -119,6 +119,18 @@ function toggleGPS() {
 }
 
 
+// Minimalist map color-key overlay — toggled by the legend button, closed
+// by default so it stays out of the way until asked for.
+let legendOpen = false;
+function toggleLegend() {
+  legendOpen = !legendOpen;
+  const btn   = document.getElementById('legend-btn');
+  const panel = document.getElementById('legend-panel');
+  if (panel) panel.classList.toggle('hidden', !legendOpen);
+  if (btn)   btn.classList.toggle('legend-active', legendOpen);
+}
+
+
 // Live-filters the building sheet as the user types in the search bar.
 // Reuses the same renderer populateBuildingSheet() already uses for the
 // full list — an empty query just re-shows everything.
