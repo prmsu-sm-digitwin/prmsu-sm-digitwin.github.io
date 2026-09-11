@@ -185,10 +185,6 @@
               <rect x="14" y="14" width="7" height="7" rx="1.5"/>
             </svg>
           </button>
-          <div id="legend-panel" class="legend-panel hidden">
-            <img src="images/LegendMap.png" alt="Map legend" class="legend-img">
-          </div>
-
         </div>
 
         
@@ -237,6 +233,17 @@
         </div>
 
       </div>
+
+      
+      <div id="legend-panel" class="legend-panel hidden" onclick="if (event.target === this) toggleLegend()">
+        <div class="legend-modal">
+          <button class="legend-close" onclick="toggleLegend()" title="Close">✕</button>
+          <div class="legend-img-wrap" id="legend-img-wrap">
+            <img src="images/LegendMap.png" alt="Map legend" id="legend-img" class="legend-img" draggable="false">
+          </div>
+        </div>
+      </div>
+
     </div>
 
 

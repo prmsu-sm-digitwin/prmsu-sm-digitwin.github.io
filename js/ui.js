@@ -119,8 +119,12 @@ function toggleGPS() {
 }
 
 
-// Minimalist map color-key overlay — toggled by the legend button, closed
-// by default so it stays out of the way until asked for.
+// Map legend overlay — a large centered modal showing the full LegendMap.png,
+// toggled by the legend button. Closed by default. The image inside can be
+// panned/pinch-zoomed independently of the 3D map: gestures are captured on
+// #legend-img-wrap (touch-action:none, its own pointer handlers below), which
+// sits above the map canvas in a completely separate part of the DOM, so
+// nothing here ever reaches the map's own pan/zoom listeners on #three-canvas.
 let legendOpen = false;
 function toggleLegend() {
   legendOpen = !legendOpen;
@@ -128,7 +132,159 @@ function toggleLegend() {
   const panel = document.getElementById('legend-panel');
   if (panel) panel.classList.toggle('hidden', !legendOpen);
   if (btn)   btn.classList.toggle('legend-active', legendOpen);
+  if (legendOpen) resetLegendView();
 }
+
+// ── Legend image pan / pinch-zoom (isolated from the 3D map) ──
+const legendView = { scale: 1, minScale: 1, maxScale: 4, tx: 0, ty: 0 };
+const legendPointers = new Map();   // pointerId -> {x, y} in wrap-local coords
+let legendPinch = null;             // {startDist, startScale, anchorX, anchorY}
+let legendDragLast = null;          // {x, y} for single-pointer pan
+let legendLastTap = null;           // {t, x, y} for double-tap-to-zoom
+
+function resetLegendView() {
+  legendView.scale = 1;
+  legendView.tx = 0;
+  legendView.ty = 0;
+  applyLegendTransform(false);
+}
+
+function applyLegendTransform(animated) {
+  const img = document.getElementById('legend-img');
+  if (!img) return;
+  img.classList.toggle('animated', !!animated);
+  img.style.transform = `translate(${legendView.tx}px, ${legendView.ty}px) scale(${legendView.scale})`;
+}
+
+function legendClampToBounds() {
+  const wrap = document.getElementById('legend-img-wrap');
+  if (!wrap) return;
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  const scaledW = w * legendView.scale, scaledH = h * legendView.scale;
+  const minTx = Math.min(0, w - scaledW), maxTx = 0;
+  const minTy = Math.min(0, h - scaledH), maxTy = 0;
+  legendView.tx = Math.min(maxTx, Math.max(minTx, legendView.tx));
+  legendView.ty = Math.min(maxTy, Math.max(minTy, legendView.ty));
+}
+
+function legendLocalPoint(wrap, clientX, clientY) {
+  const r = wrap.getBoundingClientRect();
+  return { x: clientX - r.left, y: clientY - r.top };
+}
+
+function legendZoomAt(wrap, localX, localY, newScale) {
+  newScale = Math.min(legendView.maxScale, Math.max(legendView.minScale, newScale));
+  // Keep the image point under (localX, localY) fixed while the scale changes.
+  const imgX = (localX - legendView.tx) / legendView.scale;
+  const imgY = (localY - legendView.ty) / legendView.scale;
+  legendView.scale = newScale;
+  legendView.tx = localX - imgX * newScale;
+  legendView.ty = localY - imgY * newScale;
+  legendClampToBounds();
+}
+
+function initLegendViewer() {
+  const wrap = document.getElementById('legend-img-wrap');
+  if (!wrap) return;
+
+  wrap.addEventListener('pointerdown', e => {
+    wrap.setPointerCapture(e.pointerId);
+    const p = legendLocalPoint(wrap, e.clientX, e.clientY);
+    legendPointers.set(e.pointerId, p);
+    wrap.classList.add('dragging');
+
+    if (legendPointers.size === 1) {
+      legendDragLast = p;
+      legendPinch = null;
+    } else if (legendPointers.size === 2) {
+      legendDragLast = null;
+      const pts = [...legendPointers.values()];
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid  = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      legendPinch = {
+        startDist: dist || 1,
+        startScale: legendView.scale,
+        anchorX: (mid.x - legendView.tx) / legendView.scale,
+        anchorY: (mid.y - legendView.ty) / legendView.scale,
+      };
+    }
+    e.preventDefault();
+  });
+
+  wrap.addEventListener('pointermove', e => {
+    if (!legendPointers.has(e.pointerId)) return;
+    const p = legendLocalPoint(wrap, e.clientX, e.clientY);
+    legendPointers.set(e.pointerId, p);
+
+    if (legendPointers.size === 1 && legendDragLast) {
+      legendView.tx += p.x - legendDragLast.x;
+      legendView.ty += p.y - legendDragLast.y;
+      legendDragLast = p;
+      legendClampToBounds();
+      applyLegendTransform(false);
+    } else if (legendPointers.size === 2 && legendPinch) {
+      const pts = [...legendPointers.values()];
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid  = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      const newScale = legendPinch.startScale * (dist / legendPinch.startDist);
+      legendView.scale = Math.min(legendView.maxScale, Math.max(legendView.minScale, newScale));
+      legendView.tx = mid.x - legendPinch.anchorX * legendView.scale;
+      legendView.ty = mid.y - legendPinch.anchorY * legendView.scale;
+      legendClampToBounds();
+      applyLegendTransform(false);
+    }
+    e.preventDefault();
+  });
+
+  function endPointer(e) {
+    legendPointers.delete(e.pointerId);
+    if (wrap.hasPointerCapture && wrap.hasPointerCapture(e.pointerId)) {
+      wrap.releasePointerCapture(e.pointerId);
+    }
+    if (legendPointers.size === 0) wrap.classList.remove('dragging');
+
+    if (legendPointers.size === 1) {
+      // Dropped from a pinch to a single finger — re-baseline so it doesn't jump.
+      const [remaining] = [...legendPointers.values()];
+      legendDragLast = remaining;
+      legendPinch = null;
+    } else if (legendPointers.size === 0) {
+      legendDragLast = null;
+      legendPinch = null;
+    }
+  }
+  wrap.addEventListener('pointerup', endPointer);
+  wrap.addEventListener('pointercancel', endPointer);
+
+  // Desktop convenience: wheel to zoom, anchored at the cursor.
+  wrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    const p = legendLocalPoint(wrap, e.clientX, e.clientY);
+    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    legendZoomAt(wrap, p.x, p.y, legendView.scale * factor);
+    applyLegendTransform(false);
+  }, { passive: false });
+
+  // Double-click / double-tap to toggle between fit and ~2.4x zoom.
+  wrap.addEventListener('pointerup', e => {
+    const now = Date.now();
+    const p = legendLocalPoint(wrap, e.clientX, e.clientY);
+    const isDoubleTap = legendLastTap
+      && (now - legendLastTap.t) < 320
+      && Math.hypot(p.x - legendLastTap.x, p.y - legendLastTap.y) < 24;
+    legendLastTap = { t: now, x: p.x, y: p.y };
+    if (!isDoubleTap) return;
+    legendLastTap = null;
+    if (legendView.scale > legendView.minScale + 0.01) {
+      resetLegendView();
+      applyLegendTransform(true);
+    } else {
+      legendZoomAt(wrap, p.x, p.y, 2.4);
+      applyLegendTransform(true);
+    }
+  });
+}
+initLegendViewer();
 
 
 // Live-filters the building sheet as the user types in the search bar.

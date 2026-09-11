@@ -1682,30 +1682,81 @@
   border-color: var(--maroon);
 }
 
+/* Full-page modal: dims the whole map screen (including top bar) and
+   centers a large card sized for the landscape LegendMap.png. */
 .legend-panel {
   position: absolute;
-  left: 10px;
-  bottom: 128px;
-  z-index: 6;
-  width: min(78vw, 260px);
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.14);
-  transform-origin: bottom left;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  background: rgba(15,20,25,0.66);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 1;
+  transition: opacity 0.18s ease;
 }
 .legend-panel.hidden {
-  display: block !important; /* override .hidden display:none — animate instead */
+  display: flex !important; /* override .hidden display:none — animate instead */
   opacity: 0;
-  transform: scale(0.92) translateY(4px);
   pointer-events: none;
 }
-.legend-img {
-  display: block;
+.legend-modal {
+  position: relative;
   width: 100%;
-  height: auto;
-  border-radius: 8px;
+  max-width: 640px;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 10px 36px rgba(0,0,0,0.4);
+  transform: scale(1);
+  transition: transform 0.18s ease;
 }
+.legend-panel.hidden .legend-modal { transform: scale(0.92); }
+.legend-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--white);
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  color: var(--maroon);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+/* Landscape (2:1) image viewport — pan/zoom is handled entirely inside
+   here via JS-driven transforms, isolated from the 3D map underneath. */
+.legend-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f0f0f0;
+  touch-action: none; /* we own all pan/pinch gestures ourselves */
+  cursor: grab;
+}
+.legend-img-wrap.dragging { cursor: grabbing; }
+.legend-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 0;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none; /* the wrap handles gestures, not the img itself */
+}
+.legend-img.animated { transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }

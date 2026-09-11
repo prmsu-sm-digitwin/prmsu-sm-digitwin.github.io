@@ -2171,13 +2171,13 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": null
+      "entryWaypoint": "mendorm_entrance"
     },
     {
       "id": "women_dorm",
       "name": "Women's Dormitory",
       "category": "facility",
-      "description": "Dormitory for women.",
+      "description": "Dormitory for men.",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.967677001215199,
@@ -2195,7 +2195,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": null
+      "entryWaypoint": "womendorm_entrance"
     }
   ],
   "pavedEdges": [
@@ -2335,8 +2335,8 @@
       "majorAxis": 138.53,
       "minorAxis": 89.12,
       "trackWidth": 8,
-      "rotation": -18.83,
-      "_note": "center, size (infield 122.5m x 73.1m + 8m trackWidth per side), and rotation (-18.83 deg) all derived from the 4 real corner lat/lng points Rin measured on the satellite photo, converted via the local (unrotated, 1:1 meter) equirectangular projection anchored at z3_wp5 (same method used for the center point, cross-checked against 5 nearby waypoints to ~1.3m). The corner-derived center (14.971052803, 120.20102959) matched the independently-given center point (14.971048266, 120.20104404) to within ~0.5m, confirming both are reliable. Supersedes the earlier ft-measurement-based majorAxis/minorAxis/rotation, which were an axis-aligned bounding-box estimate skewed by the oval's true rotation. Shifted +32m along the road-normal direction (2026-09-10) because the track crossed the unpaved z3_wp5<->z3_oval_end road (was ~0.2m clearance); Rin confirmed via a hand-drawn overlay on a screenshot. New position clears that road by ~21m."
+      "rotation": -15.83,
+      "_note": "center, size (infield 122.5m x 73.1m + 8m trackWidth per side), and rotation (-15.83 deg) all derived from the 4 real corner lat/lng points measured on the satellite photo, converted via the local (unrotated, 1:1 meter) equirectangular projection anchored at z3_wp5 (same method used for the center point, cross-checked against 5 nearby waypoints to ~1.3m). The corner-derived center (14.971052803, 120.20102959) matched the independently-given center point (14.971048266, 120.20104404) to within ~0.5m, confirming both are reliable. Supersedes the earlier ft-measurement-based majorAxis/minorAxis/rotation, which were an axis-aligned bounding-box estimate skewed by the oval's true rotation. Shifted +32m along the road-normal direction (2026-09-10) because the track crossed the unpaved z3_wp5<->z3_oval_end road (was ~0.2m clearance) New position clears that road by ~21m."
     }
   ]
 }
