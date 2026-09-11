@@ -1339,7 +1339,7 @@
         "depth": 12,
         "height": 6
       },
-      "glbModel": null,
+      "glbModel": "models/SCNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "sc_entry"
@@ -1387,7 +1387,7 @@
         "depth": 20,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/BEEDNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "z1_int6"
@@ -1411,7 +1411,7 @@
         "depth": 30,
         "height": 10
       },
-      "glbModel": null,
+      "glbModel": "models/LIBNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "lib_entry"
@@ -1435,7 +1435,7 @@
         "depth": 30,
         "height": 10
       },
-      "glbModel": null,
+      "glbModel": "models/ASBNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "asb_entry"
@@ -1459,7 +1459,7 @@
         "depth": 30,
         "height": 10
       },
-      "glbModel": "models/ADMINYELLOW.glb",
+      "glbModel": "models/AdminNav.glb",
       "texturedModel": null,
       "rotation": 69,
       "entryWaypoint": "admin_entry"
@@ -1483,7 +1483,7 @@
         "depth": 20,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/CANTEENNav.glb",
       "texturedModel": null,
       "rotation": 75,
       "entryWaypoint": "canteen_entry"
@@ -1507,7 +1507,7 @@
         "depth": 20,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/HM1Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "chm1_entry"
@@ -1531,7 +1531,7 @@
         "depth": 12,
         "height": 6
       },
-      "glbModel": null,
+      "glbModel": "models/HM2Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "chm2_entry"
@@ -1555,7 +1555,7 @@
         "depth": 30,
         "height": 10
       },
-      "glbModel": null,
+      "glbModel": "models/BSEDNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "cte_bsed_entry"
@@ -1579,7 +1579,7 @@
         "depth": 12,
         "height": 6
       },
-      "glbModel": null,
+      "glbModel": "models/LHSNav.glb",
       "texturedModel": null,
       "rotation": 90,
       "entryWaypoint": "lhs_entry"
@@ -1603,7 +1603,7 @@
         "depth": 20,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/CCIT2_LHSFacultyNav.glb",
       "texturedModel": null,
       "rotation": 160,
       "entryWaypoint": "z2_wp6"
@@ -1627,7 +1627,7 @@
         "depth": 12,
         "height": 6
       },
-      "glbModel": null,
+      "glbModel": "models/CCIT1Nav.glb",
       "texturedModel": null,
       "rotation": 336,
       "entryWaypoint": "CCIT_Entry"
@@ -1675,7 +1675,7 @@
         "depth": 12,
         "height": 6
       },
-      "glbModel": null,
+      "glbModel": "models/Agritech1Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "agritech_1_door"
@@ -1699,7 +1699,7 @@
         "depth": 12,
         "height": 6
       },
-      "glbModel": null,
+      "glbModel": "models/Agritech2Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "agritech_2_entry"
@@ -1723,7 +1723,7 @@
         "depth": 20,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/MotorpoolNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "motorpool_garage_door"
@@ -1747,7 +1747,7 @@
         "depth": 30,
         "height": 10
       },
-      "glbModel": null,
+      "glbModel": "models/ROMCNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "organic_mango_center_door"
@@ -1771,7 +1771,7 @@
         "depth": 12,
         "height": 6
       },
-      "glbModel": null,
+      "glbModel": "models/R&DCenterNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "rmtu_rd_center_door"
@@ -1819,7 +1819,7 @@
         "depth": 20,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/CAGNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "college_of_agriculture_door"
