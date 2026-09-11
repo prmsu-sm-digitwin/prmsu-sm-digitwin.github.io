@@ -1237,7 +1237,7 @@
       "name": "Student Center",
       "category": "facility",
       "description": "OSA, Clinic, Dental, and other student services",
-      "color": "#27ae60",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.968569111818253,
         "lng": 120.19717604559149
@@ -1285,7 +1285,7 @@
       "name": "CTE (BEED)",
       "category": "academic",
       "description": "College of Teacher Education BEED",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.968806614723318,
         "lng": 120.19770382321065
@@ -1309,7 +1309,7 @@
       "name": "Library",
       "category": "facility",
       "description": "Campus library",
-      "color": "#27ae60",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.968987465377106,
         "lng": 120.19818874710526
@@ -1333,7 +1333,7 @@
       "name": "ASB Building",
       "category": "academic",
       "description": "Agriculture Sciences Building",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.969197252107014,
         "lng": 120.19944109496984
@@ -1357,7 +1357,7 @@
       "name": "Admin Building",
       "category": "facility",
       "description": "University administration building",
-      "color": "#c0392b",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.970262302506192,
         "lng": 120.20017715794984
@@ -1381,7 +1381,7 @@
       "name": "Canteen",
       "category": "facility",
       "description": "Campus canteen",
-      "color": "#27ae60",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.968827317059702,
         "lng": 120.19550738051346
@@ -1405,7 +1405,7 @@
       "name": "CHM 1",
       "category": "academic",
       "description": "College of Hospitality Management 1",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.968911420179088,
         "lng": 120.19620175495515
@@ -1429,7 +1429,7 @@
       "name": "CHM 2",
       "category": "academic",
       "description": "College of Hospitality Management 2",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.96927054066282,
         "lng": 120.1967062527351
@@ -1453,7 +1453,7 @@
       "name": "CTE (BSED)",
       "category": "academic",
       "description": "College of Teacher Education BSED",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.969558203065242,
         "lng": 120.19723540641978
@@ -1477,7 +1477,7 @@
       "name": "LHS Building",
       "category": "academic",
       "description": "Laboratory High School",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.969867524850608,
         "lng": 120.19811305501297
@@ -1501,7 +1501,7 @@
       "name": "LHS Faculty / CCIT",
       "category": "academic",
       "description": "LHS Faculty and CCIT Classrooms",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.970000907777326,
         "lng": 120.19883298290499
@@ -1525,7 +1525,7 @@
       "name": "CCIT Main",
       "category": "academic",
       "description": "College of Communication & Information Technology",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.970173678950857,
         "lng": 120.19944236703037
@@ -1573,7 +1573,7 @@
       "name": "Agriculture Technology (Agri-Tech)",
       "category": "academic",
       "description": "Agriculture Technology building",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.970552343232745,
         "lng": 120.19850692524035
@@ -1597,7 +1597,7 @@
       "name": "Agriculture Technology (Agri-Tech) 2",
       "category": "academic",
       "description": "Agriculture Technology building (2nd building)",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.970668960591563,
         "lng": 120.19881666267813
@@ -1621,7 +1621,7 @@
       "name": "Motorpool Garage",
       "category": "facility",
       "description": "Motorpool Garage",
-      "color": "#27ae60",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.970685726159463,
         "lng": 120.19918040617159
@@ -1645,7 +1645,7 @@
       "name": "RMTU Organic Mango Center",
       "category": "facility",
       "description": "RMTU Organic Mango Center",
-      "color": "#27ae60",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.971057228941929,
         "lng": 120.19892494788732
@@ -1669,7 +1669,7 @@
       "name": "RMTU Research and Development Center",
       "category": "facility",
       "description": "RMTU R & D Center",
-      "color": "#27ae60",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.971023211819679,
         "lng": 120.19930116826961
@@ -1693,7 +1693,7 @@
       "name": "Regional Mango Center",
       "category": "facility",
       "description": "Regional Mango Center (two floors)",
-      "color": "#27ae60",
+      "color": "#4a4a4a",
       "latLng": {
         "lat": 14.971601190937468,
         "lng": 120.19908169285405
@@ -1717,7 +1717,7 @@
       "name": "College of Agriculture",
       "category": "academic",
       "description": "College of Agriculture (formerly labeled Mitos Magsaysay Building)",
-      "color": "#4a90d9",
+      "color": "#6b6b6b",
       "latLng": {
         "lat": 14.970836117647304,
         "lng": 120.19846326509722
@@ -1735,6 +1735,331 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "college_of_agriculture_door"
+    },
+    {
+      "id": "housing_1",
+      "name": "Housing 1",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.970724748842947,
+        "lng": 120.19469208801726
+      },
+      "position": {
+        "x": 392.2,
+        "z": -246.2
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_2",
+      "name": "Housing 2",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.970815439748364,
+        "lng": 120.19491471135967
+      },
+      "position": {
+        "x": 416.1,
+        "z": -256.3
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_3",
+      "name": "Housing 3",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.97089835711404,
+        "lng": 120.19512660586632
+      },
+      "position": {
+        "x": 438.9,
+        "z": -265.5
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_4",
+      "name": "Housing 4",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.970994230278086,
+        "lng": 120.19534118258193
+      },
+      "position": {
+        "x": 461.9,
+        "z": -276.2
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_5",
+      "name": "Housing 5",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.97112446565206,
+        "lng": 120.19557129734459
+      },
+      "position": {
+        "x": 486.6,
+        "z": -290.7
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_6",
+      "name": "Housing 6",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.971985505432068,
+        "lng": 120.19768259549502
+      },
+      "position": {
+        "x": 713.4,
+        "z": -386.4
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_7",
+      "name": "Housing 7",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.972094175269943,
+        "lng": 120.19796208790754
+      },
+      "position": {
+        "x": 743.5,
+        "z": -398.5
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_8",
+      "name": "Housing 8",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.972311913719825,
+        "lng": 120.19845877730407
+      },
+      "position": {
+        "x": 796.8,
+        "z": -422.7
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_9",
+      "name": "Housing 9",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.972418165858386,
+        "lng": 120.19871978910763
+      },
+      "position": {
+        "x": 824.9,
+        "z": -434.5
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_10",
+      "name": "Housing 10",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.972506180720908,
+        "lng": 120.19897177223258
+      },
+      "position": {
+        "x": 851.9,
+        "z": -444.3
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_11",
+      "name": "Housing 11",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.973371368322576,
+        "lng": 120.20103415542587
+      },
+      "position": {
+        "x": 1073.5,
+        "z": -540.5
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "housing_12",
+      "name": "Housing 12",
+      "category": "housing",
+      "description": "Private staff/faculty housing unit",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.973471513762549,
+        "lng": 120.2013020903906
+      },
+      "position": {
+        "x": 1102.3,
+        "z": -551.6
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+    },
+    {
+      "id": "executive_house",
+      "name": "Executive House",
+      "category": "housing",
+      "description": "Executive residence",
+      "color": "#b4cbd9",
+      "latLng": {
+        "lat": 14.96843342942306,
+        "lng": 120.19487063658728
+      },
+      "position": {
+        "x": 411.4,
+        "z": 8.6
+      },
+      "size": {
+        "width": 10,
+        "depth": 8,
+        "height": 5
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
     }
   ],
   "pavedEdges": [
