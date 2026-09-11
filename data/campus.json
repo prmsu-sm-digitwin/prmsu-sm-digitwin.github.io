@@ -353,12 +353,12 @@
       "id": "z2_wp4",
       "label": "Z2 WP4",
       "latLng": {
-        "lat": 14.969419175667317,
-        "lng": 120.19747231846226
+        "lat": 14.969389494764254,
+        "lng": 120.1974739448327
       },
       "position": {
-        "x": 691.6,
-        "z": -101.2
+        "x": 692.5,
+        "z": -98.2
       },
       "neighbors": [
         "z2_wp3",
@@ -475,12 +475,12 @@
       "id": "gab_entry",
       "label": "Gabaldon Entry",
       "latLng": {
-        "lat": 14.969005667256907,
-        "lng": 120.19762089497662
+        "lat": 14.968968756673268,
+        "lng": 120.19763836707384
       },
       "position": {
-        "x": 707.6,
-        "z": -55.1
+        "x": 710.2,
+        "z": -51.2
       },
       "neighbors": [
         "z1_int6"
@@ -490,12 +490,12 @@
       "id": "lib_side",
       "label": "Library Side Path",
       "latLng": {
-        "lat": 14.968782557688321,
-        "lng": 120.19778328159146
+        "lat": 14.968827317059702,
+        "lng": 120.19784273370125
       },
       "position": {
-        "x": 725.8,
-        "z": -30.4
+        "x": 732.2,
+        "z": -35.4
       },
       "neighbors": [
         "z1_int7",
@@ -615,12 +615,12 @@
       "id": "cte_bsed_entry",
       "label": "CTE BSED Entry",
       "latLng": {
-        "lat": 14.969475432757307,
-        "lng": 120.19715160292492
+        "lat": 14.969490650943577,
+        "lng": 120.19708564824062
       },
       "position": {
-        "x": 657.8,
-        "z": -107.8
+        "x": 650.7,
+        "z": -109.5
       },
       "neighbors": [
         "z2_wp3"
@@ -630,12 +630,12 @@
       "id": "cte_walk_entry",
       "label": "CTE BSED Walk",
       "latLng": {
-        "lat": 14.969600758997174,
-        "lng": 120.1973429644033
+        "lat": 14.969608815684024,
+        "lng": 120.19736154318763
       },
       "position": {
-        "x": 678.4,
-        "z": -121.8
+        "x": 680.4,
+        "z": -122.7
       },
       "neighbors": [
         "z2_wp4"
@@ -645,12 +645,12 @@
       "id": "lhs_entry",
       "label": "LHS Entry",
       "latLng": {
-        "lat": 14.96983261254093,
-        "lng": 120.19812234440512
+        "lat": 14.969884533411733,
+        "lng": 120.19808054214043
       },
       "position": {
-        "x": 762.3,
-        "z": -147.7
+        "x": 757.8,
+        "z": -153.5
       },
       "neighbors": [
         "z2_wp5"
@@ -1158,12 +1158,12 @@
       "id": "beed_entry",
       "label": "CTE BEED Entry",
       "latLng": {
-        "lat": 14.96903231498063,
-        "lng": 120.19753153906406
+        "lat": 14.969000088233235,
+        "lng": 120.19747301589348
       },
       "position": {
-        "x": 698.7,
-        "z": -58.3
+        "x": 692.4,
+        "z": -54.7
       },
       "neighbors": [
         "z1_int6",
@@ -1367,12 +1367,12 @@
       "description": "Gabaldon Court",
       "color": "#202121",
       "latLng": {
-        "lat": 14.969009254602204,
-        "lng": 120.19761360481161
+        "lat": 14.968906988740763,
+        "lng": 120.1975519757268
       },
       "position": {
-        "x": 703.3,
-        "z": -43.4
+        "x": 700.9,
+        "z": -44.3
       },
       "size": {
         "width": 40,
@@ -1391,21 +1391,21 @@
       "description": "College of Teacher Education BEED",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.968642013262183,
-        "lng": 120.19764394070913
+        "lat": 14.968690353383275,
+        "lng": 120.19768574297383
       },
       "position": {
-        "x": 710.8,
-        "z": -14.7
+        "x": 715.3,
+        "z": -20.1
       },
       "size": {
-        "width": 31.1,
-        "depth": 31.5,
+        "width": 34.4,
+        "depth": 57.1,
         "height": 8
       },
       "glbModel": "models/BEEDNav.glb",
       "texturedModel": null,
-      "rotation": 87.6,
+      "rotation": 116.9,
       "entryWaypoint": "beed_entry_door"
     },
     {
@@ -1559,16 +1559,16 @@
       "description": "College of Teacher Education BSED",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.969800385793537,
-        "lng": 120.19719804988569
+        "lat": 14.96989706603572,
+        "lng": 120.19715531868178
       },
       "position": {
-        "x": 662.8,
-        "z": -144.1
+        "x": 658.2,
+        "z": -154.9
       },
       "size": {
-        "width": 49.6,
-        "depth": 48.4,
+        "width": 63.8,
+        "depth": 60.1,
         "height": 10
       },
       "glbModel": "models/BSEDNav.glb",
@@ -1583,12 +1583,12 @@
       "description": "Laboratory High School",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.969951672468806,
-        "lng": 120.19810748137768
+        "lat": 14.969924816845976,
+        "lng": 120.19803409517965
       },
       "position": {
-        "x": 760.7,
-        "z": -161
+        "x": 752.8,
+        "z": -158
       },
       "size": {
         "width": 42.7,
@@ -1597,7 +1597,7 @@
       },
       "glbModel": "models/LHSNav.glb",
       "texturedModel": null,
-      "rotation": 101.1,
+      "rotation": 115.5,
       "entryWaypoint": "lhs_entry"
     },
     {
@@ -2184,7 +2184,7 @@
         "depth": 15,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/MenDormNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "mendorm_entrance"
