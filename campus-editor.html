@@ -1462,6 +1462,8 @@
     html += field('Entry waypoint', '<select id="f_entry">' + wpOptions + '</select>');
     html += field('GLB model path', '<input type="text" id="f_glb" placeholder="models/example.glb" value="' + escAttr(bld.glbModel || '') + '">');
     html += field('Model scale (\u00d7)', '<input type="number" step="0.01" min="0.01" id="f_scale" value="' + (bld.modelScale != null ? bld.modelScale : 1) + '">');
+    html += '<div class="field"><label style="display:flex;align-items:center;gap:6px;font-weight:400;"><input type="checkbox" id="f_tint"' + (bld.glbTint ? ' checked' : '') + '> Tint this model with the Color field above</label>' +
+      '<p style="font-size:11px;opacity:.65;margin:4px 0 0;">Replaces the model\'s own material with a flat color \u2014 useful for a scan that renders solid black or with the wrong color, no Blender needed.</p></div>';
     html += field('Textured model path', '<input type="text" id="f_tex" placeholder="(reserved for Digital Twin)" value="' + escAttr(bld.texturedModel || '') + '">');
     html += '<button class="danger-btn" id="deleteBtn">Delete building</button>';
     el.innerHTML = html;
@@ -1488,6 +1490,12 @@
       let v = parseFloat(e.target.value);
       if (isNaN(v) || v <= 0) v = 1;
       bld.modelScale = v;
+      state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.rebuildBuilding(bld);
+    });
+    el.querySelector('#f_tint').addEventListener('change', (e) => {
+      snapshot();
+      bld.glbTint = e.target.checked;
       state.dirty = true; redraw();
       if (preview3D.isOpen) preview3D.rebuildBuilding(bld);
     });
@@ -1978,6 +1986,21 @@
       inst.scale.set(sx, sy, sz);
     }
 
+    // Replaces a cloned GLB instance's own material with a flat color from
+    // the building's Color field — for a scan whose baked material is wrong
+    // (e.g. solid black, no texture) — same idea as main.js's loadGLB tint.
+    // Only touches the CLONE, never the cached template, so toggling
+    // glbTint off and rebuilding restores the model's original material.
+    function applyGlbTint(inst, bld) {
+      if (!bld.glbTint) return;
+      const color = parseInt((bld.color || '#4a90d9').replace('#', ''), 16);
+      inst.traverse(child => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide });
+        }
+      });
+    }
+
     function removeBuildingMesh(id) {
       const rec = meshes[id];
       if (!rec) return;
@@ -2030,6 +2053,7 @@
           rec.instance = inst;
           rec.nativeSize = nativeSize;
           applyGlbScale(inst, bld, nativeSize);
+          applyGlbTint(inst, bld);
           group.add(inst);
         }).catch(() => {
           if (meshes[bld.id] !== rec) return;

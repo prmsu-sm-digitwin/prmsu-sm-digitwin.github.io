@@ -1370,7 +1370,7 @@
       "name": "Multi-purpose Quad",
       "category": "court",
       "description": "Open quadrangle used for events",
-      "color": "#202121",
+      "color": "#c9a876",
       "latLng": {
         "lat": 14.96876957300278,
         "lng": 120.19624905153202
@@ -1387,7 +1387,8 @@
       "glbModel": "models/QuadrangleNav.glb",
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "quad_entry"
+      "entryWaypoint": "quad_entry",
+      "glbTint": true
     },
     {
       "id": "student_center",
@@ -1706,7 +1707,7 @@
       "name": "Admin Court",
       "category": "court",
       "description": "Court beside the Admin Building",
-      "color": "#202121",
+      "color": "#8fa3ad",
       "latLng": {
         "lat": 14.969938428686032,
         "lng": 120.20074828749216
@@ -1723,7 +1724,8 @@
       "glbModel": "models/AdminCourtNav.glb",
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "z1_int13"
+      "entryWaypoint": "z1_int13",
+      "glbTint": true
     },
     {
       "id": "agritech_1",
@@ -1912,7 +1914,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": "models/Housing1Nav.glb", 
+      "glbModel": "models/Housing1Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,

@@ -339,8 +339,18 @@ function loadGLB(bldg) {
       model.scale.set(sx, sy, sz);
       model.userData = { buildingId: bldg.id };
 
+      // Optional per-building color override: some scans exported with no
+      // baked texture and a near-black (or otherwise wrong) baseColorFactor
+      // render solid black. Rather than re-exporting from Blender, set
+      // glbTint:true (and pick a Color in the campus editor) to replace the
+      // model's own material with a flat color instead.
+      const tintColor = bldg.glbTint ? parseInt((bldg.color || '#4a90d9').replace('#', ''), 16) : null;
+
       model.traverse(child => {
         if (child.isMesh) {
+          if (tintColor !== null) {
+            child.material = new THREE.MeshLambertMaterial({ color: tintColor, side: THREE.DoubleSide });
+          }
           child.castShadow = true;
           child.receiveShadow = true;
           child.userData.buildingId = bldg.id;
