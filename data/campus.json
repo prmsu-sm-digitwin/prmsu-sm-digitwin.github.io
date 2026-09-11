@@ -1213,7 +1213,7 @@
       "name": "Multi-purpose Quad",
       "category": "court",
       "description": "Open quadrangle used for events",
-      "color": "#27ae60",
+      "color": "#202121",
       "latLng": {
         "lat": 14.96876957300278,
         "lng": 120.19624905153202
