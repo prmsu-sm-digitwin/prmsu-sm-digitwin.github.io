@@ -1432,7 +1432,7 @@
         "depth": 30,
         "height": 10
       },
-      "glbModel": "models/COVEREDCOURTNav.glb",
+      "glbModel": "models/GabaldonNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "gab_entry"
@@ -1912,7 +1912,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing1Nav.glb", 
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -1937,7 +1937,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing2Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -1962,7 +1962,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing3Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -1987,7 +1987,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing4Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2012,7 +2012,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing5Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2037,7 +2037,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing6Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2062,7 +2062,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing7Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2087,7 +2087,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing8Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2112,7 +2112,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing9Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2137,7 +2137,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing10Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2162,7 +2162,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing11Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2187,7 +2187,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/Housing12Nav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
