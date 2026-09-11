@@ -47,8 +47,6 @@
 
 <div id="app">
 
-  <!-- iOS edge-swipe-back indicator (see script near the closing </body>).
-       Hidden off-screen to the left until a swipe from the edge drags it in. -->
   <div id="swipe-back-indicator" style="position:fixed; top:50%; left:0; width:40px; height:40px;
        margin-top:-20px; border-radius:50%; background:#1A4B8C; display:flex;
        align-items:center; justify-content:center; z-index:900; pointer-events:none;
@@ -64,9 +62,7 @@
 
     <!--MAIN PAGE-->
     <div class="page active" id="page-main">
-      <!-- Pull-to-refresh indicator. #page-main scrolls internally (the outer
-           page/body never scroll), so the browser's own native pull-to-refresh
-           never triggers here — this is a small hand-rolled replacement. -->
+
       <div id="ptr-indicator" style="position:absolute; top:0; left:50%; width:44px; height:44px;
            margin-left:-22px; border-radius:50%; background:#1A4B8C; display:flex;
            align-items:center; justify-content:center; z-index:500; pointer-events:none;

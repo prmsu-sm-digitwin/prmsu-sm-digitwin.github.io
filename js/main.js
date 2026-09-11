@@ -527,7 +527,7 @@ function drawPath(waypointIds, fromPos) {
     scene.add(dot);
   });
 
-  // Destination marker tall red pin so it's easy to spot
+
   const lastWp = waypointMap[waypointIds[waypointIds.length - 1]];
   if (lastWp) {
     const pinMat = new THREE.MeshBasicMaterial({ color: 0xe74c3c });
