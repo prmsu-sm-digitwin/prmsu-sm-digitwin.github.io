@@ -107,7 +107,9 @@ function buildOval(oval) {
     trackMat
   );
   trackMesh.rotation.x = -Math.PI / 2;
-  trackMesh.position.y = 0.03;
+  trackMesh.position.y = 0.15; // was 0.03 — too close to the ground plane,
+  // caused z-fighting/flicker at typical camera distances (near:far is 1:5000,
+  // which leaves little depth-buffer precision to spare for gaps that small)
   trackMesh.receiveShadow = true;
   group.add(trackMesh);
 
@@ -120,7 +122,8 @@ function buildOval(oval) {
     fieldMat
   );
   fieldMesh.rotation.x = -Math.PI / 2;
-  fieldMesh.position.y = 0.05;
+  fieldMesh.position.y = 0.25; // was 0.05 — same z-fighting fix, kept clearly
+  // above the track ring so the ring is never obscured
   fieldMesh.receiveShadow = true;
   group.add(fieldMesh);
 
