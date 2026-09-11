@@ -49,6 +49,15 @@ function showBuildingInfo(bldg) {
     badge.className   = 'category-badge ' + (bldg.category || 'facility');
   }
 
+  // Buildings with no entryWaypoint (housing / other unconnected "model
+  // only" buildings) have no route into the pathway graph, so the
+  // Navigate Here button is hidden rather than offered and failing silently.
+  if (bldg.entryWaypoint) {
+    show('navigate-btn');
+  } else {
+    hide('navigate-btn');
+  }
+
   show('building-panel');
 }
 

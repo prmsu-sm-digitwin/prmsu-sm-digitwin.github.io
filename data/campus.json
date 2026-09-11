@@ -1213,7 +1213,7 @@
       "name": "Multi-purpose Quad",
       "category": "court",
       "description": "Open quadrangle used for events",
-      "color": "#202121",
+      "color": "#27ae60",
       "latLng": {
         "lat": 14.96876957300278,
         "lng": 120.19624905153202
@@ -1437,7 +1437,7 @@
       "position": {
         "x": 609.3,
         "z": -84.6
-      },
+      }, 
       "size": {
         "width": 15,
         "depth": 12,
@@ -1741,7 +1741,7 @@
       "name": "Housing 1",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.970724748842947,
         "lng": 120.19469208801726
@@ -1759,14 +1759,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_2",
       "name": "Housing 2",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.970815439748364,
         "lng": 120.19491471135967
@@ -1784,14 +1784,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_3",
       "name": "Housing 3",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.97089835711404,
         "lng": 120.19512660586632
@@ -1809,14 +1809,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_4",
       "name": "Housing 4",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.970994230278086,
         "lng": 120.19534118258193
@@ -1834,14 +1834,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_5",
       "name": "Housing 5",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.97112446565206,
         "lng": 120.19557129734459
@@ -1859,14 +1859,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_6",
       "name": "Housing 6",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.971985505432068,
         "lng": 120.19768259549502
@@ -1884,14 +1884,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_7",
       "name": "Housing 7",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.972094175269943,
         "lng": 120.19796208790754
@@ -1909,14 +1909,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_8",
       "name": "Housing 8",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.972311913719825,
         "lng": 120.19845877730407
@@ -1934,14 +1934,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_9",
       "name": "Housing 9",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.972418165858386,
         "lng": 120.19871978910763
@@ -1959,14 +1959,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_10",
       "name": "Housing 10",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.972506180720908,
         "lng": 120.19897177223258
@@ -1984,14 +1984,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_11",
       "name": "Housing 11",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.973371368322576,
         "lng": 120.20103415542587
@@ -2009,14 +2009,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "housing_12",
       "name": "Housing 12",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.973471513762549,
         "lng": 120.2013020903906
@@ -2034,14 +2034,14 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     },
     {
       "id": "executive_house",
       "name": "Executive House",
       "category": "housing",
       "description": "Executive residence",
-      "color": "#2d4452",
+      "color": "#b4cbd9",
       "latLng": {
         "lat": 14.96843342942306,
         "lng": 120.19487063658728
@@ -2059,7 +2059,7 @@
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route) per Rin."
+      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route)."
     }
   ],
   "pavedEdges": [
