@@ -2329,14 +2329,14 @@
       "id": "main_oval",
       "label": "Running Oval",
       "center": {
-        "x": 1000.22,
+        "x": 1072.31,
         "z": -255.29
       },
       "majorAxis": 138.53,
       "minorAxis": 89.12,
       "trackWidth": 8,
       "rotation": -10.83,
-      "_note": "center, size (infield 122.5m x 73.1m + 8m trackWidth per side), and rotation (-10.83 deg) all derived from the 4 real corner lat/lng points measured on the satellite photo, converted via the local (unrotated, 1:1 meter) equirectangular projection anchored at z3_wp5 (same method used for the center point, cross-checked against 5 nearby waypoints to ~1.3m). The corner-derived center (14.971052803, 120.20102959) matched the independently-given center point (14.971048266, 120.20104404) to within ~0.5m, confirming both are reliable. Supersedes the earlier ft-measurement-based majorAxis/minorAxis/rotation, which were an axis-aligned bounding-box estimate skewed by the oval's true rotation. Shifted +32m along the road-normal direction (2026-09-10) because the track crossed the unpaved z3_wp5<->z3_oval_end road (was ~0.2m clearance) New position clears that road by ~21m."
+      "_note": "center, size (infield 122.5m x 73.1m + 8m trackWidth per side), and rotation (-10.83 deg) all derived from the 4 real corner lat/lng points measured on the satellite photo, converted via the local (unrotated, 1:1 meter) equirectangular projection anchored at z3_wp5 (same method used for the center point, cross-checked against 5 nearby waypoints to ~1.3m). The corner-derived center (14.971052803, 120.20102959) matched the independently-given center point (14.971048266, 120.20104404) to within ~0.5m, confirming both are reliable. Supersedes the earlier ft-measurement-based majorAxis/minorAxis/rotation, which were an axis-aligned bounding-box estimate skewed by the oval's true rotation. Shifted +32m along the road-normal direction (2026-09-10) because the track crossed the unpaved z3_wp5<->z3_oval_end road (was ~0.2m clearance) New position clears that road by ~21m. [2026-09-11: center.x had drifted to 980.22 via a separate edit, landing the oval on top of the z3_wp1/z3_wp5 road junction — reverted to the verified-clear 1089.22.] [2026-09-11: a broader edge-by-edge clearance re-check (not just the single road checked in the original derivation) found the reverted 1089.22 position only cleared the z3_wp5<->z3_oval_end road by ~25m but left z3_oval_end<->connector_z3_to_z1 touching by just 0.55m. Nudged to 1072.31, the x that balances clearance on both roads (~17.4m each).]"
     }
   ]
 }
