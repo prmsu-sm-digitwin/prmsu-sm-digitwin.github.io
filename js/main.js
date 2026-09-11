@@ -317,6 +317,10 @@ function loadGLB(bldg) {
       const model = gltf.scene;
       model.position.set(bldg.position.x, 0, bldg.position.z);
       model.rotation.y = THREE.MathUtils.degToRad(bldg.rotation || 0);
+      // Uniform scale correction for scans that came out the wrong real-world
+      // size (e.g. the scale reference used during photogrammetry was off).
+      // Defaults to 1 (no correction) when a building has no modelScale set.
+      model.scale.setScalar(bldg.modelScale || 1);
       model.userData = { buildingId: bldg.id };
 
       model.traverse(child => {

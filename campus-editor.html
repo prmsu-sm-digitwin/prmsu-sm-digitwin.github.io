@@ -63,11 +63,35 @@
   #toolbar .hint { font-size: 12px; color: var(--text-dim); margin-left: 4px; }
 
   #main { flex: 1; display: flex; min-height: 0; }
-  #canvasWrap { flex: 1; position: relative; background: #dfe6ee; min-width: 0; }
+  #canvasWrap { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  #canvas2DWrap { flex: 1; position: relative; background: #dfe6ee; min-height: 0; }
   canvas { display: block; width: 100%; height: 100%; cursor: grab; }
   canvas.dragging { cursor: grabbing; }
   canvas.mode-add { cursor: copy; }
   canvas.mode-link { cursor: crosshair; }
+
+  #preview3DPanel {
+    height: 0; overflow: hidden; flex-shrink: 0; background: #0b1220;
+    border-top: 1px solid var(--border); transition: height .18s ease;
+    display: flex; flex-direction: column;
+  }
+  #preview3DPanel.open { height: 42vh; min-height: 260px; }
+  #p3dHeader {
+    display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+    background: #131c2b; color: #cfd8e3; font-size: 12px; flex-shrink: 0;
+  }
+  #p3dHeader .p3d-title { font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #p3dHeader button { padding: 4px 9px; font-size: 11.5px; }
+  #preview3DCanvasWrap { flex: 1; position: relative; min-height: 0; }
+  #preview3DCanvas { display: block; width: 100%; height: 100%; cursor: grab; }
+  #preview3DCanvas.dragging { cursor: grabbing; }
+  .p3d-msg {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #9fb0c3; font-size: 12.5px; padding: 20px; text-align: center;
+  }
+  #preview3DToggleBtn { background: #eef0f3; color: #24303d; }
+  #preview3DToggleBtn:hover { background: #e2e6ec; }
+  #preview3DToggleBtn.active { background: var(--navy); color: #fff; }
 
   #zoomControls {
     position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 6px;
@@ -172,21 +196,36 @@
     <button class="mode-btn" data-mode="link">Link Roads</button>
     <div class="divider"></div>
     <button class="btn-ghost" id="fitViewBtn">Fit view</button>
-    <span class="hint" id="modeHint">Drag to pan · scroll to zoom · click a point or building to select it</span>
+    <div class="divider"></div>
+    <button class="btn-ghost" id="preview3DToggleBtn">3D Preview</button>
+    <span class="hint" id="modeHint">Drag to pan · scroll to zoom · click a point or building to select it, drag to move it, drag a corner/edge handle to resize it</span>
   </div>
 
   <div id="main">
     <div id="canvasWrap">
-      <canvas id="canvas"></canvas>
-      <div id="zoomControls">
-        <button id="zoomInBtn">+</button>
-        <button id="zoomOutBtn">–</button>
+      <div id="canvas2DWrap">
+        <canvas id="canvas"></canvas>
+        <div id="zoomControls">
+          <button id="zoomInBtn">+</button>
+          <button id="zoomOutBtn">–</button>
+        </div>
+        <div id="legend">
+          <div class="row"><span class="swatch" style="background:#8a8f97;"></span>paved road</div>
+          <div class="row"><span class="swatch" style="background:#c7ab7a;"></span>unpaved road</div>
+          <div class="row"><span class="swatch" style="background:#5a8f5f; height:10px; border-radius:2px;"></span>building</div>
+          <div class="row"><span class="swatch" style="background:transparent; border:1px dashed #7a8896; height:0;"></span>bounds</div>
+        </div>
       </div>
-      <div id="legend">
-        <div class="row"><span class="swatch" style="background:#8a8f97;"></span>paved road</div>
-        <div class="row"><span class="swatch" style="background:#c7ab7a;"></span>unpaved road</div>
-        <div class="row"><span class="swatch" style="background:#5a8f5f; height:10px; border-radius:2px;"></span>building</div>
-        <div class="row"><span class="swatch" style="background:transparent; border:1px dashed #7a8896; height:0;"></span>bounds</div>
+      <div id="preview3DPanel">
+        <div id="p3dHeader">
+          <span class="p3d-title" id="p3dTitle">3D Preview</span>
+          <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dFrameBtn">Frame selected</button>
+          <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dFitBtn">Fit map</button>
+          <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dCloseBtn">✕</button>
+        </div>
+        <div id="preview3DCanvasWrap">
+          <canvas id="preview3DCanvas"></canvas>
+        </div>
       </div>
     </div>
     <div id="sidepanel">
@@ -212,6 +251,8 @@
 
 <div id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/vendor/GLTFLoader.js"></script>
 <script>
 (function () {
   'use strict';
@@ -272,6 +313,7 @@
     statusText.textContent = sourceLabel + ' · ' + data.waypoints.length + ' waypoints · ' + data.buildings.length + ' buildings';
     renderPanel();
     redraw();
+    if (preview3D.isOpen) preview3D.fullRebuild();
   }
 
   let waypointMap = {};
@@ -386,7 +428,7 @@
 
   // ---------- Resize ----------
   function resizeCanvas() {
-    const wrap = document.getElementById('canvasWrap');
+    const wrap = document.getElementById('canvas2DWrap');
     const dpr = window.devicePixelRatio || 1;
     canvas.width = wrap.clientWidth * dpr;
     canvas.height = wrap.clientHeight * dpr;
@@ -396,6 +438,13 @@
     redraw();
   }
   window.addEventListener('resize', resizeCanvas);
+  // The 3D preview panel opening/closing changes #canvas2DWrap's size via
+  // flex layout, not a window resize event, so resizeCanvas() alone would
+  // miss it and leave the 2D canvas element's fixed pixel size stale
+  // (stale enough to visually/hit-test overlap the 3D panel). A
+  // ResizeObserver catches every size change, including each frame of the
+  // panel's open/close CSS transition.
+  new ResizeObserver(() => resizeCanvas()).observe(document.getElementById('canvas2DWrap'));
 
   // ---------- Drawing ----------
   const NODE_R = 5;
@@ -494,6 +543,12 @@
         ctx.fillText(wp.label || wp.id, p.x + 8, p.y - 8);
       }
     });
+
+    // resize handles for the selected building (drawn last, on top)
+    if (state.selected && state.selected.type === 'building' && state.mode === 'select') {
+      const selBld = d.buildings.find(b => b.id === state.selected.id);
+      if (selBld) drawBuildingHandles(selBld);
+    }
   }
 
   function buildingCorners(bld) {
@@ -527,6 +582,99 @@
       ctx.fillText(bld.name || bld.id, center.x, center.y + 4);
       ctx.textAlign = 'left';
     }
+  }
+
+  // ---------- Resize handles ----------
+  const MIN_BUILDING_SIZE = 2;
+  const HANDLE_HIT_R = 9;
+
+  function rotateLocal(lx, lz, rot) {
+    return {
+      x: lx * Math.cos(rot) - lz * Math.sin(rot),
+      z: lx * Math.sin(rot) + lz * Math.cos(rot),
+    };
+  }
+  function inverseRotateLocal(dx, dz, rot) { return rotateLocal(dx, dz, -rot); }
+
+  function buildingHandleDefs() {
+    return [
+      { sx: -1, sz: -1 }, { sx: 0, sz: -1 }, { sx: 1, sz: -1 },
+      { sx: 1, sz: 0 },
+      { sx: 1, sz: 1 }, { sx: 0, sz: 1 }, { sx: -1, sz: 1 },
+      { sx: -1, sz: 0 },
+    ];
+  }
+
+  function buildingHandleScreenPositions(bld) {
+    const { x, z } = bld.position;
+    const hw = bld.size.width / 2, hd = bld.size.depth / 2;
+    const rot = (bld.rotation || 0) * Math.PI / 180;
+    return buildingHandleDefs().map(h => {
+      const off = rotateLocal(h.sx * hw, h.sz * hd, rot);
+      const p = worldToScreen(x + off.x, z + off.z);
+      return { sx: h.sx, sz: h.sz, x: p.x, y: p.y };
+    });
+  }
+
+  function hitTestBuildingHandle(sx, sy) {
+    if (!state.selected || state.selected.type !== 'building') return null;
+    const bld = state.data.buildings.find(b => b.id === state.selected.id);
+    if (!bld) return null;
+    const handles = buildingHandleScreenPositions(bld);
+    for (const h of handles) {
+      const dx = sx - h.x, dy = sy - h.y;
+      if (dx * dx + dy * dy <= HANDLE_HIT_R * HANDLE_HIT_R) return { bld, sx: h.sx, sz: h.sz };
+    }
+    return null;
+  }
+
+  function drawBuildingHandles(bld) {
+    buildingHandleScreenPositions(bld).forEach(h => {
+      ctx.beginPath();
+      ctx.rect(h.x - 4, h.y - 4, 8, 8);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.lineWidth = 1.6;
+      ctx.strokeStyle = '#1A4B8C';
+      ctx.stroke();
+    });
+  }
+
+  // Starts a corner/edge resize: (sxH, szH) identify which handle was
+  // grabbed (each -1/0/1 — see buildingHandleDefs). The OPPOSITE
+  // corner/edge is fixed in world space for the whole drag; width/depth
+  // and the new center are re-derived from that fixed anchor every frame,
+  // so it behaves like resizing in a normal design tool even when the
+  // building is rotated.
+  function startResizeBuilding(bld, sxH, szH) {
+    const rot = (bld.rotation || 0) * Math.PI / 180;
+    const hw0 = bld.size.width / 2, hd0 = bld.size.depth / 2;
+    const anchorOff = rotateLocal(-sxH * hw0, -szH * hd0, rot);
+    return {
+      id: bld.id, sxH, szH, rot,
+      anchorWorld: { x: bld.position.x + anchorOff.x, z: bld.position.z + anchorOff.z },
+    };
+  }
+
+  function applyResizeBuilding(rs, mouseWorld) {
+    const bld = state.data.buildings.find(b => b.id === rs.id);
+    if (!bld) return;
+    const dx = mouseWorld.x - rs.anchorWorld.x, dz = mouseWorld.z - rs.anchorWorld.z;
+    const local = inverseRotateLocal(dx, dz, rs.rot);
+    let newWidth = bld.size.width, newDepth = bld.size.depth;
+    if (rs.sxH !== 0) newWidth = Math.max(MIN_BUILDING_SIZE, rs.sxH * local.x);
+    if (rs.szH !== 0) newDepth = Math.max(MIN_BUILDING_SIZE, rs.szH * local.z);
+    const centerOff = rotateLocal(rs.sxH * newWidth / 2, rs.szH * newDepth / 2, rs.rot);
+    bld.size.width = round1(newWidth);
+    bld.size.depth = round1(newDepth);
+    bld.position.x = round1(rs.anchorWorld.x + centerOff.x);
+    bld.position.z = round1(rs.anchorWorld.z + centerOff.z);
+    const ll = xzToLL(bld.position.x, bld.position.z, state.data.origin);
+    bld.latLng.lat = ll.lat; bld.latLng.lng = ll.lng;
+    state.dirty = true;
+    redraw();
+    if (state.selected && state.selected.type === 'building' && state.selected.id === bld.id) renderPanel();
+    if (preview3D.isOpen) preview3D.syncTransform(bld);
   }
 
   // ---------- Hit testing ----------
@@ -597,6 +745,13 @@
     }
 
     // select mode
+    const handleHit = hitTestBuildingHandle(sx, sy);
+    if (handleHit) {
+      snapshot();
+      state.dragging = { kind: 'resizeBuilding', rs: startResizeBuilding(handleHit.bld, handleHit.sx, handleHit.sz) };
+      canvas.classList.add('dragging');
+      return;
+    }
     const hit = hitTest(sx, sy);
     if (hit) {
       selectItem(hit);
@@ -622,13 +777,18 @@
     } else if (state.dragging.kind === 'moveNode') {
       const w = screenToWorld(sx, sy);
       moveItem(state.dragging.item, w.x, w.z);
+    } else if (state.dragging.kind === 'resizeBuilding') {
+      const w = screenToWorld(sx, sy);
+      applyResizeBuilding(state.dragging.rs, w);
     }
   });
 
   window.addEventListener('mouseup', () => {
     if (state.dragging) {
+      const wasWaypointMove = state.dragging.kind === 'moveNode' && state.dragging.item.type === 'waypoint';
       state.dragging = null;
       canvas.classList.remove('dragging');
+      if (wasWaypointMove && preview3D.isOpen) preview3D.fullRebuild();
     }
   });
 
@@ -640,7 +800,7 @@
 
   // ---------- Mode switching ----------
   const hints = {
-    select: 'Drag to pan · scroll to zoom · click a point or building to select it, drag it to move it',
+    select: 'Drag to pan · scroll to zoom · click a point or building to select it, drag it to move it, drag a corner/edge handle to resize it',
     addWaypoint: 'Click anywhere on the map to drop a new waypoint',
     addBuilding: 'Click anywhere on the map to place a new building',
     link: 'Click a waypoint, then click a second one to connect or disconnect a road between them',
@@ -691,6 +851,7 @@
       size: { width: 20, depth: 15, height: 8 }, glbModel: null, texturedModel: null, rotation: 0, entryWaypoint: null
     };
     state.data.buildings.push(bld);
+    if (preview3D.isOpen) preview3D.rebuildBuilding(bld);
     state.dirty = true;
     selectItem({ type: 'building', id });
     redraw();
@@ -711,6 +872,7 @@
       bld.position.x = x; bld.position.z = z;
       const ll = xzToLL(x, z, state.data.origin);
       bld.latLng.lat = ll.lat; bld.latLng.lng = ll.lng;
+      if (preview3D.isOpen) preview3D.syncTransform(bld);
     }
     state.dirty = true;
     redraw();
@@ -735,6 +897,7 @@
       toast('Connected ' + (a.label || idA) + ' ↔ ' + (b.label || idB) + ' (unpaved by default — tick "paved" in the panel if it should be a paved road)');
     }
     state.dirty = true;
+    if (preview3D.isOpen) preview3D.fullRebuild();
     renderPanel();
   }
 
@@ -745,6 +908,7 @@
     if (paved) state.data.pavedEdges.push([idA, idB]);
     state.dirty = true;
     redraw();
+    if (preview3D.isOpen) preview3D.fullRebuild();
   }
 
   function renameWaypoint(oldId, newId) {
@@ -778,6 +942,7 @@
     snapshot();
     const bld = state.data.buildings.find(b => b.id === oldId);
     bld.id = newId;
+    preview3D.renameKey(oldId, newId);
     state.dirty = true;
     if (state.selected && state.selected.type === 'building' && state.selected.id === oldId) state.selected.id = newId;
     return true;
@@ -795,10 +960,12 @@
       affected.forEach(b => { b.entryWaypoint = null; });
       rebuildIndex();
       state.dirty = true;
+      if (preview3D.isOpen) preview3D.fullRebuild();
       toast(affected.length ? ('Deleted. ' + affected.length + ' building(s) lost their entryWaypoint — set a new one.') : 'Waypoint deleted.');
     } else {
       const id = state.selected.id;
       state.data.buildings = state.data.buildings.filter(b => b.id !== id);
+      preview3D.removeBuildingMesh(id);
       state.dirty = true;
       toast('Building deleted.');
     }
@@ -812,6 +979,10 @@
     state.linkFirst = null;
     renderPanel();
     redraw();
+    if (item && item.type === 'building' && preview3D.isOpen) {
+      const bld = state.data.buildings.find(b => b.id === item.id);
+      if (bld) preview3D.frameOn(bld);
+    }
   }
 
   function field(label, inputHtml) {
@@ -891,6 +1062,7 @@
     ).join('');
     html += field('Entry waypoint', '<select id="f_entry">' + wpOptions + '</select>');
     html += field('GLB model path', '<input type="text" id="f_glb" placeholder="models/example.glb" value="' + escAttr(bld.glbModel || '') + '">');
+    html += field('Model scale (\u00d7)', '<input type="number" step="0.01" min="0.01" id="f_scale" value="' + (bld.modelScale != null ? bld.modelScale : 1) + '">');
     html += field('Textured model path', '<input type="text" id="f_tex" placeholder="(reserved for Digital Twin)" value="' + escAttr(bld.texturedModel || '') + '">');
     html += '<button class="danger-btn" id="deleteBtn">Delete building</button>';
     el.innerHTML = html;
@@ -905,18 +1077,28 @@
         snapshot();
         bld[key] = e.target.value === '' && (key === 'glbModel' || key === 'texturedModel') ? null : e.target.value;
         state.dirty = true; redraw();
+        if (key === 'glbModel' && preview3D.isOpen) preview3D.rebuildBuilding(bld);
       });
     });
     el.querySelector('#f_cat').addEventListener('change', (e) => { snapshot(); bld.category = e.target.value; state.dirty = true; });
-    el.querySelector('#f_color').addEventListener('input', (e) => { bld.color = e.target.value; redraw(); });
+    el.querySelector('#f_color').addEventListener('input', (e) => { bld.color = e.target.value; redraw(); if (preview3D.isOpen) preview3D.rebuildBuilding(bld); });
     el.querySelector('#f_color').addEventListener('change', () => { snapshot(); state.dirty = true; });
     el.querySelector('#f_entry').addEventListener('change', (e) => { snapshot(); bld.entryWaypoint = e.target.value || null; state.dirty = true; });
+    el.querySelector('#f_scale').addEventListener('change', (e) => {
+      snapshot();
+      let v = parseFloat(e.target.value);
+      if (isNaN(v) || v <= 0) v = 1;
+      bld.modelScale = v;
+      state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.rebuildBuilding(bld);
+    });
     ['f_w', 'f_d', 'f_h'].forEach((fid, i) => {
       const key = ['width', 'depth', 'height'][i];
       el.querySelector('#' + fid).addEventListener('change', (e) => {
         snapshot();
         bld.size[key] = parseFloat(e.target.value) || bld.size[key];
         state.dirty = true; redraw();
+        if (preview3D.isOpen) preview3D.syncTransform(bld);
       });
     });
     el.querySelector('#f_rot').addEventListener('change', (e) => {
@@ -924,6 +1106,7 @@
       let v = parseFloat(e.target.value); if (isNaN(v)) v = 0;
       bld.rotation = ((v % 360) + 360) % 360;
       state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.syncTransform(bld);
     });
     el.querySelector('#deleteBtn').addEventListener('click', () => {
       if (confirm('Delete "' + (bld.name || bld.id) + '"?')) deleteSelected();
@@ -943,6 +1126,7 @@
       obj.latLng.lat = ll.lat; obj.latLng.lng = ll.lng;
       flat.value = ll.lat; flng.value = ll.lng;
       state.dirty = true; redraw();
+      if (kind === 'building' && preview3D.isOpen) preview3D.syncTransform(obj);
     }
     function commitLL() {
       snapshot();
@@ -952,6 +1136,7 @@
       obj.position.x = round1(xz.x); obj.position.z = round1(xz.z);
       fx.value = obj.position.x; fz.value = obj.position.z;
       state.dirty = true; redraw();
+      if (kind === 'building' && preview3D.isOpen) preview3D.syncTransform(obj);
     }
     fx.addEventListener('change', commitXZ);
     fz.addEventListener('change', commitXZ);
@@ -1045,6 +1230,7 @@
     state.dirty = true;
     fitView();
     redraw();
+    if (preview3D.isOpen) preview3D.fullRebuild();
     toast('Ground and bounds updated.');
   });
 
@@ -1070,6 +1256,328 @@
   window.addEventListener('beforeunload', (e) => {
     if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
   });
+
+
+  // ---------- 3D live preview ----------
+  // A real Three.js viewport showing the actual campus (ground, roads,
+  // buildings — GLB models where a building has one, boxes otherwise) so
+  // you can see how a placement really looks, not just its 2D footprint.
+  // Lazily initialized on first open so nothing is spent if it's never used.
+  const preview3D = (function () {
+    let inited = false, ready = false, panelOpen = false;
+    let scene3, camera3, renderer3, canvas3;
+    let meshes = {};           // buildingId -> { group, kind: 'box'|'glb'|'box-fallback' }
+    let roadGroup = null, groundMesh = null;
+    const glbCache = {};       // glbModel path -> Promise<THREE.Object3D template>
+
+    let target = { x: 0, y: 0, z: 0 };
+    let radius = 220, theta = 50 * Math.PI / 180, phi = 35 * Math.PI / 180;
+    let orbitDragging = null;
+
+    function canvasWrapEl() { return document.getElementById('preview3DCanvasWrap'); }
+
+    function showMessage(msg) {
+      const wrap = canvasWrapEl();
+      if (!wrap) return;
+      let m = wrap.querySelector('.p3d-msg');
+      if (!m) { m = document.createElement('div'); m.className = 'p3d-msg'; wrap.appendChild(m); }
+      m.textContent = msg;
+    }
+    function clearMessage() {
+      const wrap = canvasWrapEl();
+      const m = wrap && wrap.querySelector('.p3d-msg');
+      if (m) m.remove();
+    }
+
+    function ensureInit() {
+      if (inited) return ready;
+      inited = true;
+      if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') {
+        showMessage('3D preview needs Three.js loaded from cdnjs — check your internet connection, then reopen this panel.');
+        return false;
+      }
+      canvas3 = document.getElementById('preview3DCanvas');
+      scene3 = new THREE.Scene();
+      scene3.background = new THREE.Color(0x87CEEB);
+      const wrap = canvasWrapEl();
+      const w = wrap.clientWidth || 300, h = wrap.clientHeight || 200;
+      camera3 = new THREE.PerspectiveCamera(45, w / h, 1, 5000);
+      renderer3 = new THREE.WebGLRenderer({ canvas: canvas3, antialias: true });
+      renderer3.setPixelRatio(window.devicePixelRatio || 1);
+      renderer3.setSize(w, h);
+
+      scene3.add(new THREE.AmbientLight(0xffffff, 0.75));
+      const sun = new THREE.DirectionalLight(0xffffff, 0.85);
+      sun.position.set(300, 500, 200);
+      scene3.add(sun);
+
+      wireOrbitControls();
+      new ResizeObserver(() => onResize3()).observe(wrap);
+
+      ready = true;
+      clearMessage();
+      requestAnimationFrame(animate3);
+      return true;
+    }
+
+    function onResize3() {
+      if (!ready) return;
+      const wrap = canvasWrapEl();
+      const w = wrap.clientWidth, h = wrap.clientHeight;
+      if (w < 4 || h < 4) return;
+      camera3.aspect = w / h;
+      camera3.updateProjectionMatrix();
+      renderer3.setSize(w, h);
+    }
+
+    function updateCamera3() {
+      if (!camera3) return;
+      const cx = target.x + radius * Math.cos(theta) * Math.cos(phi);
+      const cy = target.y + radius * Math.sin(theta);
+      const cz = target.z + radius * Math.cos(theta) * Math.sin(phi);
+      camera3.position.set(cx, cy, cz);
+      camera3.lookAt(target.x, target.y, target.z);
+    }
+
+    function wireOrbitControls() {
+      canvas3.addEventListener('mousedown', (e) => {
+        orbitDragging = { x: e.clientX, y: e.clientY };
+        canvas3.classList.add('dragging');
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!orbitDragging) return;
+        const dx = e.clientX - orbitDragging.x, dy = e.clientY - orbitDragging.y;
+        orbitDragging.x = e.clientX; orbitDragging.y = e.clientY;
+        phi -= dx * 0.006;
+        const minT = 8 * Math.PI / 180, maxT = 85 * Math.PI / 180;
+        theta = Math.max(minT, Math.min(maxT, theta + dy * 0.006));
+        updateCamera3();
+      });
+      window.addEventListener('mouseup', () => {
+        if (orbitDragging) { orbitDragging = null; canvas3.classList.remove('dragging'); }
+      });
+      canvas3.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        radius = Math.max(5, Math.min(2000, radius * (e.deltaY < 0 ? 0.88 : 1.14)));
+        updateCamera3();
+      }, { passive: false });
+    }
+
+    function animate3() {
+      requestAnimationFrame(animate3);
+      if (panelOpen && ready) renderer3.render(scene3, camera3);
+    }
+
+    function clearScene() {
+      if (!scene3) return;
+      [...scene3.children].forEach(c => { if (!c.isLight) scene3.remove(c); });
+      meshes = {};
+      roadGroup = null;
+      groundMesh = null;
+    }
+
+    function fullRebuild() {
+      if (!ensureInit()) return;
+      clearScene();
+      const d = state.data;
+      if (!d) return;
+      buildGround3(d.ground);
+      buildRoads3(d);
+      d.buildings.forEach(rebuildBuilding);
+      frameFit(d);
+    }
+
+    function buildGround3(g) {
+      const mat = new THREE.MeshLambertMaterial({ color: g.color || '#7cb87a' });
+      groundMesh = new THREE.Mesh(new THREE.PlaneGeometry(g.width, g.depth), mat);
+      groundMesh.rotation.x = -Math.PI / 2;
+      groundMesh.position.set(g.offsetX, 0, g.offsetZ);
+      scene3.add(groundMesh);
+    }
+
+    function buildRoads3(d) {
+      roadGroup = new THREE.Group();
+      const mainEdges = new Set((d.pavedEdges || []).map(([a, b]) => [a, b].sort().join('|')));
+      const matMain = new THREE.MeshLambertMaterial({ color: 0x9a9a9a });
+      const matPath = new THREE.MeshLambertMaterial({ color: 0xc0b090 });
+      const drawn = new Set();
+      d.waypoints.forEach(wp => {
+        wp.neighbors.forEach(nid => {
+          const key = [wp.id, nid].sort().join('|');
+          if (drawn.has(key)) return;
+          drawn.add(key);
+          const nb = waypointMap[nid];
+          if (!nb) return;
+          const isMain = mainEdges.has(key);
+          const ax = wp.position.x, az = wp.position.z, bx = nb.position.x, bz = nb.position.z;
+          const dx = bx - ax, dz = bz - az;
+          const length = Math.sqrt(dx * dx + dz * dz);
+          if (length < 0.1) return;
+          const strip = new THREE.Mesh(
+            new THREE.BoxGeometry(length, 0.3, isMain ? 7 : 3.5),
+            isMain ? matMain : matPath
+          );
+          strip.position.set((ax + bx) / 2, isMain ? 0.4 : 0, (az + bz) / 2);
+          strip.rotation.y = -Math.atan2(dz, dx);
+          roadGroup.add(strip);
+        });
+      });
+      scene3.add(roadGroup);
+    }
+
+    function loadGLBTemplate(path) {
+      if (!glbCache[path]) {
+        glbCache[path] = new Promise((resolve, reject) => {
+          new THREE.GLTFLoader().load(path, gltf => resolve(gltf.scene), undefined, reject);
+        });
+      }
+      return glbCache[path];
+    }
+
+    function removeBuildingMesh(id) {
+      const rec = meshes[id];
+      if (!rec) return;
+      scene3.remove(rec.group);
+      delete meshes[id];
+    }
+
+    function addBoxVisual(group, bld) {
+      const { width, depth, height } = bld.size;
+      const color = parseInt((bld.color || '#4a90d9').replace('#', ''), 16);
+      const box = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), new THREE.MeshLambertMaterial({ color }));
+      box.position.set(0, height / 2, 0);
+      box.userData.isBoxBody = true;
+      group.add(box);
+      const roofColor = darkenColor3(color, 0.75);
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(width + 0.5, 0.5, depth + 0.5), new THREE.MeshLambertMaterial({ color: roofColor }));
+      roof.position.set(0, height + 0.25, 0);
+      roof.userData.isBoxBody = true;
+      group.add(roof);
+    }
+
+    function darkenColor3(hex, factor) {
+      const r = Math.round(((hex >> 16) & 0xff) * factor);
+      const g = Math.round(((hex >> 8) & 0xff) * factor);
+      const b = Math.round((hex & 0xff) * factor);
+      return (r << 16) | (g << 8) | b;
+    }
+
+    function positionGroup(group, bld) {
+      group.position.set(bld.position.x, 0, bld.position.z);
+      group.rotation.y = THREE.MathUtils.degToRad(bld.rotation || 0);
+    }
+
+    // Recreates a building's mesh from scratch — used when its color,
+    // glbModel path, or size changes (box geometry can't resize in place).
+    function rebuildBuilding(bld) {
+      if (!ensureInit()) return;
+      removeBuildingMesh(bld.id);
+      const group = new THREE.Group();
+      group.userData.buildingId = bld.id;
+
+      if (bld.glbModel) {
+        const rec = { group, kind: 'glb' };
+        meshes[bld.id] = rec;
+        scene3.add(group);
+        positionGroup(group, bld);
+        loadGLBTemplate(bld.glbModel).then(template => {
+          if (meshes[bld.id] !== rec) return; // superseded by a later edit
+          const inst = template.clone(true);
+          inst.scale.setScalar(bld.modelScale || 1);
+          group.add(inst);
+        }).catch(() => {
+          if (meshes[bld.id] !== rec) return;
+          addBoxVisual(group, bld);
+          rec.kind = 'box-fallback';
+        });
+      } else {
+        addBoxVisual(group, bld);
+        meshes[bld.id] = { group, kind: 'box' };
+        scene3.add(group);
+        positionGroup(group, bld);
+      }
+    }
+
+    // Cheap per-frame update during a drag: position/rotation always; for
+    // box buildings (no glbModel) the box is small enough to just redo, so
+    // width/depth/height resizing shows up live too. GLB models are loaded
+    // at their exported scale and don't visually resize — matches the real
+    // map (main.js never scales a GLB by bldg.size either).
+    function syncTransform(bld) {
+      if (!ready) return;
+      const rec = meshes[bld.id];
+      if (!rec) { rebuildBuilding(bld); return; }
+      positionGroup(rec.group, bld);
+      if (rec.kind === 'box' || rec.kind === 'box-fallback') {
+        rec.group.children.filter(c => c.userData.isBoxBody).forEach(c => rec.group.remove(c));
+        addBoxVisual(rec.group, bld);
+      }
+    }
+
+    function renameKey(oldId, newId) {
+      if (meshes[oldId]) { meshes[newId] = meshes[oldId]; delete meshes[oldId]; }
+    }
+
+    function frameOn(bld) {
+      if (!ensureInit()) return;
+      target.x = bld.position.x; target.y = (bld.size.height || 8) * 0.4; target.z = bld.position.z;
+      radius = Math.max(20, Math.max(bld.size.width, bld.size.depth, 12) * 2.6);
+      updateCamera3();
+      const title = document.getElementById('p3dTitle');
+      if (title) title.textContent = bld.name || bld.id;
+    }
+
+    function frameFit(d) {
+      if (!ready) return;
+      target.x = d.ground.offsetX; target.y = 0; target.z = d.ground.offsetZ;
+      radius = Math.max(d.ground.width, d.ground.depth) * 0.55;
+      updateCamera3();
+      const title = document.getElementById('p3dTitle');
+      if (title) title.textContent = 'Campus overview';
+    }
+
+    function setPanelOpen(open) {
+      panelOpen = open;
+      if (open) {
+        const first = !inited;
+        ensureInit();
+        if (first && state.data) fullRebuild();
+        requestAnimationFrame(() => { onResize3(); updateCamera3(); });
+        if (state.selected && state.selected.type === 'building' && state.data) {
+          const bld = state.data.buildings.find(b => b.id === state.selected.id);
+          if (bld) frameOn(bld);
+        }
+      }
+    }
+
+    return {
+      setPanelOpen, fullRebuild, rebuildBuilding, syncTransform, removeBuildingMesh,
+      renameKey, frameOn,
+      fitMap: () => { if (state.data) frameFit(state.data); },
+      get isOpen() { return panelOpen; },
+    };
+  })();
+
+  document.getElementById('preview3DToggleBtn').addEventListener('click', () => {
+    const panel = document.getElementById('preview3DPanel');
+    const open = !panel.classList.contains('open');
+    panel.classList.toggle('open', open);
+    document.getElementById('preview3DToggleBtn').classList.toggle('active', open);
+    preview3D.setPanelOpen(open);
+  });
+  document.getElementById('p3dCloseBtn').addEventListener('click', () => {
+    document.getElementById('preview3DPanel').classList.remove('open');
+    document.getElementById('preview3DToggleBtn').classList.remove('active');
+    preview3D.setPanelOpen(false);
+  });
+  document.getElementById('p3dFrameBtn').addEventListener('click', () => {
+    if (state.selected && state.selected.type === 'building') {
+      preview3D.frameOn(state.data.buildings.find(b => b.id === state.selected.id));
+    } else {
+      toast('Select a building first.');
+    }
+  });
+  document.getElementById('p3dFitBtn').addEventListener('click', () => { preview3D.fitMap(); });
 
   // ---------- Boot ----------
   resizeCanvas();
