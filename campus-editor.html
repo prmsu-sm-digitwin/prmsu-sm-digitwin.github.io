@@ -80,8 +80,9 @@
     display: flex; align-items: center; gap: 8px; padding: 6px 10px;
     background: #131c2b; color: #cfd8e3; font-size: 12px; flex-shrink: 0;
   }
-  #p3dHeader .p3d-title { font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #p3dHeader button { padding: 4px 9px; font-size: 11.5px; }
+  #p3dHeader .p3d-title { font-weight: 700; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+  #p3dHeader .p3d-hint { flex: 1; font-size: 11px; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #p3dHeader button { padding: 4px 9px; font-size: 11.5px; flex-shrink: 0; }
   #preview3DCanvasWrap { flex: 1; position: relative; min-height: 0; }
   #preview3DCanvas { display: block; width: 100%; height: 100%; cursor: grab; }
   #preview3DCanvas.dragging { cursor: grabbing; }
@@ -198,7 +199,7 @@
     <button class="btn-ghost" id="fitViewBtn">Fit view</button>
     <div class="divider"></div>
     <button class="btn-ghost" id="preview3DToggleBtn">3D Preview</button>
-    <span class="hint" id="modeHint">Drag to pan · scroll to zoom · click a point or building to select it, drag to move it, drag a corner/edge handle to resize it</span>
+    <span class="hint" id="modeHint">Drag to pan · scroll to zoom · click a point or building to select it, drag to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it</span>
   </div>
 
   <div id="main">
@@ -219,6 +220,7 @@
       <div id="preview3DPanel">
         <div id="p3dHeader">
           <span class="p3d-title" id="p3dTitle">3D Preview</span>
+          <span class="p3d-hint">Left-drag to orbit · right-drag to pan · scroll to zoom</span>
           <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dFrameBtn">Frame selected</button>
           <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dFitBtn">Fit map</button>
           <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dCloseBtn">✕</button>
@@ -544,10 +546,10 @@
       }
     });
 
-    // resize handles for the selected building (drawn last, on top)
+    // resize + rotate handles for the selected building (drawn last, on top)
     if (state.selected && state.selected.type === 'building' && state.mode === 'select') {
       const selBld = d.buildings.find(b => b.id === state.selected.id);
-      if (selBld) drawBuildingHandles(selBld);
+      if (selBld) { drawBuildingHandles(selBld); drawRotateHandle(selBld); }
     }
   }
 
@@ -638,6 +640,72 @@
       ctx.strokeStyle = '#1A4B8C';
       ctx.stroke();
     });
+  }
+
+  // ---------- Rotate handle ----------
+  // A round handle sticking out past the building's "north" edge (its local
+  // -z side, i.e. straight up on screen at rotation 0). Held a constant
+  // *screen* distance away (converted to world units via the current zoom)
+  // so it's equally easy to grab at any zoom level.
+  const ROTATE_HANDLE_OFFSET_PX = 22;
+  const ROTATE_HANDLE_HIT_R = 8;
+
+  function rotateHandleScreenPosition(bld) {
+    const { x, z } = bld.position;
+    const hd = bld.size.depth / 2;
+    const rot = (bld.rotation || 0) * Math.PI / 180;
+    const offsetWorld = ROTATE_HANDLE_OFFSET_PX / state.view.scale;
+    const off = rotateLocal(0, -hd - offsetWorld, rot);
+    return worldToScreen(x + off.x, z + off.z);
+  }
+
+  function hitTestRotateHandle(sx, sy) {
+    if (!state.selected || state.selected.type !== 'building') return null;
+    const bld = state.data.buildings.find(b => b.id === state.selected.id);
+    if (!bld) return null;
+    const p = rotateHandleScreenPosition(bld);
+    const dx = sx - p.x, dy = sy - p.y;
+    if (dx * dx + dy * dy <= ROTATE_HANDLE_HIT_R * ROTATE_HANDLE_HIT_R) return bld;
+    return null;
+  }
+
+  function drawRotateHandle(bld) {
+    const nHandle = buildingHandleScreenPositions(bld).find(h => h.sx === 0 && h.sz === -1);
+    const p = rotateHandleScreenPosition(bld);
+    ctx.beginPath();
+    ctx.moveTo(nHandle.x, nHandle.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = '#1A4B8C';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = '#1A4B8C';
+    ctx.stroke();
+  }
+
+  // The handle always points straight at the mouse (snapping the building
+  // to face it), same behavior as the rotate handle in most design tools.
+  // Screen +y is world +z (no view rotation), so a plain atan2 on the
+  // screen-space vector from the building's center to the mouse gives the
+  // angle directly; +90 lines it up with the "north = rotation 0" handle
+  // convention derived from buildingHandleScreenPositions' rotateLocal().
+  function applyRotateBuilding(id, sx, sy, snap) {
+    const bld = state.data.buildings.find(b => b.id === id);
+    if (!bld) return;
+    const center = worldToScreen(bld.position.x, bld.position.z);
+    const dx = sx - center.x, dy = sy - center.y;
+    let deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    deg = ((deg % 360) + 360) % 360;
+    if (snap) deg = Math.round(deg / 15) * 15 % 360;
+    bld.rotation = round1(deg);
+    state.dirty = true;
+    redraw();
+    if (state.selected && state.selected.type === 'building' && state.selected.id === id) renderPanel();
+    if (preview3D.isOpen) preview3D.syncTransform(bld);
   }
 
   // Starts a corner/edge resize: (sxH, szH) identify which handle was
@@ -745,6 +813,13 @@
     }
 
     // select mode
+    const rotateHit = hitTestRotateHandle(sx, sy);
+    if (rotateHit) {
+      snapshot();
+      state.dragging = { kind: 'rotateBuilding', id: rotateHit.id };
+      canvas.classList.add('dragging');
+      return;
+    }
     const handleHit = hitTestBuildingHandle(sx, sy);
     if (handleHit) {
       snapshot();
@@ -780,6 +855,8 @@
     } else if (state.dragging.kind === 'resizeBuilding') {
       const w = screenToWorld(sx, sy);
       applyResizeBuilding(state.dragging.rs, w);
+    } else if (state.dragging.kind === 'rotateBuilding') {
+      applyRotateBuilding(state.dragging.id, sx, sy, e.shiftKey);
     }
   });
 
@@ -800,7 +877,7 @@
 
   // ---------- Mode switching ----------
   const hints = {
-    select: 'Drag to pan · scroll to zoom · click a point or building to select it, drag it to move it, drag a corner/edge handle to resize it',
+    select: 'Drag to pan · scroll to zoom · click a point or building to select it, drag it to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it (hold Shift to snap to 15\u00b0)',
     addWaypoint: 'Click anywhere on the map to drop a new waypoint',
     addBuilding: 'Click anywhere on the map to place a new building',
     link: 'Click a waypoint, then click a second one to connect or disconnect a road between them',
@@ -1272,7 +1349,7 @@
 
     let target = { x: 0, y: 0, z: 0 };
     let radius = 220, theta = 50 * Math.PI / 180, phi = 35 * Math.PI / 180;
-    let orbitDragging = null;
+    let camDragging = null; // { x, y, mode: 'orbit' | 'pan' }
 
     function canvasWrapEl() { return document.getElementById('preview3DCanvasWrap'); }
 
@@ -1340,21 +1417,44 @@
     }
 
     function wireOrbitControls() {
+      // Left-drag orbits, right-drag pans (the usual split in 3D viewers),
+      // scroll zooms. The context menu is suppressed so a right-drag doesn't
+      // pop the browser menu on mouseup.
+      canvas3.addEventListener('contextmenu', (e) => e.preventDefault());
       canvas3.addEventListener('mousedown', (e) => {
-        orbitDragging = { x: e.clientX, y: e.clientY };
+        camDragging = { x: e.clientX, y: e.clientY, mode: e.button === 2 ? 'pan' : 'orbit' };
         canvas3.classList.add('dragging');
       });
       window.addEventListener('mousemove', (e) => {
-        if (!orbitDragging) return;
-        const dx = e.clientX - orbitDragging.x, dy = e.clientY - orbitDragging.y;
-        orbitDragging.x = e.clientX; orbitDragging.y = e.clientY;
-        phi -= dx * 0.006;
-        const minT = 8 * Math.PI / 180, maxT = 85 * Math.PI / 180;
-        theta = Math.max(minT, Math.min(maxT, theta + dy * 0.006));
+        if (!camDragging) return;
+        const dx = e.clientX - camDragging.x, dy = e.clientY - camDragging.y;
+        camDragging.x = e.clientX; camDragging.y = e.clientY;
+        if (camDragging.mode === 'orbit') {
+          phi -= dx * 0.006;
+          const minT = 8 * Math.PI / 180, maxT = 85 * Math.PI / 180;
+          theta = Math.max(minT, Math.min(maxT, theta + dy * 0.006));
+        } else {
+          // Pan: shift the orbit target along the camera's own right/up axes
+          // (not world axes), scaled by the current zoom so a drag covers
+          // roughly the same apparent distance whether zoomed in or out.
+          // "Right" is kept horizontal (no camera roll); "up" is whatever's
+          // left over so it tilts with the current pitch, matching what you
+          // see on screen.
+          const cosT = Math.cos(theta), sinT = Math.sin(theta);
+          const cosP = Math.cos(phi), sinP = Math.sin(phi);
+          const fx = -cosT * cosP, fy = -sinT, fz = -cosT * sinP;
+          const rlen = Math.sqrt(fz * fz + fx * fx) || 1;
+          const rx = -fz / rlen, rz = fx / rlen;
+          const ux = -rz * fy, uy = rz * fx - rx * fz, uz = rx * fy;
+          const panScale = radius / 300;
+          target.x += (-rx * dx + ux * dy) * panScale;
+          target.y += uy * dy * panScale;
+          target.z += (-rz * dx + uz * dy) * panScale;
+        }
         updateCamera3();
       });
       window.addEventListener('mouseup', () => {
-        if (orbitDragging) { orbitDragging = null; canvas3.classList.remove('dragging'); }
+        if (camDragging) { camDragging = null; canvas3.classList.remove('dragging'); }
       });
       canvas3.addEventListener('wheel', (e) => {
         e.preventDefault();
