@@ -318,12 +318,12 @@
       "id": "z2_wp2",
       "label": "Z2 WP2",
       "latLng": {
-        "lat": 14.96910725159843,
-        "lng": 120.19685100627915
+        "lat": 14.969111091474261,
+        "lng": 120.19682461632105
       },
       "position": {
-        "x": 624.8,
-        "z": -66.4
+        "x": 622.6,
+        "z": -67.1
       },
       "neighbors": [
         "z2_wp1",
@@ -335,12 +335,12 @@
       "id": "z2_wp3",
       "label": "Z2 WP3",
       "latLng": {
-        "lat": 14.969244523609104,
-        "lng": 120.19718481434623
+        "lat": 14.96926685408667,
+        "lng": 120.19721012609548
       },
       "position": {
-        "x": 660.7,
-        "z": -81.7
+        "x": 664.1,
+        "z": -84.5
       },
       "neighbors": [
         "z2_wp2",
@@ -615,12 +615,12 @@
       "id": "cte_bsed_entry",
       "label": "CTE BSED Entry",
       "latLng": {
-        "lat": 14.969493252922737,
-        "lng": 120.19709628678561
+        "lat": 14.969475432757307,
+        "lng": 120.19715160292492
       },
       "position": {
-        "x": 651.2,
-        "z": -109.4
+        "x": 657.8,
+        "z": -107.8
       },
       "neighbors": [
         "z2_wp3"
@@ -630,12 +630,12 @@
       "id": "cte_walk_entry",
       "label": "CTE BSED Walk",
       "latLng": {
-        "lat": 14.969630862108364,
-        "lng": 120.19737531980759
+        "lat": 14.969600758997174,
+        "lng": 120.1973429644033
       },
       "position": {
-        "x": 681.2,
-        "z": -124.7
+        "x": 678.4,
+        "z": -121.8
       },
       "neighbors": [
         "z2_wp4"
@@ -660,12 +660,12 @@
       "id": "admin_entry",
       "label": "Admin Entry",
       "latLng": {
-        "lat": 14.970206512380805,
-        "lng": 120.20005198680145
+        "lat": 14.970400161370048,
+        "lng": 120.20013256886749
       },
       "position": {
-        "x": 969.1,
-        "z": -188.8
+        "x": 978.7,
+        "z": -211.1
       },
       "neighbors": [
         "z2_end",
@@ -816,12 +816,12 @@
       "id": "LHS_Faculty_and_CCIT_2-4_Entry",
       "label": "LHS Faculty / CCIT Entry",
       "latLng": {
-        "lat": 14.969912884915285,
-        "lng": 120.19887029084244
+        "lat": 14.96999553665276,
+        "lng": 120.19881811987754
       },
       "position": {
-        "x": 842.8,
-        "z": -156.7
+        "x": 837.2,
+        "z": -165.9
       },
       "neighbors": [
         "z2_wp6"
@@ -831,15 +831,16 @@
       "id": "CCIT_Entry",
       "label": "CCIT Main Entry",
       "latLng": {
-        "lat": 14.970102959144075,
-        "lng": 120.19947302202448
+        "lat": 14.97009758801951,
+        "lng": 120.19946373263232
       },
       "position": {
-        "x": 907.7,
-        "z": -177.9
+        "x": 906.7,
+        "z": -177.3
       },
       "neighbors": [
-        "z2_wp7"
+        "z2_wp7",
+        "ccit entrance"
       ]
     },
     {
@@ -934,12 +935,12 @@
       "id": "agritech_2_entry",
       "label": "Agriculture Technology (Agri-Tech) 2 Entry",
       "latLng": {
-        "lat": 14.970668960591563,
-        "lng": 120.19881666267813
+        "lat": 14.97061858710239,
+        "lng": 120.19880604366774
       },
       "position": {
-        "x": 837,
-        "z": -241.1
+        "x": 835.9,
+        "z": -235.5
       },
       "neighbors": [
         "z3_wp4"
@@ -1035,12 +1036,12 @@
       "id": "agritech_1_door",
       "label": "Agriculture Technology (Agri-Tech) Door",
       "latLng": {
-        "lat": 14.970597102604128,
-        "lng": 120.19851156993643
+        "lat": 14.970544286545897,
+        "lng": 120.19852085932858
       },
       "position": {
-        "x": 804.2,
-        "z": -233.1
+        "x": 805.2,
+        "z": -227.2
       },
       "neighbors": [
         "agritech_1_entry"
@@ -1050,12 +1051,12 @@
       "id": "motorpool_garage_door",
       "label": "Motorpool Garage Door",
       "latLng": {
-        "lat": 14.970768978590232,
-        "lng": 120.19918226405002
+        "lat": 14.970660660911488,
+        "lng": 120.19922963995002
       },
       "position": {
-        "x": 876.4,
-        "z": -252.3
+        "x": 881.5,
+        "z": -240.2
       },
       "neighbors": [
         "motorpool_garage_entry"
@@ -1080,12 +1081,12 @@
       "id": "rmtu_rd_center_door",
       "label": "RMTU Research and Development Center Door",
       "latLng": {
-        "lat": 14.970969500574022,
-        "lng": 120.19931417341863
+        "lat": 14.970995461009421,
+        "lng": 120.19932160493235
       },
       "position": {
-        "x": 890.6,
-        "z": -274.7
+        "x": 891.4,
+        "z": -277.6
       },
       "neighbors": [
         "rmtu_rd_center_entry"
@@ -1202,12 +1203,12 @@
       "id": "beed_entry_door",
       "label": "BEEED DOOR",
       "latLng": {
-        "lat": 14.96869420777983,
-        "lng": 120.19763164504553
+        "lat": 14.968694829320414,
+        "lng": 120.1976300066209
       },
       "position": {
-        "x": 709.5,
-        "z": -20.5
+        "x": 709.3,
+        "z": -20.6
       },
       "neighbors": [
         "beed_entry"
@@ -1293,6 +1294,21 @@
         "inner_gate",
         "main_gate"
       ]
+    },
+    {
+      "id": "ccit entrance",
+      "label": "CCIT Main Entrance",
+      "latLng": {
+        "lat": 14.970158460764589,
+        "lng": 120.19942193036762
+      },
+      "position": {
+        "x": 902.2,
+        "z": -184.1
+      },
+      "neighbors": [
+        "CCIT_Entry"
+      ]
     }
   ],
   "buildings": [
@@ -1327,21 +1343,21 @@
       "description": "OSA, Clinic, Dental, and other student services",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.968569111818253,
-        "lng": 120.19717604559149
+        "lat": 14.968599044265657,
+        "lng": 120.19717854216216
       },
       "position": {
-        "x": 659.8,
-        "z": -6.5
+        "x": 660.7,
+        "z": -9.9
       },
       "size": {
-        "width": 15,
-        "depth": 12,
+        "width": 15.2,
+        "depth": 23.2,
         "height": 6
       },
       "glbModel": "models/SCNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 105,
       "entryWaypoint": "sc_entry"
     },
     {
@@ -1375,22 +1391,22 @@
       "description": "College of Teacher Education BEED",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.968806614723318,
-        "lng": 120.19770382321065
+        "lat": 14.968642013262183,
+        "lng": 120.19764394070913
       },
       "position": {
-        "x": 711.3,
-        "z": -19.2
+        "x": 710.8,
+        "z": -14.7
       },
       "size": {
-        "width": 25,
-        "depth": 20,
+        "width": 31.1,
+        "depth": 31.5,
         "height": 8
       },
       "glbModel": "models/BEEDNav.glb",
       "texturedModel": null,
-      "rotation": 0,
-      "entryWaypoint": "z1_int6"
+      "rotation": 87.6,
+      "entryWaypoint": "beed_entry_door"
     },
     {
       "id": "library",
@@ -1399,12 +1415,12 @@
       "description": "Campus library",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.968987465377106,
-        "lng": 120.19818874710526
+        "lat": 14.968868495681374,
+        "lng": 120.19828490876783
       },
       "position": {
-        "x": 779.9,
-        "z": -42.9
+        "x": 779.8,
+        "z": -40
       },
       "size": {
         "width": 40,
@@ -1413,7 +1429,7 @@
       },
       "glbModel": "models/LIBNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 117,
       "entryWaypoint": "lib_entry"
     },
     {
@@ -1423,21 +1439,21 @@
       "description": "Agriculture Sciences Building",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.969197252107014,
-        "lng": 120.19944109496984
+        "lat": 14.969248950338116,
+        "lng": 120.19935876250098
       },
       "position": {
-        "x": 903.4,
-        "z": -76.5
+        "x": 895.4,
+        "z": -82.5
       },
       "size": {
-        "width": 40,
-        "depth": 30,
+        "width": 66.4,
+        "depth": 32,
         "height": 10
       },
       "glbModel": "models/ASBNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 104.8,
       "entryWaypoint": "asb_entry"
     },
     {
@@ -1447,21 +1463,21 @@
       "description": "University administration building",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.970262302506192,
-        "lng": 120.20017715794984
+        "lat": 14.970364353872943,
+        "lng": 120.20004803539888
       },
       "position": {
-        "x": 983.5,
-        "z": -195.7
+        "x": 969.6,
+        "z": -207.1
       },
       "size": {
-        "width": 40,
-        "depth": 30,
+        "width": 57.2,
+        "depth": 66.3,
         "height": 10
       },
       "glbModel": "models/AdminNav.glb",
       "texturedModel": null,
-      "rotation": 69,
+      "rotation": 189.6,
       "entryWaypoint": "admin_entry"
     },
     {
@@ -1471,21 +1487,21 @@
       "description": "Campus canteen",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.968827317059702,
-        "lng": 120.19550738051346
+        "lat": 14.968908779115617,
+        "lng": 120.1954739387017
       },
       "position": {
-        "x": 480.8,
-        "z": -35.4
+        "x": 477.2,
+        "z": -44.5
       },
       "size": {
-        "width": 25,
-        "depth": 20,
+        "width": 35.5,
+        "depth": 25,
         "height": 8
       },
       "glbModel": "models/CANTEENNav.glb",
       "texturedModel": null,
-      "rotation": 75,
+      "rotation": 284.3,
       "entryWaypoint": "canteen_entry"
     },
     {
@@ -1495,21 +1511,21 @@
       "description": "College of Hospitality Management 1",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.968911420179088,
-        "lng": 120.19620175495515
+        "lat": 14.969038581292624,
+        "lng": 120.19593840830946
       },
       "position": {
-        "x": 547.8,
-        "z": -62.8
+        "x": 527.2,
+        "z": -59
       },
       "size": {
-        "width": 25,
-        "depth": 20,
+        "width": 41.2,
+        "depth": 31.3,
         "height": 8
       },
       "glbModel": "models/HM1Nav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 195,
       "entryWaypoint": "chm1_entry"
     },
     {
@@ -1519,21 +1535,21 @@
       "description": "College of Hospitality Management 2",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.96927054066282,
-        "lng": 120.1967062527351
+        "lat": 14.969342945018017,
+        "lng": 120.19668155968186
       },
       "position": {
-        "x": 609.3,
-        "z": -84.6
+        "x": 607.2,
+        "z": -93
       },
       "size": {
-        "width": 15,
-        "depth": 12,
+        "width": 44.9,
+        "depth": 15.5,
         "height": 6
       },
       "glbModel": "models/HM2Nav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 293.8,
       "entryWaypoint": "chm2_entry"
     },
     {
@@ -1543,21 +1559,21 @@
       "description": "College of Teacher Education BSED",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.969558203065242,
-        "lng": 120.19723540641978
+        "lat": 14.969800385793537,
+        "lng": 120.19719804988569
       },
       "position": {
-        "x": 666.2,
-        "z": -116.6
+        "x": 662.8,
+        "z": -144.1
       },
       "size": {
-        "width": 40,
-        "depth": 30,
+        "width": 49.6,
+        "depth": 48.4,
         "height": 10
       },
       "glbModel": "models/BSEDNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 30,
       "entryWaypoint": "cte_bsed_entry"
     },
     {
@@ -1567,21 +1583,21 @@
       "description": "Laboratory High School",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.969867524850608,
-        "lng": 120.19811305501297
+        "lat": 14.969951672468806,
+        "lng": 120.19810748137768
       },
       "position": {
-        "x": 761.3,
-        "z": -151.6
+        "x": 760.7,
+        "z": -161
       },
       "size": {
-        "width": 15,
-        "depth": 12,
+        "width": 42.7,
+        "depth": 13.6,
         "height": 6
       },
       "glbModel": "models/LHSNav.glb",
       "texturedModel": null,
-      "rotation": 90,
+      "rotation": 101.1,
       "entryWaypoint": "lhs_entry"
     },
     {
@@ -1591,21 +1607,21 @@
       "description": "LHS Faculty and CCIT Classrooms",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.970000907777326,
-        "lng": 120.19883298290499
+        "lat": 14.970057304585266,
+        "lng": 120.19890079546772
       },
       "position": {
-        "x": 838.8,
-        "z": -166.5
+        "x": 846.1,
+        "z": -172.8
       },
       "size": {
-        "width": 25,
-        "depth": 20,
+        "width": 26.5,
+        "depth": 38.6,
         "height": 8
       },
       "glbModel": "models/CCIT2_LHSFacultyNav.glb",
       "texturedModel": null,
-      "rotation": 160,
+      "rotation": 120.2,
       "entryWaypoint": "z2_wp6"
     },
     {
@@ -1615,22 +1631,22 @@
       "description": "College of Communication & Information Technology",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.970173678950857,
-        "lng": 120.19944236703037
+        "lat": 14.97021843832224,
+        "lng": 120.19940428052253
       },
       "position": {
-        "x": 904.4,
-        "z": -185.8
+        "x": 900.3,
+        "z": -190.8
       },
       "size": {
-        "width": 15,
-        "depth": 12,
+        "width": 17.1,
+        "depth": 24.6,
         "height": 6
       },
       "glbModel": "models/CCIT1Nav.glb",
       "texturedModel": null,
-      "rotation": 336,
-      "entryWaypoint": "CCIT_Entry"
+      "rotation": 115.1,
+      "entryWaypoint": "ccit entrance"
     },
     {
       "id": "admin_court",
@@ -1663,21 +1679,21 @@
       "description": "Agriculture Technology building",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.970552343232745,
-        "lng": 120.19850692524035
+        "lat": 14.970546076920751,
+        "lng": 120.19850878311878
       },
       "position": {
-        "x": 803.7,
-        "z": -228.1
+        "x": 803.9,
+        "z": -227.4
       },
       "size": {
-        "width": 15,
-        "depth": 12,
+        "width": 33.8,
+        "depth": 12.3,
         "height": 6
       },
       "glbModel": "models/Agritech1Nav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 17.7,
       "entryWaypoint": "agritech_1_door"
     },
     {
@@ -1687,21 +1703,21 @@
       "description": "Agriculture Technology building (2nd building)",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.970668960591563,
-        "lng": 120.19881666267813
+        "lat": 14.970616796727535,
+        "lng": 120.19880139897167
       },
       "position": {
-        "x": 837,
-        "z": -241.1
+        "x": 835.4,
+        "z": -235.3
       },
       "size": {
-        "width": 15,
+        "width": 20.1,
         "depth": 12,
         "height": 6
       },
       "glbModel": "models/Agritech2Nav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 20.5,
       "entryWaypoint": "agritech_2_entry"
     },
     {
@@ -1711,21 +1727,21 @@
       "description": "Motorpool Garage",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.970685726159463,
-        "lng": 120.19918040617159
+        "lat": 14.97068304059718,
+        "lng": 120.19916554314415
       },
       "position": {
-        "x": 876.2,
-        "z": -243
+        "x": 874.6,
+        "z": -242.7
       },
       "size": {
-        "width": 25,
-        "depth": 20,
+        "width": 16.3,
+        "depth": 32,
         "height": 8
       },
       "glbModel": "models/MotorpoolNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 108.2,
       "entryWaypoint": "motorpool_garage_door"
     },
     {
@@ -1735,21 +1751,21 @@
       "description": "RMTU Organic Mango Center",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.971057228941929,
-        "lng": 120.19892494788732
+        "lat": 14.970980242823153,
+        "lng": 120.19894538455007
       },
       "position": {
-        "x": 848.7,
-        "z": -284.5
+        "x": 850.9,
+        "z": -275.9
       },
       "size": {
-        "width": 40,
-        "depth": 30,
+        "width": 36.2,
+        "depth": 38.2,
         "height": 10
       },
       "glbModel": "models/ROMCNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 291.9,
       "entryWaypoint": "organic_mango_center_door"
     },
     {
@@ -1759,21 +1775,21 @@
       "description": "RMTU R & D Center",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.971023211819679,
-        "lng": 120.19930116826961
+        "lat": 14.971054543379646,
+        "lng": 120.19929931039118
       },
       "position": {
-        "x": 889.2,
-        "z": -280.7
+        "x": 889,
+        "z": -284.2
       },
       "size": {
-        "width": 15,
-        "depth": 12,
+        "width": 20.8,
+        "depth": 20.5,
         "height": 6
       },
       "glbModel": "models/R&DCenterNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 289.7,
       "entryWaypoint": "rmtu_rd_center_door"
     },
     {
@@ -1807,21 +1823,21 @@
       "description": "College of Agriculture",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.970836117647304,
-        "lng": 120.19846326509722
+        "lat": 14.970882667393541,
+        "lng": 120.19842146283251
       },
       "position": {
-        "x": 799,
-        "z": -259.8
+        "x": 794.5,
+        "z": -265
       },
       "size": {
-        "width": 25,
-        "depth": 20,
+        "width": 50.1,
+        "depth": 29.6,
         "height": 8
       },
       "glbModel": "models/CAGNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 196.5,
       "entryWaypoint": "college_of_agriculture_door"
     },
     {
