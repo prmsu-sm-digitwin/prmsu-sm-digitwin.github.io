@@ -1384,7 +1384,7 @@
         "depth": 20,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/QuadrangleNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "quad_entry"
@@ -1432,7 +1432,7 @@
         "depth": 30,
         "height": 10
       },
-      "glbModel": null,
+      "glbModel": "models/COVEREDCOURTNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "gab_entry"
@@ -1720,7 +1720,7 @@
         "depth": 15,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/COVEREDCOURTNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "z1_int13"
@@ -2261,7 +2261,7 @@
         "depth": 15,
         "height": 8
       },
-      "glbModel": null,
+      "glbModel": "models/WomenDorm.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "womendorm_entrance"
