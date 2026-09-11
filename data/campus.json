@@ -1720,7 +1720,7 @@
         "depth": 15,
         "height": 8
       },
-      "glbModel": "models/COVEREDCOURTNav.glb",
+      "glbModel": "models/AdminCourtNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "z1_int13"
@@ -2261,7 +2261,7 @@
         "depth": 15,
         "height": 8
       },
-      "glbModel": "models/WomenDorm.glb",
+      "glbModel": "models/WomenDormNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "womendorm_entrance"
@@ -2285,7 +2285,7 @@
         "depth": 16,
         "height": 10
       },
-      "glbModel": "models/PracticehouseNav.glb",
+      "glbModel": "models/Prac_GuestNav.glb",
       "texturedModel": null,
       "rotation": 181.8,
       "entryWaypoint": null
