@@ -1285,7 +1285,7 @@
       "name": "CTE (BEED)",
       "category": "academic",
       "description": "College of Teacher Education BEED",
-      "color": "#6b6b6b",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.968806614723318,
         "lng": 120.19770382321065
@@ -1333,7 +1333,7 @@
       "name": "ASB Building",
       "category": "academic",
       "description": "Agriculture Sciences Building",
-      "color": "#6b6b6b",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.969197252107014,
         "lng": 120.19944109496984
@@ -1405,7 +1405,7 @@
       "name": "CHM 1",
       "category": "academic",
       "description": "College of Hospitality Management 1",
-      "color": "#6b6b6b",
+      "color": "#a9aaab",
       "latLng": {
         "lat": 14.968911420179088,
         "lng": 120.19620175495515
@@ -1429,7 +1429,7 @@
       "name": "CHM 2",
       "category": "academic",
       "description": "College of Hospitality Management 2",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.96927054066282,
         "lng": 120.1967062527351
@@ -1453,7 +1453,7 @@
       "name": "CTE (BSED)",
       "category": "academic",
       "description": "College of Teacher Education BSED",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.969558203065242,
         "lng": 120.19723540641978
@@ -1477,7 +1477,7 @@
       "name": "LHS Building",
       "category": "academic",
       "description": "Laboratory High School",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.969867524850608,
         "lng": 120.19811305501297
@@ -1501,7 +1501,7 @@
       "name": "LHS Faculty / CCIT",
       "category": "academic",
       "description": "LHS Faculty and CCIT Classrooms",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.970000907777326,
         "lng": 120.19883298290499
@@ -1525,7 +1525,7 @@
       "name": "CCIT Main",
       "category": "academic",
       "description": "College of Communication & Information Technology",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.970173678950857,
         "lng": 120.19944236703037
@@ -1573,7 +1573,7 @@
       "name": "Agriculture Technology (Agri-Tech)",
       "category": "academic",
       "description": "Agriculture Technology building",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.970552343232745,
         "lng": 120.19850692524035
@@ -1597,7 +1597,7 @@
       "name": "Agriculture Technology (Agri-Tech) 2",
       "category": "academic",
       "description": "Agriculture Technology building (2nd building)",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.970668960591563,
         "lng": 120.19881666267813
@@ -1717,7 +1717,7 @@
       "name": "College of Agriculture",
       "category": "academic",
       "description": "College of Agriculture (formerly labeled Mitos Magsaysay Building)",
-      "color": "#6b6b6b",
+      "color": "#cfd2d4",
       "latLng": {
         "lat": 14.970836117647304,
         "lng": 120.19846326509722
