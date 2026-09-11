@@ -1481,16 +1481,16 @@
       "description": "Campus library",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.968868495681374,
-        "lng": 120.19828490876783
+        "lat": 14.968895351304203,
+        "lng": 120.19823753286785
       },
       "position": {
-        "x": 779.8,
-        "z": -40
+        "x": 774.7,
+        "z": -43
       },
       "size": {
-        "width": 40,
-        "depth": 30,
+        "width": 24.3,
+        "depth": 43,
         "height": 12
       },
       "glbModel": "models/LIBNav.glb",
@@ -1505,16 +1505,16 @@
       "description": "Agriculture Sciences Building",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.969264168524386,
-        "lng": 120.19929745251275
+        "lat": 14.96923999846384,
+        "lng": 120.19925379236962
       },
       "position": {
-        "x": 888.8,
-        "z": -84.2
+        "x": 884.1,
+        "z": -81.5
       },
       "size": {
-        "width": 66.4,
-        "depth": 45.6,
+        "width": 70.2,
+        "depth": 39.1,
         "height": 30
       },
       "glbModel": "models/ASBNav.glb",
@@ -2286,21 +2286,21 @@
       "description": "An abandoned practice/guest house, could be use as a landmark.",
       "color": "#808080",
       "latLng": {
-        "lat": 14.968332014025718,
-        "lng": 120.19622668263885
+        "lat": 14.96835197253563,
+        "lng": 120.19623102416234
       },
       "position": {
-        "x": 558.2,
-        "z": 19.9
+        "x": 558.7,
+        "z": 17.7
       },
       "size": {
-        "width": 20,
-        "depth": 15,
-        "height": 8
+        "width": 22.3,
+        "depth": 16,
+        "height": 10
       },
       "glbModel": "models/PracticehouseNav.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 181.8,
       "entryWaypoint": null
     }
   ],
