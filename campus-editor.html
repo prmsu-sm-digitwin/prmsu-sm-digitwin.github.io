@@ -199,7 +199,7 @@
     <button class="btn-ghost" id="fitViewBtn">Fit view</button>
     <div class="divider"></div>
     <button class="btn-ghost" id="preview3DToggleBtn">3D Preview</button>
-    <span class="hint" id="modeHint">Drag to pan · scroll to zoom · click a point or building to select it, drag to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it</span>
+    <span class="hint" id="modeHint">Drag to pan · scroll to zoom · click a point, building, or oval to select it, drag to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it</span>
   </div>
 
   <div id="main">
@@ -306,6 +306,7 @@
   function setData(data, sourceLabel) {
     // normalize: ensure pavedEdges array exists
     if (!Array.isArray(data.pavedEdges)) data.pavedEdges = [];
+    if (!Array.isArray(data.ovals)) data.ovals = [];
     state.data = data;
     state.selected = null;
     state.history = [];
@@ -365,14 +366,16 @@
     rebuildIndex();
     // selection may no longer exist
     if (state.selected) {
-      const stillThere = state.selected.type === 'waypoint'
-        ? waypointMap[state.selected.id]
-        : state.data.buildings.find(b => b.id === state.selected.id);
+      let stillThere;
+      if (state.selected.type === 'waypoint') stillThere = waypointMap[state.selected.id];
+      else if (state.selected.type === 'building') stillThere = state.data.buildings.find(b => b.id === state.selected.id);
+      else if (state.selected.type === 'oval') stillThere = (state.data.ovals || []).find(o => o.id === state.selected.id);
       if (!stillThere) state.selected = null;
     }
     state.dirty = true;
     renderPanel();
     redraw();
+    if (preview3D.isOpen) preview3D.fullRebuild();
     toast('Undid last change');
   }
   document.getElementById('undoBtn').addEventListener('click', undo);
@@ -522,6 +525,11 @@
       }
     }
 
+    // running-track ovals (procedural stadium shapes, same data + math as main.js's buildOval)
+    (d.ovals || []).forEach(oval => {
+      drawOval(oval, state.selected && state.selected.type === 'oval' && state.selected.id === oval.id);
+    });
+
     // buildings
     d.buildings.forEach(bld => {
       drawBuilding(bld, state.selected && state.selected.type === 'building' && state.selected.id === bld.id);
@@ -546,10 +554,15 @@
       }
     });
 
-    // resize + rotate handles for the selected building (drawn last, on top)
-    if (state.selected && state.selected.type === 'building' && state.mode === 'select') {
-      const selBld = d.buildings.find(b => b.id === state.selected.id);
-      if (selBld) { drawBuildingHandles(selBld); drawRotateHandle(selBld); }
+    // resize + rotate handles for the selected building/oval (drawn last, on top)
+    if (state.selected && state.mode === 'select') {
+      if (state.selected.type === 'building') {
+        const selBld = d.buildings.find(b => b.id === state.selected.id);
+        if (selBld) { drawBuildingHandles(selBld); drawRotateHandle(selBld); }
+      } else if (state.selected.type === 'oval') {
+        const selOval = (d.ovals || []).find(o => o.id === state.selected.id);
+        if (selOval) { drawOvalHandles(selOval); drawOvalRotateHandle(selOval); }
+      }
     }
   }
 
@@ -584,6 +597,74 @@
       ctx.fillText(bld.name || bld.id, center.x, center.y + 4);
       ctx.textAlign = 'left';
     }
+  }
+
+  // ---------- Ovals (running track, stadium shape: two straight sides +
+  // semicircular ends — same math as main.js's buildOval, kept in sync by
+  // hand since one is Canvas2D and the other Three.js). majorAxis is the
+  // full length along the local x axis, minorAxis the full width along the
+  // local z axis — i.e. exactly like a building's width/depth, which is
+  // what lets the resize-handle code below be a near copy of the building
+  // version.
+  function stadiumSubpath(halfLen, r) {
+    ctx.moveTo(-halfLen, -r);
+    ctx.lineTo(halfLen, -r);
+    ctx.arc(halfLen, 0, r, -Math.PI / 2, Math.PI / 2, false);
+    ctx.lineTo(-halfLen, r);
+    ctx.arc(-halfLen, 0, r, Math.PI / 2, -Math.PI / 2, false);
+    ctx.closePath();
+  }
+
+  function drawOval(oval, selected) {
+    const p = worldToScreen(oval.center.x, oval.center.z);
+    const rot = (oval.rotation || 0) * Math.PI / 180;
+    const scale = state.view.scale;
+    const radius = oval.minorAxis / 2;
+    const half = Math.max(0, oval.majorAxis - oval.minorAxis) / 2;
+    const trackW = oval.trackWidth != null ? oval.trackWidth : 8;
+    const innerR = Math.max(0.1, radius - trackW);
+    const innerHalf = Math.max(0, half - trackW);
+
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(rot);
+    ctx.scale(scale, scale);
+
+    ctx.beginPath();
+    stadiumSubpath(half, radius);
+    ctx.fillStyle = selected ? '#e0842fdd' : '#e0842faa';
+    ctx.fill();
+    ctx.lineWidth = (selected ? 3 : 1.4) / scale;
+    ctx.strokeStyle = selected ? '#1A4B8C' : '#8a5a22';
+    ctx.stroke();
+
+    ctx.beginPath();
+    stadiumSubpath(innerHalf, innerR);
+    ctx.fillStyle = '#4caf50aa';
+    ctx.fill();
+
+    ctx.restore();
+
+    if (selected || state.view.scale > 0.5) {
+      ctx.fillStyle = '#24303d';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(oval.label || oval.id, p.x, p.y + 4);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  // Point-in-stadium test in world space: clamp the point's local x to the
+  // straight-side range, then it's just a distance-to-that-point <= radius
+  // check (the standard "distance to a capsule's centerline segment" test).
+  function pointInOval(wx, wz, oval) {
+    const rot = (oval.rotation || 0) * Math.PI / 180;
+    const local = inverseRotateLocal(wx - oval.center.x, wz - oval.center.z, rot);
+    const half = Math.max(0, oval.majorAxis - oval.minorAxis) / 2;
+    const r = oval.minorAxis / 2;
+    const cx = Math.max(-half, Math.min(half, local.x));
+    const dx = local.x - cx, dz = local.z;
+    return (dx * dx + dz * dz) <= r * r;
   }
 
   // ---------- Resize handles ----------
@@ -745,6 +826,127 @@
     if (preview3D.isOpen) preview3D.syncTransform(bld);
   }
 
+  // ---------- Oval resize + rotate handles ----------
+  // majorAxis/minorAxis are full extents (like a building's width/depth),
+  // so this is a near copy of the building resize/rotate code above.
+  const MIN_OVAL_SIZE = 20;
+
+  function ovalHandleScreenPositions(oval) {
+    const { x, z } = oval.center;
+    const hw = oval.majorAxis / 2, hd = oval.minorAxis / 2;
+    const rot = (oval.rotation || 0) * Math.PI / 180;
+    return buildingHandleDefs().map(h => {
+      const off = rotateLocal(h.sx * hw, h.sz * hd, rot);
+      const p = worldToScreen(x + off.x, z + off.z);
+      return { sx: h.sx, sz: h.sz, x: p.x, y: p.y };
+    });
+  }
+
+  function hitTestOvalHandle(sx, sy) {
+    if (!state.selected || state.selected.type !== 'oval') return null;
+    const oval = (state.data.ovals || []).find(o => o.id === state.selected.id);
+    if (!oval) return null;
+    const handles = ovalHandleScreenPositions(oval);
+    for (const h of handles) {
+      const dx = sx - h.x, dy = sy - h.y;
+      if (dx * dx + dy * dy <= HANDLE_HIT_R * HANDLE_HIT_R) return { oval, sx: h.sx, sz: h.sz };
+    }
+    return null;
+  }
+
+  function drawOvalHandles(oval) {
+    ovalHandleScreenPositions(oval).forEach(h => {
+      ctx.beginPath();
+      ctx.rect(h.x - 4, h.y - 4, 8, 8);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.lineWidth = 1.6;
+      ctx.strokeStyle = '#1A4B8C';
+      ctx.stroke();
+    });
+  }
+
+  function ovalRotateHandleScreenPosition(oval) {
+    const { x, z } = oval.center;
+    const hd = oval.minorAxis / 2;
+    const rot = (oval.rotation || 0) * Math.PI / 180;
+    const offsetWorld = ROTATE_HANDLE_OFFSET_PX / state.view.scale;
+    const off = rotateLocal(0, -hd - offsetWorld, rot);
+    return worldToScreen(x + off.x, z + off.z);
+  }
+
+  function hitTestOvalRotateHandle(sx, sy) {
+    if (!state.selected || state.selected.type !== 'oval') return null;
+    const oval = (state.data.ovals || []).find(o => o.id === state.selected.id);
+    if (!oval) return null;
+    const p = ovalRotateHandleScreenPosition(oval);
+    const dx = sx - p.x, dy = sy - p.y;
+    if (dx * dx + dy * dy <= ROTATE_HANDLE_HIT_R * ROTATE_HANDLE_HIT_R) return oval;
+    return null;
+  }
+
+  function drawOvalRotateHandle(oval) {
+    const nHandle = ovalHandleScreenPositions(oval).find(h => h.sx === 0 && h.sz === -1);
+    const p = ovalRotateHandleScreenPosition(oval);
+    ctx.beginPath();
+    ctx.moveTo(nHandle.x, nHandle.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = '#1A4B8C';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = '#1A4B8C';
+    ctx.stroke();
+  }
+
+  function applyRotateOval(id, sx, sy, snap) {
+    const oval = (state.data.ovals || []).find(o => o.id === id);
+    if (!oval) return;
+    const center = worldToScreen(oval.center.x, oval.center.z);
+    const dx = sx - center.x, dy = sy - center.y;
+    let deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    deg = ((deg % 360) + 360) % 360;
+    if (snap) deg = Math.round(deg / 15) * 15 % 360;
+    oval.rotation = round1(deg);
+    state.dirty = true;
+    redraw();
+    if (state.selected && state.selected.type === 'oval' && state.selected.id === id) renderPanel();
+    if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
+  }
+
+  function startResizeOval(oval, sxH, szH) {
+    const rot = (oval.rotation || 0) * Math.PI / 180;
+    const hw0 = oval.majorAxis / 2, hd0 = oval.minorAxis / 2;
+    const anchorOff = rotateLocal(-sxH * hw0, -szH * hd0, rot);
+    return {
+      id: oval.id, sxH, szH, rot,
+      anchorWorld: { x: oval.center.x + anchorOff.x, z: oval.center.z + anchorOff.z },
+    };
+  }
+
+  function applyResizeOval(rs, mouseWorld) {
+    const oval = (state.data.ovals || []).find(o => o.id === rs.id);
+    if (!oval) return;
+    const dx = mouseWorld.x - rs.anchorWorld.x, dz = mouseWorld.z - rs.anchorWorld.z;
+    const local = inverseRotateLocal(dx, dz, rs.rot);
+    let newMajor = oval.majorAxis, newMinor = oval.minorAxis;
+    if (rs.sxH !== 0) newMajor = Math.max(MIN_OVAL_SIZE, rs.sxH * local.x);
+    if (rs.szH !== 0) newMinor = Math.max(MIN_OVAL_SIZE, rs.szH * local.z);
+    const centerOff = rotateLocal(rs.sxH * newMajor / 2, rs.szH * newMinor / 2, rs.rot);
+    oval.majorAxis = round1(newMajor);
+    oval.minorAxis = round1(newMinor);
+    oval.center.x = round1(rs.anchorWorld.x + centerOff.x);
+    oval.center.z = round1(rs.anchorWorld.z + centerOff.z);
+    state.dirty = true;
+    redraw();
+    if (state.selected && state.selected.type === 'oval' && state.selected.id === oval.id) renderPanel();
+    if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
+  }
+
   // ---------- Hit testing ----------
   function hitTest(sx, sy) {
     if (!state.data) return null;
@@ -763,6 +965,14 @@
     for (let i = blds.length - 1; i >= 0; i--) {
       const corners = buildingCorners(blds[i]);
       if (pointInPoly(sx, sy, corners)) return { type: 'building', id: blds[i].id };
+    }
+    // ovals (checked last — large shapes, buildings/waypoints "on top" win first)
+    const ovals = state.data.ovals || [];
+    if (ovals.length) {
+      const w = screenToWorld(sx, sy);
+      for (let i = ovals.length - 1; i >= 0; i--) {
+        if (pointInOval(w.x, w.z, ovals[i])) return { type: 'oval', id: ovals[i].id };
+      }
     }
     return null;
   }
@@ -827,6 +1037,20 @@
       canvas.classList.add('dragging');
       return;
     }
+    const ovalRotateHit = hitTestOvalRotateHandle(sx, sy);
+    if (ovalRotateHit) {
+      snapshot();
+      state.dragging = { kind: 'rotateOval', id: ovalRotateHit.id };
+      canvas.classList.add('dragging');
+      return;
+    }
+    const ovalHandleHit = hitTestOvalHandle(sx, sy);
+    if (ovalHandleHit) {
+      snapshot();
+      state.dragging = { kind: 'resizeOval', rs: startResizeOval(ovalHandleHit.oval, ovalHandleHit.sx, ovalHandleHit.sz) };
+      canvas.classList.add('dragging');
+      return;
+    }
     const hit = hitTest(sx, sy);
     if (hit) {
       selectItem(hit);
@@ -857,6 +1081,11 @@
       applyResizeBuilding(state.dragging.rs, w);
     } else if (state.dragging.kind === 'rotateBuilding') {
       applyRotateBuilding(state.dragging.id, sx, sy, e.shiftKey);
+    } else if (state.dragging.kind === 'resizeOval') {
+      const w = screenToWorld(sx, sy);
+      applyResizeOval(state.dragging.rs, w);
+    } else if (state.dragging.kind === 'rotateOval') {
+      applyRotateOval(state.dragging.id, sx, sy, e.shiftKey);
     }
   });
 
@@ -877,7 +1106,7 @@
 
   // ---------- Mode switching ----------
   const hints = {
-    select: 'Drag to pan · scroll to zoom · click a point or building to select it, drag it to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it (hold Shift to snap to 15\u00b0)',
+    select: 'Drag to pan · scroll to zoom · click a point, building, or oval to select it, drag it to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it (hold Shift to snap to 15\u00b0)',
     addWaypoint: 'Click anywhere on the map to drop a new waypoint',
     addBuilding: 'Click anywhere on the map to place a new building',
     link: 'Click a waypoint, then click a second one to connect or disconnect a road between them',
@@ -943,13 +1172,18 @@
       wp.position.x = x; wp.position.z = z;
       const ll = xzToLL(x, z, state.data.origin);
       wp.latLng.lat = ll.lat; wp.latLng.lng = ll.lng;
-    } else {
+    } else if (item.type === 'building') {
       const bld = state.data.buildings.find(b => b.id === item.id);
       if (!bld) return;
       bld.position.x = x; bld.position.z = z;
       const ll = xzToLL(x, z, state.data.origin);
       bld.latLng.lat = ll.lat; bld.latLng.lng = ll.lng;
       if (preview3D.isOpen) preview3D.syncTransform(bld);
+    } else if (item.type === 'oval') {
+      const oval = (state.data.ovals || []).find(o => o.id === item.id);
+      if (!oval) return;
+      oval.center.x = x; oval.center.z = z;
+      if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
     }
     state.dirty = true;
     redraw();
@@ -1039,12 +1273,18 @@
       state.dirty = true;
       if (preview3D.isOpen) preview3D.fullRebuild();
       toast(affected.length ? ('Deleted. ' + affected.length + ' building(s) lost their entryWaypoint — set a new one.') : 'Waypoint deleted.');
-    } else {
+    } else if (state.selected.type === 'building') {
       const id = state.selected.id;
       state.data.buildings = state.data.buildings.filter(b => b.id !== id);
       preview3D.removeBuildingMesh(id);
       state.dirty = true;
       toast('Building deleted.');
+    } else if (state.selected.type === 'oval') {
+      const id = state.selected.id;
+      state.data.ovals = (state.data.ovals || []).filter(o => o.id !== id);
+      preview3D.removeOvalMesh(id);
+      state.dirty = true;
+      toast('Oval deleted.');
     }
     selectItem(null);
     redraw();
@@ -1067,6 +1307,12 @@
       const bld = state.data.buildings.find(b => b.id === item.id);
       if (bld) preview3D.frameOn(bld);
     }
+    const isDifferentOval = item && item.type === 'oval' &&
+      !(prev && prev.type === 'oval' && prev.id === item.id);
+    if (isDifferentOval && preview3D.isOpen) {
+      const oval = (state.data.ovals || []).find(o => o.id === item.id);
+      if (oval) preview3D.frameOnOval(oval);
+    }
   }
 
   function field(label, inputHtml) {
@@ -1076,14 +1322,83 @@
   function renderPanel() {
     const el = document.getElementById('panelContent');
     if (!state.selected || !state.data) {
-      el.innerHTML = '<p class="empty">Nothing selected. Click a waypoint or building on the map to edit it, or use the toolbar to add new ones.</p>';
+      el.innerHTML = '<p class="empty">Nothing selected. Click a waypoint, building, or oval on the map to edit it, or use the toolbar to add new ones.</p>';
       return;
     }
     if (state.selected.type === 'waypoint') {
       renderWaypointPanel(el, waypointMap[state.selected.id]);
-    } else {
+    } else if (state.selected.type === 'building') {
       renderBuildingPanel(el, state.data.buildings.find(b => b.id === state.selected.id));
+    } else if (state.selected.type === 'oval') {
+      renderOvalPanel(el, (state.data.ovals || []).find(o => o.id === state.selected.id));
     }
+  }
+
+  function renderOvalPanel(el, oval) {
+    if (!oval) { el.innerHTML = '<p class="empty">That oval no longer exists.</p>'; return; }
+    let html = '<h2>Running Track / Oval</h2>';
+    html += '<div class="id-row">' + field('ID', '<input type="text" id="f_id" value="' + escAttr(oval.id) + '">') + '</div>';
+    html += field('Label', '<input type="text" id="f_label" value="' + escAttr(oval.label || '') + '">');
+    html += '<div class="field-row">' + field('X (m)', '<input type="number" step="0.1" id="f_x" value="' + oval.center.x + '">') + field('Z (m)', '<input type="number" step="0.1" id="f_z" value="' + oval.center.z + '">') + '</div>';
+    html += '<div class="field-row">' + field('Major axis (m)', '<input type="number" step="0.5" id="f_major" value="' + oval.majorAxis + '">') + field('Minor axis (m)', '<input type="number" step="0.5" id="f_minor" value="' + oval.minorAxis + '">') + '</div>';
+    html += '<div class="field-row">' + field('Track width (m)', '<input type="number" step="0.5" id="f_tw" value="' + (oval.trackWidth != null ? oval.trackWidth : 8) + '">') + field('Rotation (°)', '<input type="number" step="1" id="f_rot" value="' + (oval.rotation || 0) + '">') + '</div>';
+    if (oval._note) {
+      html += '<div class="section-title">Provenance note</div><p class="empty" style="font-size:11px;line-height:1.5;">' + escHtml(oval._note) + '</p>';
+    }
+    html += '<button class="danger-btn" id="deleteBtn">Delete oval</button>';
+    el.innerHTML = html;
+
+    el.querySelector('#f_id').addEventListener('change', (e) => {
+      const newId = e.target.value.trim();
+      if (!newId || newId === oval.id) { e.target.value = oval.id; return; }
+      const clash = waypointMap[newId] || state.data.buildings.some(b => b.id === newId) || (state.data.ovals || []).some(o => o.id === newId);
+      if (clash) { toast('That id is already used by something else.'); e.target.value = oval.id; return; }
+      snapshot();
+      const oldId = oval.id;
+      oval.id = newId;
+      preview3D.renameOvalKey(oldId, newId);
+      state.dirty = true;
+      if (state.selected && state.selected.type === 'oval' && state.selected.id === oldId) state.selected.id = newId;
+      renderPanel(); redraw();
+    });
+    el.querySelector('#f_label').addEventListener('change', (e) => { snapshot(); oval.label = e.target.value; state.dirty = true; redraw(); });
+    function commitOvalXZ() {
+      snapshot();
+      oval.center.x = round1(parseFloat(el.querySelector('#f_x').value) || 0);
+      oval.center.z = round1(parseFloat(el.querySelector('#f_z').value) || 0);
+      state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
+    }
+    el.querySelector('#f_x').addEventListener('change', commitOvalXZ);
+    el.querySelector('#f_z').addEventListener('change', commitOvalXZ);
+    el.querySelector('#f_major').addEventListener('change', (e) => {
+      snapshot();
+      oval.majorAxis = Math.max(MIN_OVAL_SIZE, parseFloat(e.target.value) || oval.majorAxis);
+      state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
+    });
+    el.querySelector('#f_minor').addEventListener('change', (e) => {
+      snapshot();
+      oval.minorAxis = Math.max(MIN_OVAL_SIZE, parseFloat(e.target.value) || oval.minorAxis);
+      state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
+    });
+    el.querySelector('#f_tw').addEventListener('change', (e) => {
+      snapshot();
+      oval.trackWidth = Math.max(0.5, parseFloat(e.target.value) || oval.trackWidth);
+      state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
+    });
+    el.querySelector('#f_rot').addEventListener('change', (e) => {
+      snapshot();
+      let v = parseFloat(e.target.value); if (isNaN(v)) v = 0;
+      oval.rotation = ((v % 360) + 360) % 360;
+      state.dirty = true; redraw();
+      if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
+    });
+    el.querySelector('#deleteBtn').addEventListener('click', () => {
+      if (confirm('Delete "' + (oval.label || oval.id) + '"?')) deleteSelected();
+    });
   }
 
   function renderWaypointPanel(el, wp) {
@@ -1265,6 +1580,22 @@
       const { x, z } = bld.position;
       if (x < gMinX || x > gMaxX || z < gMinZ || z > gMaxZ) issues.push({ level: 'warn', msg: 'Building "' + (bld.name || bld.id) + '" is outside the rendered ground' });
     });
+    (d.ovals || []).forEach(oval => {
+      const { x, z } = oval.center;
+      if (x < gMinX || x > gMaxX || z < gMinZ || z > gMaxZ) issues.push({ level: 'warn', msg: '"' + (oval.label || oval.id) + '" is outside the rendered ground' });
+      // Flag a building whose footprint dips into the oval's footprint — the
+      // same clearance you'd otherwise only catch by eyeballing the 3D preview.
+      d.buildings.forEach(bld => {
+        const rot = (bld.rotation || 0) * Math.PI / 180;
+        const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sxc, szc]) => {
+          const off = rotateLocal(sxc * bld.size.width / 2, szc * bld.size.depth / 2, rot);
+          return { x: bld.position.x + off.x, z: bld.position.z + off.z };
+        });
+        if (corners.some(c => pointInOval(c.x, c.z, oval))) {
+          issues.push({ level: 'warn', msg: 'Building "' + (bld.name || bld.id) + '" overlaps "' + (oval.label || oval.id) + '"' });
+        }
+      });
+    });
     return issues;
   }
 
@@ -1294,6 +1625,11 @@
       const half = Math.max(b.size.width, b.size.depth) / 2;
       minX = Math.min(minX, b.position.x - half); maxX = Math.max(maxX, b.position.x + half);
       minZ = Math.min(minZ, b.position.z - half); maxZ = Math.max(maxZ, b.position.z + half);
+    });
+    (d.ovals || []).forEach(o => {
+      const half = o.majorAxis / 2; // conservative (majorAxis is the largest extent, regardless of rotation)
+      minX = Math.min(minX, o.center.x - half); maxX = Math.max(maxX, o.center.x + half);
+      minZ = Math.min(minZ, o.center.z - half); maxZ = Math.max(maxZ, o.center.z + half);
     });
     if (!isFinite(minX)) { toast('No waypoints/buildings to fit around.'); return; }
     const groundMargin = 50, boundsMargin = 20;
@@ -1352,6 +1688,7 @@
     let cameraPositioned = false; // true once the camera has been auto-framed at least once
     let scene3, camera3, renderer3, canvas3;
     let meshes = {};           // buildingId -> { group, kind: 'box'|'glb'|'box-fallback' }
+    let ovalMeshes = {};       // ovalId -> { group }
     let roadGroup = null, groundMesh = null;
     const glbCache = {};       // glbModel path -> Promise<THREE.Object3D template>
 
@@ -1480,6 +1817,7 @@
       if (!scene3) return;
       [...scene3.children].forEach(c => { if (!c.isLight) scene3.remove(c); });
       meshes = {};
+      ovalMeshes = {};
       roadGroup = null;
       groundMesh = null;
     }
@@ -1491,8 +1829,82 @@
       if (!d) return;
       buildGround3(d.ground);
       buildRoads3(d);
+      (d.ovals || []).forEach(rebuildOval);
       d.buildings.forEach(rebuildBuilding);
       if (!cameraPositioned) frameFit(d);
+    }
+
+    // ---------- Ovals (running track) ----------
+    // Mirrors main.js's buildOval() exactly (same stadium-shape math, same
+    // colors/y-offsets) so the preview matches the real map.
+    function stadiumShape3(halfLen, r) {
+      const shape = new THREE.Shape();
+      shape.moveTo(-halfLen, r);
+      shape.lineTo(halfLen, r);
+      shape.absarc(halfLen, 0, r, Math.PI / 2, -Math.PI / 2, true);
+      shape.lineTo(-halfLen, -r);
+      shape.absarc(-halfLen, 0, r, -Math.PI / 2, Math.PI / 2, true);
+      return shape;
+    }
+
+    function buildOval3(oval) {
+      const { center, majorAxis, minorAxis, trackWidth, rotation } = oval;
+      const radius = minorAxis / 2;
+      const straight = Math.max(0, majorAxis - minorAxis);
+      const halfStraight = straight / 2;
+
+      const group = new THREE.Group();
+
+      const trackMat = new THREE.MeshLambertMaterial({ color: 0xb5651d });
+      const trackMesh = new THREE.Mesh(new THREE.ShapeGeometry(stadiumShape3(halfStraight, radius)), trackMat);
+      trackMesh.rotation.x = -Math.PI / 2;
+      trackMesh.position.y = 0.15;
+      group.add(trackMesh);
+
+      const innerR = Math.max(0.1, radius - (trackWidth != null ? trackWidth : 8));
+      const innerHalfStraight = Math.max(0, halfStraight - (trackWidth != null ? trackWidth : 8));
+      const fieldMat = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
+      const fieldMesh = new THREE.Mesh(new THREE.ShapeGeometry(stadiumShape3(innerHalfStraight, innerR)), fieldMat);
+      fieldMesh.rotation.x = -Math.PI / 2;
+      fieldMesh.position.y = 0.25;
+      group.add(fieldMesh);
+
+      group.position.set(center.x, 0, center.z);
+      group.rotation.y = THREE.MathUtils.degToRad(rotation || 0);
+      group.userData.ovalId = oval.id;
+      return group;
+    }
+
+    // Rebuilds an oval's mesh from scratch — cheap enough (a couple of flat
+    // shapes) to just redo on every move/resize/rotate, same as a box
+    // building's syncTransform.
+    function rebuildOval(oval) {
+      if (!ensureInit()) return;
+      removeOvalMesh(oval.id);
+      const group = buildOval3(oval);
+      scene3.add(group);
+      ovalMeshes[oval.id] = { group };
+    }
+
+    function removeOvalMesh(id) {
+      const rec = ovalMeshes[id];
+      if (!rec) return;
+      scene3.remove(rec.group);
+      delete ovalMeshes[id];
+    }
+
+    function renameOvalKey(oldId, newId) {
+      if (ovalMeshes[oldId]) { ovalMeshes[newId] = ovalMeshes[oldId]; delete ovalMeshes[oldId]; }
+    }
+
+    function frameOnOval(oval) {
+      if (!ensureInit()) return;
+      target.x = oval.center.x; target.y = 2; target.z = oval.center.z;
+      radius = Math.max(30, oval.majorAxis * 0.75);
+      updateCamera3();
+      cameraPositioned = true;
+      const title = document.getElementById('p3dTitle');
+      if (title) title.textContent = oval.label || oval.id;
     }
 
     function buildGround3(g) {
@@ -1683,9 +2095,14 @@
         ensureInit();
         if (first && state.data) fullRebuild();
         requestAnimationFrame(() => { onResize3(); updateCamera3(); });
-        if (first && state.selected && state.selected.type === 'building' && state.data) {
-          const bld = state.data.buildings.find(b => b.id === state.selected.id);
-          if (bld) frameOn(bld);
+        if (first && state.selected && state.data) {
+          if (state.selected.type === 'building') {
+            const bld = state.data.buildings.find(b => b.id === state.selected.id);
+            if (bld) frameOn(bld);
+          } else if (state.selected.type === 'oval') {
+            const oval = (state.data.ovals || []).find(o => o.id === state.selected.id);
+            if (oval) frameOnOval(oval);
+          }
         }
       }
     }
@@ -1693,6 +2110,7 @@
     return {
       setPanelOpen, fullRebuild, rebuildBuilding, syncTransform, removeBuildingMesh,
       renameKey, frameOn,
+      rebuildOval, syncOvalTransform: rebuildOval, removeOvalMesh, renameOvalKey, frameOnOval,
       fitMap: () => { if (state.data) frameFit(state.data); },
       get isOpen() { return panelOpen; },
     };
@@ -1713,8 +2131,10 @@
   document.getElementById('p3dFrameBtn').addEventListener('click', () => {
     if (state.selected && state.selected.type === 'building') {
       preview3D.frameOn(state.data.buildings.find(b => b.id === state.selected.id));
+    } else if (state.selected && state.selected.type === 'oval') {
+      preview3D.frameOnOval((state.data.ovals || []).find(o => o.id === state.selected.id));
     } else {
-      toast('Select a building first.');
+      toast('Select a building or oval first.');
     }
   });
   document.getElementById('p3dFitBtn').addEventListener('click', () => { preview3D.fitMap(); });
