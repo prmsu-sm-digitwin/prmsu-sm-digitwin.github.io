@@ -171,8 +171,7 @@
         "z1_int5",
         "z1_int7",
         "z2_wp4",
-        "gab_entry",
-        "beed_entry"
+        "gabaldon_beed_entry"
       ]
     },
     {
@@ -196,12 +195,12 @@
       "id": "z1_int8",
       "label": "Z1 Int 8",
       "latLng": {
-        "lat": 14.969345376589217,
-        "lng": 120.19815587145462
+        "lat": 14.969333097956314,
+        "lng": 120.19817808075805
       },
       "position": {
-        "x": 765.1,
-        "z": -92.9
+        "x": 768.3,
+        "z": -91.9
       },
       "neighbors": [
         "z1_int7",
@@ -462,42 +461,27 @@
       "id": "sc_entry",
       "label": "Student Center Entry",
       "latLng": {
-        "lat": 14.968580711660133,
-        "lng": 120.19718637711799
+        "lat": 14.968437015341257,
+        "lng": 120.19722127336608
       },
       "position": {
-        "x": 660.9,
-        "z": -7.8
+        "x": 665.3,
+        "z": 8.2
       },
       "neighbors": [
         "z1_int4"
       ]
     },
     {
-      "id": "gab_entry",
-      "label": "Gabaldon Entry",
-      "latLng": {
-        "lat": 14.969005667256907,
-        "lng": 120.19762089497662
-      },
-      "position": {
-        "x": 707.6,
-        "z": -55.1
-      },
-      "neighbors": [
-        "z1_int6"
-      ]
-    },
-    {
       "id": "lib_side",
       "label": "Library Side Path",
       "latLng": {
-        "lat": 14.968782557688321,
-        "lng": 120.19778328159146
+        "lat": 14.968857753432243,
+        "lng": 120.19786688612086
       },
       "position": {
-        "x": 725.8,
-        "z": -30.4
+        "x": 734.8,
+        "z": -38.8
       },
       "neighbors": [
         "z1_int7",
@@ -508,12 +492,12 @@
       "id": "lib_entry",
       "label": "Library Entry",
       "latLng": {
-        "lat": 14.969008544659372,
-        "lng": 120.19827928131946
+        "lat": 14.96903947648005,
+        "lng": 120.19834157405998
       },
       "position": {
-        "x": 778.4,
-        "z": -55.5
+        "x": 785.9,
+        "z": -59.1
       },
       "neighbors": [
         "lib_side",
@@ -739,7 +723,7 @@
         "z3_wp4",
         "z3_spur2",
         "agritech_1_entry",
-        "college_of_agriculture_entry"
+        "mitos_magsaysay_building_entry"
       ]
     },
     {
@@ -1116,7 +1100,7 @@
       ]
     },
     {
-      "id": "college_of_agriculture_entry",
+      "id": "mitos_magsaysay_building_entry",
       "label": "College of Agriculture Entry",
       "latLng": {
         "lat": 14.970659765724061,
@@ -1127,12 +1111,12 @@
         "z": -240.1
       },
       "neighbors": [
-        "college_of_agriculture_door",
+        "mitos_magsaysay_building_door",
         "z3_wp3"
       ]
     },
     {
-      "id": "college_of_agriculture_door",
+      "id": "mitos_magsaysay_building_door",
       "label": "College of Agriculture Door",
       "latLng": {
         "lat": 14.970779720839364,
@@ -1143,7 +1127,7 @@
         "z": -253.5
       },
       "neighbors": [
-        "college_of_agriculture_entry"
+        "mitos_magsaysay_building_entry"
       ]
     },
     {
@@ -1164,8 +1148,8 @@
       ]
     },
     {
-      "id": "beed_entry",
-      "label": "CTE BEED Entry",
+      "id": "gabaldon_beed_entry",
+      "label": "Gabaldon and CTE BEED Entry",
       "latLng": {
         "lat": 14.96903231498063,
         "lng": 120.19753153906406
@@ -1207,7 +1191,7 @@
         "z": -20.6
       },
       "neighbors": [
-        "beed_entry"
+        "gabaldon_beed_entry"
       ]
     },
     {
@@ -1406,12 +1390,12 @@
       "description": "OSA, Clinic, Dental, and other student services",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.968607996139934,
-        "lng": 120.19717947110138
+        "lat": 14.968468299969876,
+        "lng": 120.19721798109791
       },
       "position": {
-        "x": 660.8,
-        "z": -10.9
+        "x": 664.9,
+        "z": 4.7
       },
       "size": {
         "width": 20.1,
@@ -1431,22 +1415,22 @@
       "description": "Gabaldon Court",
       "color": "#202121",
       "latLng": {
-        "lat": 14.969009254602204,
-        "lng": 120.19761360481161
+        "lat": 14.96888460905507,
+        "lng": 120.19762907768168
       },
       "position": {
-        "x": 703.3,
-        "z": -43.4
+        "x": 709.2,
+        "z": -41.8
       },
       "size": {
-        "width": 40,
-        "depth": 30,
+        "width": 22.9,
+        "depth": 11.5,
         "height": 10
       },
       "glbModel": "models/GabaldonNav.glb",
       "texturedModel": null,
-      "rotation": 0,
-      "entryWaypoint": "gab_entry"
+      "rotation": 21.4,
+      "entryWaypoint": "gabaldon_beed_entry"
     },
     {
       "id": "cte_beed",
@@ -1455,21 +1439,21 @@
       "description": "College of Teacher Education BEED",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.968642013262183,
-        "lng": 120.19764394070913
+        "lat": 14.968667822012163,
+        "lng": 120.19772491861352
       },
       "position": {
-        "x": 710.8,
-        "z": -14.7
+        "x": 719.5,
+        "z": -17.6
       },
       "size": {
-        "width": 31.1,
-        "depth": 31.5,
+        "width": 34.1,
+        "depth": 60.2,
         "height": 12
       },
       "glbModel": "models/BEEDNav.glb",
       "texturedModel": null,
-      "rotation": 87.6,
+      "rotation": 113,
       "entryWaypoint": "beed_entry_door",
       "modelScale": 1
     },
@@ -1480,12 +1464,12 @@
       "description": "Campus library",
       "color": "#4a4a4a",
       "latLng": {
-        "lat": 14.968895351304203,
-        "lng": 120.19823753286785
+        "lat": 14.968908779115617,
+        "lng": 120.1982765483149
       },
       "position": {
-        "x": 774.7,
-        "z": -43
+        "x": 778.9,
+        "z": -44.5
       },
       "size": {
         "width": 24.3,
@@ -1494,8 +1478,9 @@
       },
       "glbModel": "models/LIBNav.glb",
       "texturedModel": null,
-      "rotation": 117,
-      "entryWaypoint": "lib_entry"
+      "rotation": 113.5,
+      "entryWaypoint": "lib_entry",
+      "modelScale": 1.1
     },
     {
       "id": "asb",
@@ -1675,12 +1660,12 @@
       "description": "LHS Faculty and CCIT Classrooms",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.970081474645813,
-        "lng": 120.19888964819714
+        "lat": 14.969966890655076,
+        "lng": 120.19872894171286
       },
       "position": {
-        "x": 844.9,
-        "z": -175.5
+        "x": 827.6,
+        "z": -162.7
       },
       "size": {
         "width": 32.6,
@@ -1689,7 +1674,7 @@
       },
       "glbModel": "models/CCIT2_LHSFacultyNav.glb",
       "texturedModel": null,
-      "rotation": 120.2,
+      "rotation": 291.4,
       "entryWaypoint": "z2_wp6"
     },
     {
@@ -1746,7 +1731,7 @@
       "id": "agritech_1",
       "name": "Agriculture Technology (Agri-Tech)",
       "category": "academic",
-      "description": "Agriculture Technology building",
+      "description": "A building of College of Agriculture",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.970517430923067,
@@ -1770,7 +1755,7 @@
       "id": "agritech_2",
       "name": "Agriculture Technology (Agri-Tech) 2",
       "category": "academic",
-      "description": "Agriculture Technology building (2nd building)",
+      "description": "A building of College of Agriculture",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.970616796727535,
@@ -1887,10 +1872,10 @@
       "entryWaypoint": "regional_mango_center_door"
     },
     {
-      "id": "college_of_agriculture",
-      "name": "College of Agriculture",
+      "id": "mitos_magsaysay_building",
+      "name": "Mitos Magsaysay Building",
       "category": "academic",
-      "description": "College of Agriculture",
+      "description": "A building of College of Agriculture",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.970882667393541,
@@ -1905,10 +1890,10 @@
         "depth": 29.6,
         "height": 13
       },
-      "glbModel": "models/CAGNav.glb",
+      "glbModel": "models/MMNav.glb",
       "texturedModel": null,
       "rotation": 196.5,
-      "entryWaypoint": "college_of_agriculture_door"
+      "entryWaypoint": "mitos_magsaysay_building_door"
     },
     {
       "id": "housing_1",
