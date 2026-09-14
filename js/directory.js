@@ -28,26 +28,26 @@ const DIRECTORY_DATA = [
     id: 'academic',
     title: 'Academic',
     items: [
-      { name: 'CCIT Main', photo: 'images/CCIT_MAIN.jpg',
-        text: 'College of Communication & Information Technology. Computer laboratory and CCIT lecture rooms.' },
-      { name: 'LHS Faculty / CCIT', photo: 'images/LHS_FACULTY_CCIT.jpg',
-        text: 'Laboratory High School faculty offices together with additional CCIT classrooms.' },
-      { name: 'LHS Building', photo: 'images/LHS.jpg',
-        text: 'Laboratory High School — junior and senior high school classrooms.' },
-      { name: 'College of Agriculture', photo: 'images/CAG.jpg',
-        text: 'College of Agriculture offices and lecture rooms. (Formerly labeled the Mitos Magsaysay Building.)' },
-      { name: 'ASB Building', photo: 'images/ASB.jpg',
-        text: 'Agriculture Sciences Building — laboratories and lecture rooms for agriculture programs.' },
       { name: 'Agriculture Technology (Agri-Tech)', photo: 'images/AGRI_TECH.jpg',
-        text: 'Agri-Tech building housing agricultural technology facilities.' },
-      { name: 'CTE (BEED)', photo: 'images/CTE_BEED.jpg',
-        text: 'College of Teacher Education — Bachelor of Elementary Education classrooms.' },
-      { name: 'CTE (BSED)', photo: 'images/CTE_BSED.jpg',
-        text: 'College of Teacher Education — Bachelor of Secondary Education classrooms.' },
+        text: 'Some College of Agriculture (CAg) classrooms, located in front of the Mitos Magsaysay Building.' },
+      { name: 'ASB Building', photo: 'images/ASB.jpg',
+        text: 'CAg building with classrooms and a faculty office.' },
+      { name: 'CCIT Main', photo: 'images/CCIT_MAIN.jpg',
+        text: 'Faculty offices and a computer laboratory, with first year classrooms.' },
       { name: 'CHM 1', photo: 'images/CHM_1.jpg',
-        text: 'College of Hospitality Management 1 — training kitchens and lecture rooms.' },
+        text: 'CHM building near the canteen, with classrooms.' },
       { name: 'CHM 2', photo: 'images/CHM_2.jpg',
-        text: 'College of Hospitality Management 2 — additional HM facilities.' }
+        text: 'Second CHM building with the faculty office and some classrooms.' },
+      { name: 'CTE (BEED)', photo: 'images/CTE_BEED.jpg',
+        text: 'CTE building in front of Gabaldon Court.' },
+      { name: 'CTE (BSED)', photo: 'images/CTE_BSED.jpg',
+        text: 'CTE building with a faculty office and classrooms.' },
+      { name: 'LHS Building', photo: 'images/LHS.jpg',
+        text: 'LHS building with classrooms.' },
+      { name: 'LHS Faculty / CCIT', photo: 'images/LHS_FACULTY_CCIT.jpg',
+        text: 'Joint building for LHS faculty and CCIT second to fourth year classrooms.' },
+      { name: 'Mitos Magsaysay Building', photo: 'images/CAG.jpg',
+        text: 'A CAg building in front of Agri-Tech.' }
     ]
   },
   {
@@ -55,21 +55,29 @@ const DIRECTORY_DATA = [
     title: 'Facility',
     items: [
       { name: 'Admin Building', photo: 'images/ADMIN.jpg',
-        text: 'University administration building — Registrar, Cashier, and administrative offices.' },
-      { name: 'Library', photo: "images/LIBRARY.jpg",
-        text: 'Campus library — reading areas, references, and study space.' },
-      { name: 'Student Center', photo: "images/SC.jpg",
-        text: 'OSA, Clinic, Dental, and other student services.' },
+        text: "Cashier, Registrar, and HRMO on the first floor. Second floor: the campus director's office and the accreditation room." },
       { name: 'Canteen', photo: "images/CANTEEN.jpg",
-        text: 'Campus canteen — meals and refreshments for students and staff.' },
+        text: 'Has four food stalls.' },
+      { name: "Guard's House", photo: null,
+        text: "A small building located beside the inner gate." },
+      { name: 'Library', photo: "images/LIBRARY.jpg",
+        text: 'The campus library, with reading areas and study space.' },
+      { name: "Men's Dormitory", photo: null,
+        text: 'Dormitory housing for male students and faculty.' },
       { name: 'Motorpool', photo: "images/MOTORPOOL.jpg",
         text: 'Campus motorpool and service garage.' },
+      { name: 'Practice House', photo: null,
+        text: 'Abandoned building that could be used as a campus landmark.' },
+      { name: 'Regional Mango Center', photo: "images/ROMC.jpg",
+        text: 'Has an event hall and some offices.' },
       { name: 'RMTU Organic Mango Center', photo: "images/ROMC.jpg",
         text: 'Organic mango research and production facility.' },
       { name: 'RMTU Research and Development Center', photo: "images/RND_CENTER.jpg",
-        text: 'RMTU R & D Center — research offices and laboratories.' },
-      { name: 'Regional Mango Center', photo: "images/ROMC.jpg",
-        text: 'Two-storey regional mango center supporting mango research and training.' }
+        text: 'PRMSU research services office.' },
+      { name: 'Student Center', photo: "images/SC.jpg",
+        text: 'Office of Student Affairs, Clinic, Dental, and SSG office.' },
+      { name: "Women's Dormitory", photo: null,
+        text: 'Dormitory housing for female students and faculty.' }
     ]
   },
   {
@@ -77,11 +85,11 @@ const DIRECTORY_DATA = [
     title: 'Multi-Court',
     items: [
       { name: 'Admin Court', photo: null,
-        text: 'Court beside the Admin Building, used for PE classes and campus activities.' },
+        text: 'Covered court beside the Admin Building, used for campus activities.' },
       { name: 'Gabaldon Court', photo: null,
-        text: 'Gabaldon Court — open court for sports and student gatherings.' },
+        text: 'Covered court used for campus activities.' },
       { name: 'Multi-purpose Quad', photo: null,
-        text: 'Open quadrangle used for campus events, programs, and assemblies.' }
+        text: 'Open court used for sports and CHM programs.' }
     ]
   }
 ];
