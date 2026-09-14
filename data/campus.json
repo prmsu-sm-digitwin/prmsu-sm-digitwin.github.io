@@ -1397,7 +1397,7 @@
       "id": "multipurpose",
       "name": "Multi-purpose Quad",
       "category": "court",
-      "description": "Open quadrangle used for events",
+      "description": "",
       "color": "#797c80",
       "latLng": {
         "lat": 14.968770025064334,
@@ -1423,7 +1423,7 @@
       "id": "student_center",
       "name": "Student Center",
       "category": "facility",
-      "description": "OSA, Clinic, Dental, and other student services",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.96845849983952,
@@ -1448,7 +1448,7 @@
       "id": "gabaldon",
       "name": "Gabaldon Court",
       "category": "court",
-      "description": "Gabaldon Court",
+      "description": "",
       "color": "#797c80",
       "latLng": {
         "lat": 14.968748540566072,
@@ -1474,7 +1474,7 @@
       "id": "cte_beed",
       "name": "CTE (BEED)",
       "category": "academic",
-      "description": "College of Teacher Education BEED",
+      "description": "College of Teacher Education (Bachelor of Elementary Education).",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.968610681702216,
@@ -1499,7 +1499,7 @@
       "id": "library",
       "name": "Library",
       "category": "facility",
-      "description": "Campus library",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.968874761993368,
@@ -1524,7 +1524,7 @@
       "id": "asb",
       "name": "ASB Building",
       "category": "academic",
-      "description": "Agriculture Sciences Building",
+      "description": "Agricultural Science Building.",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.96916032678278,
@@ -1549,7 +1549,7 @@
       "id": "admin",
       "name": "Admin Building",
       "category": "facility",
-      "description": "University administration building",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.970254245819344,
@@ -1574,7 +1574,7 @@
       "id": "canteen",
       "name": "Canteen",
       "category": "facility",
-      "description": "Campus canteen",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.96894548180015,
@@ -1599,7 +1599,7 @@
       "id": "chm1",
       "name": "CHM 1",
       "category": "academic",
-      "description": "College of Hospitality Management 1",
+      "description": "College of Hospitality Management.",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.969031419793202,
@@ -1624,7 +1624,7 @@
       "id": "chm2",
       "name": "CHM 2",
       "category": "academic",
-      "description": "College of Hospitality Management 2",
+      "description": "College of Hospitality Management.",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.969316089395189,
@@ -1648,7 +1648,7 @@
       "id": "cte_bsed",
       "name": "CTE (BSED)",
       "category": "academic",
-      "description": "College of Teacher Education BSED",
+      "description": "College of Teacher Education (Bachelor of Secondary Education).",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.970032239337293,
@@ -1673,7 +1673,7 @@
       "id": "lhs",
       "name": "LHS Building",
       "category": "academic",
-      "description": "Laboratory High School",
+      "description": "Laboratory High School.",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.969923026471122,
@@ -1698,7 +1698,7 @@
       "id": "lhs_fac_ccit",
       "name": "LHS Faculty / CCIT",
       "category": "academic",
-      "description": "LHS Faculty and CCIT Classrooms",
+      "description": "LHS faculty with CCIT classrooms.",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.969991060715621,
@@ -1723,7 +1723,7 @@
       "id": "ccit_main",
       "name": "CCIT Main",
       "category": "academic",
-      "description": "College of Communication & Information Technology",
+      "description": "College of Communication and Information Technology.",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.970230970946226,
@@ -1748,7 +1748,7 @@
       "id": "admin_court",
       "name": "Admin Court",
       "category": "court",
-      "description": "Court beside the Admin Building",
+      "description": "",
       "color": "#797c80",
       "latLng": {
         "lat": 14.969883638224307,
@@ -1774,7 +1774,7 @@
       "id": "agritech_1",
       "name": "Agriculture Technology (Agri-Tech)",
       "category": "academic",
-      "description": "A building of College of Agriculture",
+      "description": "College of Agriculture classrooms.",
       "color": "#4b73b4",
       "latLng": {
         "lat": 14.970538020233903,
@@ -1799,7 +1799,7 @@
       "id": "agritech_2",
       "name": "Agriculture Technology (Agri-Tech) 2",
       "category": "academic",
-      "description": "A building of College of Agriculture",
+      "description": "College of Agriculture classrooms.",
       "color": "#4b73b4",
       "latLng": {
         "lat": 14.970616796727535,
@@ -1824,7 +1824,7 @@
       "id": "motorpool_garage",
       "name": "Motorpool Garage",
       "category": "facility",
-      "description": "Motorpool Garage",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.97071705771943,
@@ -1849,7 +1849,7 @@
       "id": "organic_mango_center",
       "name": "RMTU Organic Mango Center",
       "category": "facility",
-      "description": "RMTU Organic Mango Center",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.970985613947718,
@@ -1874,7 +1874,7 @@
       "id": "rmtu_rd_center",
       "name": "RMTU Research and Development Center",
       "category": "facility",
-      "description": "RMTU R & D Center",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.97106797119106,
@@ -1899,7 +1899,7 @@
       "id": "regional_mango_center",
       "name": "Regional Mango Center",
       "category": "facility",
-      "description": "Regional Mango Center (two floors)",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.971591655836223,
@@ -1924,7 +1924,7 @@
       "id": "mitos_magsaysay_building",
       "name": "Mitos Magsaysay Building",
       "category": "academic",
-      "description": "A building of College of Agriculture",
+      "description": "One of the CAg buildings.",
       "color": "#a9aaab",
       "latLng": {
         "lat": 14.970883562580969,
@@ -2288,7 +2288,7 @@
       "id": "men_dorm",
       "name": "Men's Dormitory",
       "category": "facility",
-      "description": "Dormitory for women.",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.972512803699255,
@@ -2312,7 +2312,7 @@
       "id": "women_dorm",
       "name": "Women's Dormitory",
       "category": "facility",
-      "description": "Dormitory for men.",
+      "description": "",
       "color": "#4a4a4a",
       "latLng": {
         "lat": 14.967784423706513,
@@ -2337,7 +2337,7 @@
       "id": "prachouse",
       "name": "Practice House",
       "category": "facility",
-      "description": "An abandoned practice/guest house, could be use as a landmark.",
+      "description": "",
       "color": "#808080",
       "latLng": {
         "lat": 14.96836360997219,
@@ -2362,7 +2362,7 @@
       "id": "guard_house",
       "name": "Guard's House",
       "category": "facility",
-      "description": "The Guard's house.",
+      "description": "",
       "color": "#585e65",
       "latLng": {
         "lat": 14.96824634041917,

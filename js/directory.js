@@ -42,7 +42,7 @@ const DIRECTORY_DATA = [
         text: 'CTE building in front of Gabaldon Court.' },
       { name: 'CTE (BSED)', photo: 'images/CTE_BSED.jpg',
         text: 'CTE building with a faculty office and classrooms.' },
-      { name: 'LHS Building', photo: 'images/LHS.JPG',
+      { name: 'LHS Building', photo: 'images/LHS.jpg',
         text: 'LHS building with classrooms.' },
       { name: 'LHS Faculty / CCIT', photo: 'images/LHS_CCIT.jpg',
         text: 'Joint building for LHS faculty and CCIT second to fourth year classrooms.' },
@@ -62,7 +62,7 @@ const DIRECTORY_DATA = [
         text: "A small building located beside the inner gate." },
       { name: 'Library', photo: "images/LIBRARY.jpg",
         text: 'The campus library, with reading areas and study space.' },
-      { name: "Men's Dormitory", photo: 'images/MENS_DORMITORY.png',
+      { name: "Men's Dormitory", photo: 'images/MENS_DORMITORY.jpg',
         text: 'Dormitory housing for male students and faculty.' },
       { name: 'Motorpool', photo: "images/MOTORPOOL.jpg",
         text: 'Campus motorpool and service garage.' },
@@ -84,7 +84,7 @@ const DIRECTORY_DATA = [
     id: 'court',
     title: 'Multi-Court',
     items: [
-      { name: 'Admin Court', photo: 'images/ADMIN_COURT.png',
+      { name: 'Admin Court', photo: 'images/ADMIN_COURT.jpg',
         text: 'Covered court beside the Admin Building, used for campus activities.' },
       { name: 'Gabaldon Court', photo: 'images/GABALDON_COURT.jpg',
         text: 'Covered court used for campus activities.' },
@@ -123,6 +123,14 @@ const DIRECTORY_DATA = [
     if (item && item.photo) {
       var img = el('img', 'dir-photo-img', photoBox);
       img.alt = item.name || 'Building photo';
+      // Every category builds its whole carousel up front, so without this
+      // the page would kick off dozens of photo downloads the instant it
+      // opens — most of them for slides/categories the user hasn't scrolled
+      // to yet. loading="lazy" defers each photo until it's actually about
+      // to be visible; decoding="async" keeps a big photo's decode off the
+      // main thread so it can't freeze a swipe/scroll that's already in progress.
+      img.loading = 'lazy';
+      img.decoding = 'async';
       // If the file is missing or fails to decode, drop back to the
       // placeholder rather than showing a broken-image icon.
       img.onerror = function () {
