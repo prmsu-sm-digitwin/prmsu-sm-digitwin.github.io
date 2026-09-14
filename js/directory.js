@@ -103,8 +103,12 @@ const DIRECTORY_DATA = [
     return n;
   }
 
-  // Slide markup for one building.
-  function buildSlide(item, track) {
+  // Slide markup for one building's PHOTO only. The name/blurb used to
+  // live inside each slide too, but now that the photo is full-bleed and
+  // carries the arrows/dots as an overlay, only the photo needs to slide —
+  // the text below the stage just swaps its content on navigation instead
+  // of scrolling with it (see buildCategory's render()).
+  function buildPhotoSlide(item, track) {
     var slide = el('div', 'dir-slide', track);
 
     var photoBox = el('div', 'dir-photo', slide);
@@ -121,12 +125,6 @@ const DIRECTORY_DATA = [
     } else {
       photoBox.appendChild(placeholderBox());
     }
-
-    var info = el('div', 'dir-info', slide);
-    el('div', 'dir-name', info).textContent =
-      (item && item.name) ? item.name : 'Building name';
-    el('p', 'dir-text', info).textContent =
-      (item && item.text) ? item.text : 'Insert text about the building — what is inside and what it is for.';
 
     return slide;
   }
@@ -160,11 +158,19 @@ const DIRECTORY_DATA = [
       return section;
     }
 
+    // ---- photo stage: only the photos live in the sliding track. Arrows,
+    // dots, and the counter are a single shared overlay on top of it (not
+    // duplicated per slide), positioned by CSS relative to the photo itself
+    // — which is what lets the photo go full-bleed edge-to-edge. ----
     var stage = el('div', 'dir-stage', section);
 
     var viewport = el('div', 'dir-viewport', stage);
     var track = el('div', 'dir-track', viewport);
-    items.forEach(function (item) { buildSlide(item, track); });
+    items.forEach(function (item) { buildPhotoSlide(item, track); });
+
+    // Bottom fade so the arrows/dots stay legible over any photo, without
+    // dimming the rest of the image.
+    el('div', 'dir-photo-gradient', stage);
 
     var prev = el('button', 'dir-arrow dir-arrow-left', stage);
     prev.type = 'button';
@@ -178,7 +184,7 @@ const DIRECTORY_DATA = [
 
     // Dots — one per building, and they stay in sync automatically because
     // they're generated from the same list.
-    var dots = el('div', 'dir-dots', section);
+    var dots = el('div', 'dir-dots', stage);
     var dotEls = items.map(function (_, i) {
       var d = el('button', 'dir-dot', dots);
       d.type = 'button';
@@ -187,8 +193,15 @@ const DIRECTORY_DATA = [
       return d;
     });
 
+    var counter = el('div', 'dir-counter', stage);
+
+    // ---- name + blurb for whichever building is current. No longer part
+    // of the sliding track — it just swaps content on navigation. ----
+    var info = el('div', 'dir-info', section);
+    var nameEl = el('div', 'dir-name', info);
+    var textEl = el('p', 'dir-text', info);
+
     var idx = 0;
-    var counter = el('div', 'dir-counter', section);
 
     function render() {
       track.style.transform = 'translateX(' + (-idx * 100) + '%)';
@@ -200,6 +213,9 @@ const DIRECTORY_DATA = [
       Array.prototype.forEach.call(track.children, function (s, i) {
         s.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
       });
+      var item = items[idx];
+      nameEl.textContent = (item && item.name) ? item.name : 'Building name';
+      textEl.textContent = (item && item.text) ? item.text : 'Insert text about the building — what is inside and what it is for.';
     }
 
     // Modulo keeps the index in range forever, so it wraps around at both
