@@ -1658,14 +1658,25 @@
 
   /* ---- photo ---- */
   .dir-photo {
+    position: relative; /* contains the img once js/directory.js switches it to absolute (zoomed) positioning */
     width: 100%;
     aspect-ratio: 16 / 10;
     max-height: 320px;
-    overflow: hidden;
+    overflow: hidden; /* clips a zoomed-in photo to its own placeholder */
     background: var(--maroon-dark);
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Vertical page-scroll stays native even when a drag starts on a photo;
+       pinch and horizontal gestures are NOT native, so js/directory.js's own
+       pinch-zoom gets them instead of the browser trying to zoom the page. */
+    touch-action: pan-y;
+  }
+  /* Set once a photo is actually being pinched/panned (js/directory.js) —
+     takes full ownership of touch there, including vertical drags, so
+     panning a zoomed-in photo doesn't also scroll the page underneath it. */
+  .dir-photo.dir-photo-zoomed {
+    touch-action: none;
   }
   .dir-photo-img {
     width: 100%;
@@ -1673,6 +1684,7 @@
     object-fit: cover;
     display: block;
   }
+  .dir-photo-img-zoomanim { transition: transform 0.2s ease; }
   .dir-photo-ph {
     width: 100%;
     height: 100%;

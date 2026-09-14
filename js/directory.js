@@ -217,6 +217,100 @@ const DIRECTORY_DATA = [
 
     var idx = 0;
 
+    // ---- pinch/double-tap zoom, scoped to whichever photo is currently
+    // showing. Swiping to a different photo always resets it — each photo
+    // starts flat (no zoom carried over), which keeps this simple and
+    // matches what people expect from a photo carousel. ----
+    var zoomImg = null;  // the <img> currently in "zoomed" mode, or null
+    var zoomBox = null;  // its .dir-photo container (for bounds/sizing)
+    var zoomView = { scale: 1, baseScale: 1, minScale: 1, maxScale: 4, tx: 0, ty: 0, imgW: 0, imgH: 0 };
+
+    function currentPhotoImg() {
+      var slide = track.children[idx];
+      return slide ? slide.querySelector('.dir-photo-img') : null;
+    }
+
+    function isZoomActive() {
+      return !!zoomImg && zoomView.scale > zoomView.baseScale + 0.01;
+    }
+
+    // Switches an <img> from its normal CSS object-fit:cover display into
+    // JS-driven transform mode — same "cover" math as the satellite map and
+    // POV photo viewers use — so it can be scaled/panned. Starts out exactly
+    // where object-fit:cover already had it, so there's no visual jump.
+    function engageZoom(img) {
+      if (!img || !img.naturalWidth || zoomImg === img) return;
+      var box = img.closest('.dir-photo');
+      if (!box) return;
+      var boxW = box.clientWidth, boxH = box.clientHeight;
+      if (!boxW || !boxH) return;
+
+      var fit = Math.max(boxW / img.naturalWidth, boxH / img.naturalHeight);
+      zoomView.imgW = img.naturalWidth;
+      zoomView.imgH = img.naturalHeight;
+      zoomView.baseScale = fit;
+      zoomView.minScale = fit;
+      zoomView.maxScale = fit * 4;
+      zoomView.scale = fit;
+      zoomView.tx = (boxW - img.naturalWidth * fit) / 2;
+      zoomView.ty = (boxH - img.naturalHeight * fit) / 2;
+
+      img.style.position = 'absolute';
+      img.style.top = '0';
+      img.style.left = '0';
+      img.style.width = img.naturalWidth + 'px';
+      img.style.height = img.naturalHeight + 'px';
+      img.style.transformOrigin = '0 0';
+
+      zoomImg = img;
+      zoomBox = box;
+      box.classList.add('dir-photo-zoomed'); // hands touch-action fully to us — see style.css
+      applyZoomTransform(false);
+    }
+
+    function applyZoomTransform(animated) {
+      if (!zoomImg) return;
+      zoomImg.classList.toggle('dir-photo-img-zoomanim', !!animated);
+      zoomImg.style.transform = 'translate(' + zoomView.tx + 'px, ' + zoomView.ty + 'px) scale(' + zoomView.scale + ')';
+    }
+
+    function zoomClampToBounds() {
+      if (!zoomBox) return;
+      var boxW = zoomBox.clientWidth, boxH = zoomBox.clientHeight;
+      var scaledW = zoomView.imgW * zoomView.scale;
+      var scaledH = zoomView.imgH * zoomView.scale;
+      if (scaledW <= boxW) {
+        zoomView.tx = (boxW - scaledW) / 2;
+      } else {
+        var minTx = boxW - scaledW, maxTx = 0;
+        zoomView.tx = Math.min(maxTx, Math.max(minTx, zoomView.tx));
+      }
+      if (scaledH <= boxH) {
+        zoomView.ty = (boxH - scaledH) / 2;
+      } else {
+        var minTy = boxH - scaledH, maxTy = 0;
+        zoomView.ty = Math.min(maxTy, Math.max(minTy, zoomView.ty));
+      }
+    }
+
+    // Back to plain object-fit:cover — clearing the inline styles
+    // engageZoom set is enough, the CSS class takes back over.
+    function resetZoom() {
+      if (!zoomImg) return;
+      zoomImg.classList.remove('dir-photo-img-zoomanim');
+      zoomImg.style.position = '';
+      zoomImg.style.top = '';
+      zoomImg.style.left = '';
+      zoomImg.style.width = '';
+      zoomImg.style.height = '';
+      zoomImg.style.transform = '';
+      zoomImg.style.transformOrigin = '';
+      if (zoomBox) zoomBox.classList.remove('dir-photo-zoomed');
+      zoomImg = null;
+      zoomBox = null;
+      zoomView.scale = 1;
+    }
+
     function render() {
       track.style.transform = 'translateX(' + (-idx * 100) + '%)';
       dotEls.forEach(function (d, i) {
@@ -234,6 +328,7 @@ const DIRECTORY_DATA = [
     // Modulo keeps the index in range forever, so it wraps around at both
     // ends and can never run off the array.
     function go(i) {
+      resetZoom(); // each photo starts flat when you swipe/tap to it
       var n = items.length;
       idx = ((i % n) + n) % n;
       render();
@@ -242,27 +337,172 @@ const DIRECTORY_DATA = [
     prev.addEventListener('click', function () { go(idx - 1); });
     next.addEventListener('click', function () { go(idx + 1); });
 
-    // Swipe. Only a mostly-horizontal drag counts, so swiping up/down
-    // still scrolls the page normally.
-    var sx = 0, sy = 0, tracking = false;
-    viewport.addEventListener('touchstart', function (e) {
-      if (e.touches.length !== 1) { tracking = false; return; }
-      sx = e.touches[0].clientX;
-      sy = e.touches[0].clientY;
-      tracking = true;
-    }, { passive: true });
+    // ---- gestures on the photo stage: single-finger swipe between photos
+    // (same idea as before), single-finger pan once zoomed in, two-finger
+    // pinch to zoom, double-tap to toggle zoom. Pointer events (not touch
+    // events) so pinch reliably reaches this instead of falling through to
+    // the browser's own page-zoom — see touch-action in style.css. ----
+    var pointers = new Map();
+    var pinch = null;
+    var dragLast = null;
+    var swipeStart = null;
+    var lastTap = null;
 
-    viewport.addEventListener('touchend', function (e) {
-      if (!tracking) return;
-      tracking = false;
-      var t = e.changedTouches && e.changedTouches[0];
-      if (!t) return;
-      var dx = t.clientX - sx;
-      var dy = t.clientY - sy;
-      if (Math.abs(dx) < SWIPE_THRESHOLD) return;
-      if (Math.abs(dx) < Math.abs(dy)) return; // vertical scroll, not a swipe
-      go(dx < 0 ? idx + 1 : idx - 1);
-    }, { passive: true });
+    function localPoint(clientX, clientY) {
+      var r = viewport.getBoundingClientRect();
+      return { x: clientX - r.left, y: clientY - r.top };
+    }
+
+    viewport.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      viewport.setPointerCapture(e.pointerId);
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 1) {
+        if (isZoomActive()) {
+          dragLast = { x: e.clientX, y: e.clientY };
+          swipeStart = null;
+        } else {
+          swipeStart = { x: e.clientX, y: e.clientY };
+          dragLast = null;
+        }
+        pinch = null;
+      } else if (pointers.size === 2) {
+        swipeStart = null;
+        dragLast = null;
+        var img = currentPhotoImg();
+        if (img && img.naturalWidth) {
+          if (!zoomImg) engageZoom(img);
+          var pts = [...pointers.values()];
+          var dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+          var mid = localPoint((pts[0].x + pts[1].x) / 2, (pts[0].y + pts[1].y) / 2);
+          pinch = {
+            startDist: dist || 1,
+            startScale: zoomView.scale,
+            anchorX: (mid.x - zoomView.tx) / zoomView.scale,
+            anchorY: (mid.y - zoomView.ty) / zoomView.scale,
+          };
+          e.preventDefault();
+        }
+      }
+    });
+
+    viewport.addEventListener('pointermove', function (e) {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 1 && dragLast) {
+        zoomView.tx += e.clientX - dragLast.x;
+        zoomView.ty += e.clientY - dragLast.y;
+        dragLast = { x: e.clientX, y: e.clientY };
+        zoomClampToBounds();
+        applyZoomTransform(false);
+        e.preventDefault();
+      } else if (pointers.size === 2 && pinch) {
+        var pts = [...pointers.values()];
+        var dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        var mid = localPoint((pts[0].x + pts[1].x) / 2, (pts[0].y + pts[1].y) / 2);
+        var newScale = pinch.startScale * (dist / pinch.startDist);
+        zoomView.scale = Math.min(zoomView.maxScale, Math.max(zoomView.minScale, newScale));
+        zoomView.tx = mid.x - pinch.anchorX * zoomView.scale;
+        zoomView.ty = mid.y - pinch.anchorY * zoomView.scale;
+        zoomClampToBounds();
+        applyZoomTransform(false);
+        e.preventDefault();
+      }
+    });
+
+    function endPointer(e) {
+      var wasSwipeAttempt = !!swipeStart && pointers.size === 1;
+      var startPt = swipeStart;
+      pointers.delete(e.pointerId);
+      if (viewport.hasPointerCapture && viewport.hasPointerCapture(e.pointerId)) {
+        viewport.releasePointerCapture(e.pointerId);
+      }
+
+      if (pointers.size === 1) {
+        var remaining = [...pointers.values()][0];
+        dragLast = isZoomActive() ? remaining : null;
+        swipeStart = isZoomActive() ? null : remaining;
+        pinch = null;
+      } else if (pointers.size === 0) {
+        dragLast = null;
+        pinch = null;
+
+        // A pinch that let go without ending up zoomed in — snap back to a
+        // plain, un-transformed photo instead of leaving it sitting exactly
+        // at 1x in "zoomed mode".
+        if (zoomImg && !isZoomActive()) {
+          zoomView.scale = zoomView.baseScale;
+          zoomClampToBounds();
+          applyZoomTransform(true);
+          setTimeout(resetZoom, 200);
+        }
+
+        if (wasSwipeAttempt && startPt) {
+          var dx = e.clientX - startPt.x;
+          var dy = e.clientY - startPt.y;
+          if (Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dx) >= Math.abs(dy)) {
+            go(dx < 0 ? idx + 1 : idx - 1);
+          }
+        }
+        swipeStart = null;
+      }
+    }
+    viewport.addEventListener('pointerup', endPointer);
+    viewport.addEventListener('pointercancel', endPointer);
+
+    // Double-tap (or double-click, on desktop) toggles zoom, centered on
+    // wherever was tapped.
+    viewport.addEventListener('pointerup', function (e) {
+      var img = currentPhotoImg();
+      if (!img || !img.naturalWidth) return;
+      var now = Date.now();
+      var p = { x: e.clientX, y: e.clientY };
+      var isDoubleTap = lastTap
+        && (now - lastTap.t) < 320
+        && Math.hypot(p.x - lastTap.x, p.y - lastTap.y) < 24;
+      lastTap = { t: now, x: p.x, y: p.y };
+      if (!isDoubleTap) return;
+      lastTap = null;
+
+      if (isZoomActive()) {
+        zoomView.scale = zoomView.baseScale;
+        zoomClampToBounds();
+        applyZoomTransform(true);
+        setTimeout(resetZoom, 200);
+      } else {
+        if (!zoomImg) engageZoom(img);
+        var local = localPoint(e.clientX, e.clientY);
+        var newScale = zoomView.baseScale * 2.2;
+        var imgX = (local.x - zoomView.tx) / zoomView.scale;
+        var imgY = (local.y - zoomView.ty) / zoomView.scale;
+        zoomView.scale = newScale;
+        zoomView.tx = local.x - imgX * newScale;
+        zoomView.ty = local.y - imgY * newScale;
+        zoomClampToBounds();
+        applyZoomTransform(true);
+      }
+    });
+
+    // Desktop convenience: wheel to zoom, anchored at the cursor.
+    viewport.addEventListener('wheel', function (e) {
+      var img = currentPhotoImg();
+      if (!img || !img.naturalWidth) return;
+      e.preventDefault();
+      if (!zoomImg) engageZoom(img);
+      var local = localPoint(e.clientX, e.clientY);
+      var factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+      var newScale = Math.min(zoomView.maxScale, Math.max(zoomView.minScale, zoomView.scale * factor));
+      var imgX = (local.x - zoomView.tx) / zoomView.scale;
+      var imgY = (local.y - zoomView.ty) / zoomView.scale;
+      zoomView.scale = newScale;
+      zoomView.tx = local.x - imgX * newScale;
+      zoomView.ty = local.y - imgY * newScale;
+      zoomClampToBounds();
+      applyZoomTransform(false);
+      if (!isZoomActive()) setTimeout(function () { if (!isZoomActive()) resetZoom(); }, 200);
+    }, { passive: false });
 
     render();
     return section;
