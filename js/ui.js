@@ -712,7 +712,6 @@ function openDevzonePOV(zone) {
   const pov = document.getElementById('devzones-pov');
   const img = document.getElementById('devzones-pov-img');
   const label = document.getElementById('devzones-pov-label');
-  const backdrop = document.getElementById('devzones-pov-backdrop');
   if (!pov || !img || !label) return;
 
   initPovViewer();
@@ -726,10 +725,6 @@ function openDevzonePOV(zone) {
 
   label.textContent = zone.label;
   pov.classList.add('is-open');
-
-  // Same photo, blurred full-bleed behind the sharp one — see
-  // .devzones-pov-backdrop in style.css for why.
-  if (backdrop) backdrop.style.backgroundImage = 'url(' + zone.photo + ')';
 
   // Setting .src resets img.complete immediately, so this "already loaded"
   // check right after is safe — it only fires true for a cached repeat view

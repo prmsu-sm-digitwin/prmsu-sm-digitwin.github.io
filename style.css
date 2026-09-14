@@ -935,24 +935,8 @@
     opacity: 1;
     visibility: visible;
   }
-  /* Same photo as the sharp one on top, just blown up and heavily blurred,
-     filling the whole screen behind everything. Whatever the sharp stage's
-     mask fades away shows this instead — a soft blurred continuation of the
-     photo's own colors, not a flat black edge. scale(1.2) keeps the blur's
-     own soft boundary safely off-screen so it never peeks in as a ring. */
-  .devzones-pov-backdrop {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    transform: scale(1.2);
-    filter: blur(70px) saturate(1.25);
-  }
   /* The gesture surface — same size as the overlay, holds the perspective
-     so the tilt layer inside it has something to rotate "into". Masked
-     (not covered by an opaque overlay) so it fades itself out toward the
-     edges and lets .devzones-pov-backdrop show through there instead of
-     painting over it. */
+     so the tilt layer inside it has something to rotate "into". */
   .devzones-pov-stage {
     position: absolute;
     inset: 0;
@@ -960,8 +944,6 @@
     perspective: 850px;
     touch-action: none; /* we own all pan/pinch/tilt gestures ourselves */
     cursor: grab;
-    -webkit-mask-image: radial-gradient(ellipse at center, #000 52%, transparent 92%);
-    mask-image: radial-gradient(ellipse at center, #000 52%, transparent 92%);
   }
   .devzones-pov-stage.dragging { cursor: grabbing; }
   /* Rotates in 3D based on how far the photo has been panned from center —

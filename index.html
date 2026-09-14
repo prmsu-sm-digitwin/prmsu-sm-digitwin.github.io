@@ -365,17 +365,11 @@
            is pannable/zoomable (drag, pinch, wheel — same engine as the
            satellite map) and .devzones-pov-tilt adds a subtle perspective
            tilt driven by how far you've panned, for a bit of a "looking
-           around" feel while it's still just a flat photo.
-
-           The edges aren't black: .devzones-pov-backdrop is the same photo,
-           blown up and heavily blurred, filling the whole screen behind
-           everything else. .devzones-pov-stage fades itself out (a CSS
-           mask, not an opaque overlay) toward its own edges, so what shows
-           through there is a soft, blurred continuation of the photo's own
-           colors — same idea as the blurred-background look music apps use
-           behind an album cover. -->
+           around" feel while it's still just a flat photo. It always fully
+           covers the screen — even mid-tilt — via the dynamic cover-scale
+           math in applyPovTransform (js/ui.js), so there's no backdrop or
+           edge treatment needed here; a plain edge is the intended look. -->
       <div class="devzones-pov" id="devzones-pov" onclick="if (event.target === this) closeDevzonePOV()">
-        <div class="devzones-pov-backdrop" id="devzones-pov-backdrop"></div>
         <button class="devzones-pov-close" onclick="closeDevzonePOV()" title="Close">✕</button>
         <div class="devzones-pov-label" id="devzones-pov-label">Zone name</div>
         <div class="devzones-pov-stage" id="devzones-pov-stage">
