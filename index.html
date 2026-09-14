@@ -98,6 +98,17 @@
           <span class="btn-label">Navigation Map</span>
           <span class="btn-arrow">›</span>
         </button>
+        <button class="main-nav-btn" onclick="goTo('walkthrough')">
+          <div class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="4.5" r="1.8"/>
+              <path d="M10.5 22l1-6.5-2.2-1.8.6-4.7c.1-1 1-1.7 2-1.6.6.1 1.1.4 1.4.9l1.4 2.3 2.3 1 .8 2"/>
+              <path d="M9.3 13.7 6.5 15.2 5 20"/>
+            </svg>
+          </div>
+          <span class="btn-label">Campus Walkthrough</span>
+          <span class="btn-arrow">›</span>
+        </button>
         <button class="main-nav-btn" onclick="goTo('directory')">
           <div class="btn-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -105,6 +116,16 @@
             </svg>
           </div>
           <span class="btn-label">Campus Directory</span>
+          <span class="btn-arrow">›</span>
+        </button>
+        <button class="main-nav-btn" onclick="goTo('devzones')">
+          <div class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 21V8l5-3 5 3v13"/><path d="M14 21v-9l6-3v12"/>
+              <path d="M9 21v-4M4 21h16"/>
+            </svg>
+          </div>
+          <span class="btn-label">Development Zones</span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="main-nav-btn" onclick="goTo('about')">
@@ -243,6 +264,36 @@
     </div>
 
 
+    <!--CAMPUS WALKTHROUGH PAGE-->
+    <!-- Placeholder only — empty for now, design to follow. -->
+    <div class="page" id="page-walkthrough">
+      <div class="inner-top-bar">
+        <div class="inner-top-logo">
+          <div class="inner-top-logo-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="4.5" r="1.8"/>
+              <path d="M10.5 22l1-6.5-2.2-1.8.6-4.7c.1-1 1-1.7 2-1.6.6.1 1.1.4 1.4.9l1.4 2.3 2.3 1 .8 2"/>
+              <path d="M9.3 13.7 6.5 15.2 5 20"/>
+            </svg>
+          </div>
+          <div class="inner-top-logo-text">
+            <span class="inner-top-logo-name">PRMSU SM Digital Twin</span>
+            <span class="inner-top-logo-sub">CAMPUS WALKTHROUGH</span>
+          </div>
+        </div>
+        <button class="inner-hamburger-btn" onclick="openSidebar('walkthrough')">
+          <div class="ham-line"></div>
+          <div class="ham-line"></div>
+          <div class="ham-line"></div>
+        </button>
+      </div>
+
+      <div class="page-placeholder-content">
+        <span>Campus Walkthrough coming soon.</span>
+      </div>
+    </div>
+
+
     <!--ABOUT PAGE-->
     <!--CAMPUS DIRECTORY PAGE-->
     <!-- The category blocks inside #directory-content are generated at runtime
@@ -272,6 +323,35 @@
 
       <div class="directory-content" id="directory-content"></div>
 
+    </div>
+
+
+    <!--DEVELOPMENT ZONES PAGE-->
+    <!-- Placeholder only — empty for now, design to follow. -->
+    <div class="page" id="page-devzones">
+      <div class="inner-top-bar">
+        <div class="inner-top-logo">
+          <div class="inner-top-logo-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 21V8l5-3 5 3v13"/><path d="M14 21v-9l6-3v12"/>
+              <path d="M9 21v-4M4 21h16"/>
+            </svg>
+          </div>
+          <div class="inner-top-logo-text">
+            <span class="inner-top-logo-name">PRMSU SM Digital Twin</span>
+            <span class="inner-top-logo-sub">DEVELOPMENT ZONES</span>
+          </div>
+        </div>
+        <button class="inner-hamburger-btn" onclick="openSidebar('devzones')">
+          <div class="ham-line"></div>
+          <div class="ham-line"></div>
+          <div class="ham-line"></div>
+        </button>
+      </div>
+
+      <div class="page-placeholder-content">
+        <span>Development Zones coming soon.</span>
+      </div>
     </div>
 
     <div class="page" id="page-about">
@@ -436,6 +516,16 @@
           </div>
           <span class="sidebar-nav-label">Navigation Map</span>
         </div>
+        <div class="sidebar-nav-item" id="s-walkthrough" onclick="sidebarGoTo('walkthrough')">
+          <div class="sidebar-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="4.5" r="1.8"/>
+              <path d="M10.5 22l1-6.5-2.2-1.8.6-4.7c.1-1 1-1.7 2-1.6.6.1 1.1.4 1.4.9l1.4 2.3 2.3 1 .8 2"/>
+              <path d="M9.3 13.7 6.5 15.2 5 20"/>
+            </svg>
+          </div>
+          <span class="sidebar-nav-label">Campus Walkthrough</span>
+        </div>
         <div class="sidebar-nav-item" id="s-directory" onclick="sidebarGoTo('directory')">
           <div class="sidebar-nav-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -443,6 +533,15 @@
             </svg>
           </div>
           <span class="sidebar-nav-label">Campus Directory</span>
+        </div>
+        <div class="sidebar-nav-item" id="s-devzones" onclick="sidebarGoTo('devzones')">
+          <div class="sidebar-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 21V8l5-3 5 3v13"/><path d="M14 21v-9l6-3v12"/>
+              <path d="M9 21v-4M4 21h16"/>
+            </svg>
+          </div>
+          <span class="sidebar-nav-label">Development Zones</span>
         </div>
         <div class="sidebar-nav-item" id="s-about" onclick="sidebarGoTo('about')">
           <div class="sidebar-nav-icon">

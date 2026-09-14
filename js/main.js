@@ -100,8 +100,11 @@ function buildOval(oval) {
 
   const group = new THREE.Group();
 
-  // Outer track ring (reddish rubberized-track color)
-  const trackMat = new THREE.MeshLambertMaterial({ color: 0xb5651d });
+  // Outer track ring (reddish rubberized-track color by default — set
+  // trackColor/fieldColor on the oval in campus.json, or via the Track
+  // color / Field color fields in the campus editor, to override).
+  const trackColor = parseInt((oval.trackColor || '#b5651d').replace('#', ''), 16);
+  const trackMat = new THREE.MeshLambertMaterial({ color: trackColor });
   const trackMesh = new THREE.Mesh(
     new THREE.ShapeGeometry(stadiumShape(halfStraight, radius)),
     trackMat
@@ -116,7 +119,8 @@ function buildOval(oval) {
   // Inner infield (green), inset by the track width so the ring still shows
   const innerR = Math.max(0.1, radius - trackWidth);
   const innerHalfStraight = Math.max(0, halfStraight - trackWidth);
-  const fieldMat = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
+  const fieldColor = parseInt((oval.fieldColor || '#4caf50').replace('#', ''), 16);
+  const fieldMat = new THREE.MeshLambertMaterial({ color: fieldColor });
   const fieldMesh = new THREE.Mesh(
     new THREE.ShapeGeometry(stadiumShape(innerHalfStraight, innerR)),
     fieldMat
@@ -536,20 +540,6 @@ function drawPath(waypointIds, fromPos) {
     dot.userData.isPathDot = true;
     scene.add(dot);
   });
-
-
-  const lastWp = waypointMap[waypointIds[waypointIds.length - 1]];
-  if (lastWp) {
-    const pinMat = new THREE.MeshBasicMaterial({ color: 0xe74c3c });
-    const pinSphere = new THREE.Mesh(new THREE.SphereGeometry(4, 12, 12), pinMat);
-    pinSphere.position.set(lastWp.position.x, 8, lastWp.position.z);
-    pinSphere.userData.isPathDot = true;
-    scene.add(pinSphere);
-    const pinStick = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 8, 8), pinMat);
-    pinStick.position.set(lastWp.position.x, 4, lastWp.position.z);
-    pinStick.userData.isPathDot = true;
-    scene.add(pinStick);
-  }
 }
 
 function clearPath() {
@@ -577,10 +567,10 @@ function updateGPSMarker(x, z, isOnCampus) {
   // Only use as nav origin when actually inside campus bounds (not clamped)
   currentGPSPosition = isOnCampus ? { x, z } : null;
   if (!gpsMarker) {
-    // Blue sphere
+    // Red sphere — bigger and more visible than the old small blue dot
     gpsMarker = new THREE.Mesh(
-      new THREE.SphereGeometry(2.5, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0x3498db })
+      new THREE.SphereGeometry(4, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0xe74c3c })
     );
     gpsMarker.userData.isGPS = true;
     scene.add(gpsMarker);
@@ -593,7 +583,7 @@ function updateGPSMarker(x, z, isOnCampus) {
     return;
   }
   gpsMarker.visible = true;
-  gpsMarker.position.set(x, 2.5, z);
+  gpsMarker.position.set(x, 4, z);
 }
 
 const TAP_THRESHOLD = 12;

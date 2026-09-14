@@ -630,9 +630,12 @@
     ctx.rotate(rot);
     ctx.scale(scale, scale);
 
+    const trackColor = oval.trackColor || '#e0842f';
+    const fieldColor = oval.fieldColor || '#4caf50';
+
     ctx.beginPath();
     stadiumSubpath(half, radius);
-    ctx.fillStyle = selected ? '#e0842fdd' : '#e0842faa';
+    ctx.fillStyle = trackColor + (selected ? 'dd' : 'aa');
     ctx.fill();
     ctx.lineWidth = (selected ? 3 : 1.4) / scale;
     ctx.strokeStyle = selected ? '#1A4B8C' : '#8a5a22';
@@ -640,7 +643,7 @@
 
     ctx.beginPath();
     stadiumSubpath(innerHalf, innerR);
-    ctx.fillStyle = '#4caf50aa';
+    ctx.fillStyle = fieldColor + 'aa';
     ctx.fill();
 
     ctx.restore();
@@ -1342,6 +1345,7 @@
     html += '<div class="field-row">' + field('X (m)', '<input type="number" step="0.1" id="f_x" value="' + oval.center.x + '">') + field('Z (m)', '<input type="number" step="0.1" id="f_z" value="' + oval.center.z + '">') + '</div>';
     html += '<div class="field-row">' + field('Major axis (m)', '<input type="number" step="0.5" id="f_major" value="' + oval.majorAxis + '">') + field('Minor axis (m)', '<input type="number" step="0.5" id="f_minor" value="' + oval.minorAxis + '">') + '</div>';
     html += '<div class="field-row">' + field('Track width (m)', '<input type="number" step="0.5" id="f_tw" value="' + (oval.trackWidth != null ? oval.trackWidth : 8) + '">') + field('Rotation (°)', '<input type="number" step="1" id="f_rot" value="' + (oval.rotation || 0) + '">') + '</div>';
+    html += '<div class="field-row">' + field('Track color', '<input type="color" id="f_track_color" value="' + (oval.trackColor || '#b5651d') + '">') + field('Field color', '<input type="color" id="f_field_color" value="' + (oval.fieldColor || '#4caf50') + '">') + '</div>';
     if (oval._note) {
       html += '<div class="section-title">Provenance note</div><p class="empty" style="font-size:11px;line-height:1.5;">' + escHtml(oval._note) + '</p>';
     }
@@ -1396,6 +1400,16 @@
       state.dirty = true; redraw();
       if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
     });
+    el.querySelector('#f_track_color').addEventListener('input', (e) => {
+      oval.trackColor = e.target.value; redraw();
+      if (preview3D.isOpen) preview3D.rebuildOval(oval);
+    });
+    el.querySelector('#f_track_color').addEventListener('change', () => { snapshot(); state.dirty = true; });
+    el.querySelector('#f_field_color').addEventListener('input', (e) => {
+      oval.fieldColor = e.target.value; redraw();
+      if (preview3D.isOpen) preview3D.rebuildOval(oval);
+    });
+    el.querySelector('#f_field_color').addEventListener('change', () => { snapshot(); state.dirty = true; });
     el.querySelector('#deleteBtn').addEventListener('click', () => {
       if (confirm('Delete "' + (oval.label || oval.id) + '"?')) deleteSelected();
     });
@@ -1863,7 +1877,10 @@
 
       const group = new THREE.Group();
 
-      const trackMat = new THREE.MeshLambertMaterial({ color: 0xb5651d });
+      const trackColor = parseInt((oval.trackColor || '#b5651d').replace('#', ''), 16);
+      const fieldColor = parseInt((oval.fieldColor || '#4caf50').replace('#', ''), 16);
+
+      const trackMat = new THREE.MeshLambertMaterial({ color: trackColor });
       const trackMesh = new THREE.Mesh(new THREE.ShapeGeometry(stadiumShape3(halfStraight, radius)), trackMat);
       trackMesh.rotation.x = -Math.PI / 2;
       trackMesh.position.y = 0.15;
@@ -1871,7 +1888,7 @@
 
       const innerR = Math.max(0.1, radius - (trackWidth != null ? trackWidth : 8));
       const innerHalfStraight = Math.max(0, halfStraight - (trackWidth != null ? trackWidth : 8));
-      const fieldMat = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
+      const fieldMat = new THREE.MeshLambertMaterial({ color: fieldColor });
       const fieldMesh = new THREE.Mesh(new THREE.ShapeGeometry(stadiumShape3(innerHalfStraight, innerR)), fieldMat);
       fieldMesh.rotation.x = -Math.PI / 2;
       fieldMesh.position.y = 0.25;
