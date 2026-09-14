@@ -472,6 +472,27 @@ let povDragLast = null;
 let povLastTap = null;
 let povViewerInited = false;
 
+// Must match .devzones-pov-stage's CSS `perspective` — the tilt-cover math
+// below needs the same number CSS is actually using to project it.
+const POV_PERSPECTIVE_PX = 850;
+
+// Rotating a flat plane in 3D shrinks its projected footprint on the far
+// side (perspective foreshortening) — that's exactly what let the black
+// page background show through at the corners when the photo tilts. This
+// works out how much to scale the plane up, *before* it rotates, so its
+// foreshortened far edge still reaches exactly as far as it did flat —
+// derived from the actual angle in use and the perspective distance above,
+// so it costs nothing extra when centered (deg = 0 → scale 1) and only
+// zooms in slightly at the extremes of a pan, right when it's needed.
+function povTiltCoverScale(deg, half) {
+  var theta = Math.abs(deg) * Math.PI / 180;
+  if (theta < 0.0001 || half <= 0) return 1;
+  var denom = Math.cos(theta) * POV_PERSPECTIVE_PX - half * Math.sin(theta);
+  if (denom <= 0) return 3; // degenerate (huge screen / steep angle) — clamp rather than blow up
+  var s = POV_PERSPECTIVE_PX / denom;
+  return Math.min(s * 1.08, 3); // small safety margin for the X+Y-tilted-at-once case, hard-capped
+}
+
 function fitPovImage() {
   const stage = document.getElementById('devzones-pov-stage');
   const img = document.getElementById('devzones-pov-img');
@@ -497,6 +518,7 @@ function fitPovImage() {
 function applyPovTransform(animated) {
   const img = document.getElementById('devzones-pov-img');
   const tilt = document.getElementById('devzones-pov-tilt');
+  const stage = document.getElementById('devzones-pov-stage');
   if (!img) return;
   img.classList.toggle('animated', !!animated);
   img.style.width = povView.imgW + 'px';
@@ -504,10 +526,27 @@ function applyPovTransform(animated) {
   img.style.transform = 'translate(' + povView.tx + 'px, ' + povView.ty + 'px) scale(' + povView.scale + ')';
 
   if (tilt) {
+    // .devzones-pov-tilt always transitions (see its CSS) rather than being
+    // gated like .devzones-pov-img.animated — it updates every pointermove
+    // during a drag, and letting it ease continuously (instead of jumping
+    // frame-to-frame) is what gives the lean its "settling into place" feel
+    // even while the pan itself tracks the finger exactly.
     var maxTiltDeg = 14; // noticeable lean, still short of a fairground ride
     var rotY = -povView.tiltX * maxTiltDeg;
     var rotX = povView.tiltY * maxTiltDeg;
-    tilt.style.transform = 'rotateY(' + rotY.toFixed(2) + 'deg) rotateX(' + rotX.toFixed(2) + 'deg)';
+
+    var stageW = stage ? stage.clientWidth : 0;
+    var stageH = stage ? stage.clientHeight : 0;
+    var coverScale = Math.max(
+      povTiltCoverScale(rotY, stageW / 2),
+      povTiltCoverScale(rotX, stageH / 2),
+      1
+    );
+
+    // scale() goes innermost (rightmost) so the plane is enlarged *before*
+    // it rotates — matching what povTiltCoverScale actually solved for.
+    tilt.style.transform =
+      'rotateY(' + rotY.toFixed(2) + 'deg) rotateX(' + rotX.toFixed(2) + 'deg) scale(' + coverScale.toFixed(4) + ')';
   }
 }
 
@@ -673,6 +712,7 @@ function openDevzonePOV(zone) {
   const pov = document.getElementById('devzones-pov');
   const img = document.getElementById('devzones-pov-img');
   const label = document.getElementById('devzones-pov-label');
+  const backdrop = document.getElementById('devzones-pov-backdrop');
   if (!pov || !img || !label) return;
 
   initPovViewer();
@@ -686,6 +726,10 @@ function openDevzonePOV(zone) {
 
   label.textContent = zone.label;
   pov.classList.add('is-open');
+
+  // Same photo, blurred full-bleed behind the sharp one — see
+  // .devzones-pov-backdrop in style.css for why.
+  if (backdrop) backdrop.style.backgroundImage = 'url(' + zone.photo + ')';
 
   // Setting .src resets img.complete immediately, so this "already loaded"
   // check right after is safe — it only fires true for a cached repeat view
