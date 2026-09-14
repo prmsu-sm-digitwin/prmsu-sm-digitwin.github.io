@@ -871,6 +871,39 @@
     font-size: 13px;
     color: var(--text-light);
   }
+
+  /* Development Zones — full-bleed pannable/zoomable satellite map. Same
+     pan/pinch/zoom technique as the map legend viewer (see .legend-img-wrap
+     in js/ui.js), but sized to fill the whole page instead of a fixed modal
+     box, and the image starts "fit to screen" (whole map visible, letterboxed
+     if its aspect ratio doesn't match the screen) instead of at 1:1. */
+  .devzones-map-wrap {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: #10151a;
+    touch-action: none; /* we own all pan/pinch gestures ourselves */
+    cursor: grab;
+  }
+  .devzones-map-wrap.dragging { cursor: grabbing; }
+  .devzones-map-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none; /* the wrap handles gestures, not the img itself */
+  }
+  .devzones-map-img.animated { transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
+  .devzones-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    pointer-events: none; /* markers (added next) opt back in individually */
+  }
   .inner-hamburger-btn {
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.15);

@@ -33,6 +33,13 @@ let campusBuildings  = [];     // filled by onSceneReady() from main.js
         if (typeof onResize === 'function') onResize();
       }, 80);
     }
+    if (pageId === 'devzones') {
+      // Same idea: the page was hidden (zero-size) until now, so the "fit
+      // whole map to screen" math needs a frame to see real dimensions.
+      setTimeout(function () {
+        if (typeof fitDevzonesMap === 'function') fitDevzonesMap();
+      }, 80);
+    }
   };
 })();
 
@@ -285,6 +292,231 @@ function initLegendViewer() {
   });
 }
 initLegendViewer();
+
+
+// ── Development Zones — full-bleed pannable/pinch-zoomable satellite map ──
+// Same gesture handling as the legend viewer above (pointer-based pan, pinch
+// to zoom, wheel to zoom, double-tap to toggle zoom), but this map fills the
+// whole page instead of a fixed modal box, so instead of always resetting to
+// scale=1 at the top-left, the "resting" state is "zoomed/cropped to fill the
+// screen, centered" (baseScale below, see fitDevzonesMap) — the equivalent of
+// object-fit:cover, except driven by JS so it can be panned/zoomed from
+// there. Markers get layered on top of this in a later pass; #devzones-markers
+// already exists in the DOM (see index.html) so that pass doesn't need to
+// touch this file's structure.
+const devzonesView = { scale: 1, baseScale: 1, minScale: 1, maxScale: 6, tx: 0, ty: 0, imgW: 0, imgH: 0 };
+const devzonesPointers = new Map();
+let devzonesPinch = null;
+let devzonesDragLast = null;
+let devzonesLastTap = null;
+
+// Recomputes the starting view and resets to it. Called once the image has
+// its real pixel size (onload) and again whenever the page becomes
+// visible/resizes, since the wrap has zero size while its page is hidden and
+// the fit math needs real dimensions.
+//
+// This is "cover", not "contain": the satellite photo is landscape (wide)
+// but phones are portrait, so showing the *whole* image would leave black
+// bars above and below it. Google Maps never opens showing blank margins —
+// it opens already zoomed in, filling the screen edge to edge. Math.max
+// (instead of Math.min) picks the larger of the two ratios, so the map
+// scales up until it fills the taller dimension completely, cropping
+// whatever's left over on the sides — same as CSS object-fit:cover.
+function fitDevzonesMap() {
+  const wrap = document.getElementById('devzones-map-wrap');
+  const img = document.getElementById('devzones-map-img');
+  if (!wrap || !img || !img.naturalWidth) return;
+
+  devzonesView.imgW = img.naturalWidth;
+  devzonesView.imgH = img.naturalHeight;
+
+  const wrapW = wrap.clientWidth, wrapH = wrap.clientHeight;
+  if (!wrapW || !wrapH) return; // still hidden — try again once it's shown
+
+  const fit = Math.max(wrapW / devzonesView.imgW, wrapH / devzonesView.imgH);
+  devzonesView.baseScale = fit;
+  devzonesView.minScale = fit;
+  devzonesView.maxScale = fit * 6;
+  devzonesView.scale = fit;
+  devzonesView.tx = (wrapW - devzonesView.imgW * fit) / 2;
+  devzonesView.ty = (wrapH - devzonesView.imgH * fit) / 2;
+  applyDevzonesTransform(false);
+}
+
+function applyDevzonesTransform(animated) {
+  const img = document.getElementById('devzones-map-img');
+  const markers = document.getElementById('devzones-markers');
+  if (!img) return;
+  img.classList.toggle('animated', !!animated);
+  img.style.width = devzonesView.imgW + 'px';
+  img.style.height = devzonesView.imgH + 'px';
+  const t = 'translate(' + devzonesView.tx + 'px, ' + devzonesView.ty + 'px) scale(' + devzonesView.scale + ')';
+  img.style.transform = t;
+  // Markers (added in a later pass) live in image-pixel coordinates too, so
+  // they ride along with exactly the same transform and stay pinned to the
+  // spot on the map they mark, at any pan/zoom level.
+  if (markers) markers.style.transform = t;
+}
+
+// Keeps the map from being panned past its own edges — but only on axes
+// where it's actually bigger than the viewport at the current zoom. On an
+// axis where the (possibly letterboxed) image is smaller than the wrap, it
+// stays centered instead of pinned to an edge — same idea as object-fit,
+// just applied per-axis so a non-matching aspect ratio still looks right.
+function devzonesClampToBounds() {
+  const wrap = document.getElementById('devzones-map-wrap');
+  if (!wrap) return;
+  const wrapW = wrap.clientWidth, wrapH = wrap.clientHeight;
+  const scaledW = devzonesView.imgW * devzonesView.scale;
+  const scaledH = devzonesView.imgH * devzonesView.scale;
+
+  if (scaledW <= wrapW) {
+    devzonesView.tx = (wrapW - scaledW) / 2;
+  } else {
+    const minTx = wrapW - scaledW, maxTx = 0;
+    devzonesView.tx = Math.min(maxTx, Math.max(minTx, devzonesView.tx));
+  }
+  if (scaledH <= wrapH) {
+    devzonesView.ty = (wrapH - scaledH) / 2;
+  } else {
+    const minTy = wrapH - scaledH, maxTy = 0;
+    devzonesView.ty = Math.min(maxTy, Math.max(minTy, devzonesView.ty));
+  }
+}
+
+function devzonesLocalPoint(wrap, clientX, clientY) {
+  const r = wrap.getBoundingClientRect();
+  return { x: clientX - r.left, y: clientY - r.top };
+}
+
+function devzonesZoomAt(wrap, localX, localY, newScale) {
+  newScale = Math.min(devzonesView.maxScale, Math.max(devzonesView.minScale, newScale));
+  // Keep the map point under (localX, localY) fixed while the scale changes.
+  const imgX = (localX - devzonesView.tx) / devzonesView.scale;
+  const imgY = (localY - devzonesView.ty) / devzonesView.scale;
+  devzonesView.scale = newScale;
+  devzonesView.tx = localX - imgX * newScale;
+  devzonesView.ty = localY - imgY * newScale;
+  devzonesClampToBounds();
+}
+
+function initDevzonesViewer() {
+  const wrap = document.getElementById('devzones-map-wrap');
+  const img = document.getElementById('devzones-map-img');
+  if (!wrap || !img) return;
+
+  if (img.complete && img.naturalWidth) {
+    fitDevzonesMap();
+  } else {
+    img.addEventListener('load', function () { fitDevzonesMap(); });
+  }
+  window.addEventListener('resize', function () {
+    // Only refit while the page is actually visible — refitting a hidden
+    // (zero-size) page would just zero out the view.
+    var page = document.getElementById('page-devzones');
+    if (page && page.classList.contains('active')) fitDevzonesMap();
+  });
+
+  wrap.addEventListener('pointerdown', e => {
+    wrap.setPointerCapture(e.pointerId);
+    const p = devzonesLocalPoint(wrap, e.clientX, e.clientY);
+    devzonesPointers.set(e.pointerId, p);
+    wrap.classList.add('dragging');
+
+    if (devzonesPointers.size === 1) {
+      devzonesDragLast = p;
+      devzonesPinch = null;
+    } else if (devzonesPointers.size === 2) {
+      devzonesDragLast = null;
+      const pts = [...devzonesPointers.values()];
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      devzonesPinch = {
+        startDist: dist || 1,
+        startScale: devzonesView.scale,
+        anchorX: (mid.x - devzonesView.tx) / devzonesView.scale,
+        anchorY: (mid.y - devzonesView.ty) / devzonesView.scale,
+      };
+    }
+    e.preventDefault();
+  });
+
+  wrap.addEventListener('pointermove', e => {
+    if (!devzonesPointers.has(e.pointerId)) return;
+    const p = devzonesLocalPoint(wrap, e.clientX, e.clientY);
+    devzonesPointers.set(e.pointerId, p);
+
+    if (devzonesPointers.size === 1 && devzonesDragLast) {
+      devzonesView.tx += p.x - devzonesDragLast.x;
+      devzonesView.ty += p.y - devzonesDragLast.y;
+      devzonesDragLast = p;
+      devzonesClampToBounds();
+      applyDevzonesTransform(false);
+    } else if (devzonesPointers.size === 2 && devzonesPinch) {
+      const pts = [...devzonesPointers.values()];
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      const newScale = devzonesPinch.startScale * (dist / devzonesPinch.startDist);
+      devzonesView.scale = Math.min(devzonesView.maxScale, Math.max(devzonesView.minScale, newScale));
+      devzonesView.tx = mid.x - devzonesPinch.anchorX * devzonesView.scale;
+      devzonesView.ty = mid.y - devzonesPinch.anchorY * devzonesView.scale;
+      devzonesClampToBounds();
+      applyDevzonesTransform(false);
+    }
+    e.preventDefault();
+  });
+
+  function endPointer(e) {
+    devzonesPointers.delete(e.pointerId);
+    if (wrap.hasPointerCapture && wrap.hasPointerCapture(e.pointerId)) {
+      wrap.releasePointerCapture(e.pointerId);
+    }
+    if (devzonesPointers.size === 0) wrap.classList.remove('dragging');
+
+    if (devzonesPointers.size === 1) {
+      const [remaining] = [...devzonesPointers.values()];
+      devzonesDragLast = remaining;
+      devzonesPinch = null;
+    } else if (devzonesPointers.size === 0) {
+      devzonesDragLast = null;
+      devzonesPinch = null;
+    }
+  }
+  wrap.addEventListener('pointerup', endPointer);
+  wrap.addEventListener('pointercancel', endPointer);
+
+  // Desktop convenience: wheel to zoom, anchored at the cursor.
+  wrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    const p = devzonesLocalPoint(wrap, e.clientX, e.clientY);
+    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    devzonesZoomAt(wrap, p.x, p.y, devzonesView.scale * factor);
+    applyDevzonesTransform(false);
+  }, { passive: false });
+
+  // Double-click / double-tap to toggle between fit and ~2.4x the fit scale.
+  wrap.addEventListener('pointerup', e => {
+    const now = Date.now();
+    const p = devzonesLocalPoint(wrap, e.clientX, e.clientY);
+    const isDoubleTap = devzonesLastTap
+      && (now - devzonesLastTap.t) < 320
+      && Math.hypot(p.x - devzonesLastTap.x, p.y - devzonesLastTap.y) < 24;
+    devzonesLastTap = { t: now, x: p.x, y: p.y };
+    if (!isDoubleTap) return;
+    devzonesLastTap = null;
+    if (devzonesView.scale > devzonesView.baseScale + 0.01) {
+      devzonesView.scale = devzonesView.baseScale;
+      devzonesView.tx = (wrap.clientWidth - devzonesView.imgW * devzonesView.scale) / 2;
+      devzonesView.ty = (wrap.clientHeight - devzonesView.imgH * devzonesView.scale) / 2;
+      devzonesClampToBounds();
+      applyDevzonesTransform(true);
+    } else {
+      devzonesZoomAt(wrap, p.x, p.y, devzonesView.baseScale * 2.4);
+      applyDevzonesTransform(true);
+    }
+  });
+}
+initDevzonesViewer();
 
 
 // Live-filters the building sheet as the user types in the search bar.

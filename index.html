@@ -349,8 +349,12 @@
         </button>
       </div>
 
-      <div class="page-placeholder-content">
-        <span>Development Zones coming soon.</span>
+      <!-- Pannable/zoomable satellite map. Markers come next — for now this
+           is just the map itself, full-bleed under the top bar. -->
+      <div class="devzones-map-wrap" id="devzones-map-wrap">
+        <img src="images/DEV_ZONES_SATMAP.jpg" alt="Campus satellite map"
+             id="devzones-map-img" class="devzones-map-img" draggable="false">
+        <div class="devzones-markers" id="devzones-markers"></div>
       </div>
     </div>
 
