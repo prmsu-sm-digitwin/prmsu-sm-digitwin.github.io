@@ -290,21 +290,25 @@
 
       <!-- Early first-person prototype (js/walkthrough.js): walk over the
            reconstructed pathway mesh (models/LHS2Canteendt.glb), steered by a
-           draggable joystick that appears wherever you touch the left half
-           of the screen; dragging the right half looks around. Ground height
-           comes from data/walkthroughPathHeightmap.json, a precomputed grid
-           (built offline from the raw scan) rather than raycasting the 400k
-           polygons live -- see that file's header comment in the repo notes
-           for how it's built. The reconstruction has a real gap in the
-           middle where the LHS-side and Canteen-side scans don't share a
-           consistent elevation (not just a missing-geometry hole), so that
-           region is fenced off with an invisible wall instead of being
-           hidden -- it stays honest about what's incomplete. -->
+           joystick fixed at the bottom-middle of the screen (its touch
+           catchment is more generous than its graphic, so you don't need to
+           land a thumb exactly on it); dragging anywhere else looks around.
+           Ground height and the spawn point come from
+           data/walkthroughPathHeightmap.json, a precomputed grid (built
+           offline from the raw scan, including a road-vs-vegetation color
+           read so the spawn lands on the actual path) rather than
+           raycasting the 400k polygons live -- see that file's header
+           comment in the repo notes for how it's built. The reconstruction
+           has a real gap in the middle where the LHS-side and Canteen-side
+           scans don't share a consistent elevation (not just a
+           missing-geometry hole), so that region is fenced off with an
+           invisible wall instead of being hidden -- it stays honest about
+           what's incomplete. -->
       <div class="wt-fp-stage" id="wt-fp-stage">
         <canvas id="wt-fp-canvas"></canvas>
         <div class="wt-fp-loading" id="wt-fp-loading">Loading pathway preview…</div>
         <div class="wt-fp-badge">Early prototype — reconstructed pathway, may have rough edges</div>
-        <div class="wt-fp-hint" id="wt-fp-hint">Drag left to move · drag right to look around</div>
+        <div class="wt-fp-hint" id="wt-fp-hint">Use the joystick to move · drag elsewhere to look around</div>
         <div class="wt-fp-toast" id="wt-fp-toast">Reconstruction gap here — can't go further this way</div>
         <div class="wt-fp-joystick-base" id="wt-fp-joystick-base">
           <div class="wt-fp-joystick-nub" id="wt-fp-joystick-nub"></div>

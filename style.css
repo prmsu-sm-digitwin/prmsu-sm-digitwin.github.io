@@ -967,20 +967,23 @@
   .wt-fp-toast.wt-show { opacity: 1; transform: translate(-50%, 0); }
 
   /* Base is repositioned to the touch-down point by js/walkthrough.js, so
-     it reads as an "invisible wheel" that appears wherever you touch down,
-     rather than a fixed on-screen control. */
+     stays put at the bottom-middle -- its touch catchment is more generous
+     than its graphic (see JOY_ZONE_FRAC in js/walkthrough.js), so you don't
+     need to land a thumb exactly on it, but the visual itself never moves. */
   .wt-fp-joystick-base {
     position: absolute;
     z-index: 2;
+    left: 50%;
+    bottom: 26px;
     width: 96px;
     height: 96px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.14);
-    border: 2px solid rgba(255,255,255,0.35);
-    opacity: 0;
+    background: rgba(255,255,255,0.16);
+    border: 2px solid rgba(255,255,255,0.4);
+    opacity: 0.65;
     pointer-events: none;
     transition: opacity 0.15s ease;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
   }
   .wt-fp-joystick-base.wt-active { opacity: 1; }
   .wt-fp-joystick-nub {

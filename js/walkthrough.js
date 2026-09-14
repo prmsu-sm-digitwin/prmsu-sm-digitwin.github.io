@@ -1,13 +1,15 @@
 // Campus Walkthrough page — early first-person prototype.
 //
 // Walks the camera over the reconstructed pathway mesh (LHS building to the
-// Canteen), steered by a draggable joystick that appears wherever you touch
-// the left half of the screen ("invisible wheel"); dragging the right half
-// looks around. This is deliberately independent of js/main.js's map scene
-// and js/ui.js's POV viewer -- its own THREE.Scene/camera/renderer, its own
-// gesture handling -- so it can be lazily created only once this page is
-// actually opened, and paused (not torn down) whenever the user navigates
-// away.
+// Canteen), steered by a joystick fixed at the bottom-middle of the screen;
+// dragging anywhere else on the stage looks around. The joystick's visual
+// stays put, but you don't have to land your thumb exactly on it -- starting
+// a touch anywhere in the bottom third of the stage grabs it, and the nub
+// then clamps toward wherever you drag from that fixed center. This is
+// deliberately independent of js/main.js's map scene and js/ui.js's POV
+// viewer -- its own THREE.Scene/camera/renderer, its own gesture handling --
+// so it can be lazily created only once this page is actually opened, and
+// paused (not torn down) whenever the user navigates away.
 //
 // ---- Why there's a heightmap JSON instead of raycasting the mesh live ----
 // The raw scan is ~400k triangles / 44MB. Raycasting that live, every frame,
@@ -251,6 +253,14 @@
   }
 
   // ---- gestures ----
+  // The joystick's visual is fixed (via CSS) at the bottom-middle of the
+  // stage and never moves. Its touch CATCHMENT is more generous than its
+  // graphic though: starting a touch anywhere in the bottom JOY_ZONE_FRAC of
+  // the stage grabs it, so you don't need to land your thumb precisely on a
+  // 96px circle -- the nub then clamps toward your drag position measured
+  // from the fixed base center. Everywhere above that band is look-drag.
+  var JOY_ZONE_FRAC = 0.34;
+
   function bindGestures() {
     canvas.style.touchAction = 'none';
     canvas.addEventListener('pointerdown', onPointerDown);
@@ -260,9 +270,15 @@
     canvas.addEventListener('pointerleave', onPointerUpMaybe);
   }
 
-  function isLeftHalf(clientX) {
+  function isInJoystickZone(clientY) {
     var r = stage.getBoundingClientRect();
-    return (clientX - r.left) < r.width / 2;
+    return (clientY - r.top) > r.height * (1 - JOY_ZONE_FRAC);
+  }
+
+  function fixedJoyCenter() {
+    if (!joyBaseEl) return { x: 0, y: 0 };
+    var r = joyBaseEl.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
   function onPointerDown(e) {
@@ -271,14 +287,13 @@
       hintEl.classList.add('wt-hidden');
     }
 
-    if (isLeftHalf(e.clientX) && joyPointerId === null) {
+    if (isInJoystickZone(e.clientY) && joyPointerId === null) {
       joyPointerId = e.pointerId;
-      joyCenter = { x: e.clientX, y: e.clientY };
+      joyCenter = fixedJoyCenter();
       joyVec = { x: 0, y: 0 };
-      positionJoystick(joyCenter.x, joyCenter.y);
-      setJoystickNub(0, 0);
       if (joyBaseEl) joyBaseEl.classList.add('wt-active');
-    } else if (!isLeftHalf(e.clientX) && lookPointerId === null) {
+      onPointerMove(e); // apply the initial touch-down offset immediately
+    } else if (!isInJoystickZone(e.clientY) && lookPointerId === null) {
       lookPointerId = e.pointerId;
       lookLastX = e.clientX; lookLastY = e.clientY;
     }
@@ -299,14 +314,15 @@
     } else if (e.pointerId === lookPointerId) {
       var ddx = e.clientX - lookLastX, ddy = e.clientY - lookLastY;
       lookLastX = e.clientX; lookLastY = e.clientY;
-      yaw -= ddx * 0.006;
-      pitch = clamp(pitch - ddy * 0.006, MIN_PITCH, MAX_PITCH);
+      yaw -= ddx * 0.005;
+      pitch = clamp(pitch - ddy * 0.005, MIN_PITCH, MAX_PITCH);
       e.preventDefault();
     }
   }
 
   function endJoystick() {
     joyPointerId = null; joyCenter = null; joyVec = { x: 0, y: 0 };
+    setJoystickNub(0, 0);
     if (joyBaseEl) joyBaseEl.classList.remove('wt-active');
   }
 
@@ -321,13 +337,6 @@
   function onPointerUpMaybe(e) {
     if (canvas.hasPointerCapture && canvas.hasPointerCapture(e.pointerId)) return;
     onPointerUp(e);
-  }
-
-  function positionJoystick(clientX, clientY) {
-    if (!joyBaseEl || !stage) return;
-    var r = stage.getBoundingClientRect();
-    joyBaseEl.style.left = (clientX - r.left) + 'px';
-    joyBaseEl.style.top = (clientY - r.top) + 'px';
   }
 
   function setJoystickNub(dx, dy) {
