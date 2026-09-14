@@ -158,10 +158,10 @@ const DIRECTORY_DATA = [
       return section;
     }
 
-    // ---- photo stage: only the photos live in the sliding track. Arrows,
-    // dots, and the counter are a single shared overlay on top of it (not
-    // duplicated per slide), positioned by CSS relative to the photo itself
-    // — which is what lets the photo go full-bleed edge-to-edge. ----
+    // ---- photo stage: only the photos live in the sliding track. Arrows
+    // and dots are a single shared overlay on top of it (not duplicated
+    // per slide), positioned by CSS relative to the photo itself — which
+    // is what lets the photo go full-bleed edge-to-edge. ----
     var stage = el('div', 'dir-stage', section);
 
     var viewport = el('div', 'dir-viewport', stage);
@@ -193,8 +193,6 @@ const DIRECTORY_DATA = [
       return d;
     });
 
-    var counter = el('div', 'dir-counter', stage);
-
     // ---- name + blurb for whichever building is current. No longer part
     // of the sliding track — it just swaps content on navigation. ----
     var info = el('div', 'dir-info', section);
@@ -208,7 +206,6 @@ const DIRECTORY_DATA = [
       dotEls.forEach(function (d, i) {
         d.classList.toggle('is-active', i === idx);
       });
-      counter.textContent = (idx + 1) + ' / ' + items.length;
       // Only the visible slide should be reachable by screen readers / tab.
       Array.prototype.forEach.call(track.children, function (s, i) {
         s.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
