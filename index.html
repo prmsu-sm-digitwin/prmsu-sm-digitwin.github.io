@@ -361,11 +361,19 @@
 
       <!-- Full-screen "street view"-style POV for a tapped zone. Just a
            photo for now (per-zone future-plan render); the plan is to swap
-           this for an actual 3D model preview once those exist. -->
+           this for an actual 3D model preview once those exist. The photo
+           is pannable/zoomable (drag, pinch, wheel — same engine as the
+           satellite map) and .devzones-pov-tilt adds a subtle perspective
+           tilt driven by how far you've panned, for a bit of a "looking
+           around" feel while it's still just a flat photo. -->
       <div class="devzones-pov" id="devzones-pov" onclick="if (event.target === this) closeDevzonePOV()">
         <button class="devzones-pov-close" onclick="closeDevzonePOV()" title="Close">✕</button>
         <div class="devzones-pov-label" id="devzones-pov-label">Zone name</div>
-        <img class="devzones-pov-img" id="devzones-pov-img" src="" alt="Future development plan">
+        <div class="devzones-pov-stage" id="devzones-pov-stage">
+          <div class="devzones-pov-tilt" id="devzones-pov-tilt">
+            <img class="devzones-pov-img" id="devzones-pov-img" src="" alt="Future development plan" draggable="false">
+          </div>
+        </div>
       </div>
     </div>
 

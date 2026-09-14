@@ -448,17 +448,252 @@ function buildDevzonesMarkers() {
   });
 }
 
-// Full-screen "street view"-style POV for a tapped zone — just the zone's
-// photo for now; the plan is to swap the <img> for an actual 3D model
-// preview once those exist, without needing to touch this open/close logic.
+// ── Full-screen POV photo — pannable/zoomable, with a cheap "looking
+// around" 3D tilt ──
+// Just the zone's photo for now; the plan is to swap the <img> for an
+// actual 3D model preview once those exist, without needing to touch this
+// open/close/pan/zoom logic. The photo starts "cover"-fit (fills the
+// screen, same idea as the satellite map) and can be dragged/pinched from
+// there — same gesture engine as devzonesView above, duplicated with a
+// "pov" prefix instead of shared, since the two run on different elements
+// and don't need to interact.
+//
+// The 3D-ish part: .devzones-pov-tilt (a separate layer wrapping the image,
+// see index.html/style.css) gets a small rotateX/rotateY based on how far
+// off-center the pan currently is — panned to the left edge of the photo
+// tilts one way, the right edge the other, snapping back to flat when
+// centered. It's not a real look-around (that needs an actual panorama or
+// 3D model), just a flat photo with a perspective lean, but it reads as
+// "leaning into the scene" rather than a static crop.
+const povView = { scale: 1, baseScale: 1, minScale: 1, maxScale: 6, tx: 0, ty: 0, imgW: 0, imgH: 0, tiltX: 0, tiltY: 0 };
+const povPointers = new Map();
+let povPinch = null;
+let povDragLast = null;
+let povLastTap = null;
+let povViewerInited = false;
+
+function fitPovImage() {
+  const stage = document.getElementById('devzones-pov-stage');
+  const img = document.getElementById('devzones-pov-img');
+  if (!stage || !img || !img.naturalWidth) return;
+
+  povView.imgW = img.naturalWidth;
+  povView.imgH = img.naturalHeight;
+
+  const stageW = stage.clientWidth, stageH = stage.clientHeight;
+  if (!stageW || !stageH) return;
+
+  const fit = Math.max(stageW / povView.imgW, stageH / povView.imgH);
+  povView.baseScale = fit;
+  povView.minScale = fit;
+  povView.maxScale = fit * 4;
+  povView.scale = fit;
+  povView.tx = (stageW - povView.imgW * fit) / 2;
+  povView.ty = (stageH - povView.imgH * fit) / 2;
+  povClampToBounds();
+  applyPovTransform(false);
+}
+
+function applyPovTransform(animated) {
+  const img = document.getElementById('devzones-pov-img');
+  const tilt = document.getElementById('devzones-pov-tilt');
+  if (!img) return;
+  img.classList.toggle('animated', !!animated);
+  img.style.width = povView.imgW + 'px';
+  img.style.height = povView.imgH + 'px';
+  img.style.transform = 'translate(' + povView.tx + 'px, ' + povView.ty + 'px) scale(' + povView.scale + ')';
+
+  if (tilt) {
+    var maxTiltDeg = 14; // noticeable lean, still short of a fairground ride
+    var rotY = -povView.tiltX * maxTiltDeg;
+    var rotX = povView.tiltY * maxTiltDeg;
+    tilt.style.transform = 'rotateY(' + rotY.toFixed(2) + 'deg) rotateX(' + rotX.toFixed(2) + 'deg)';
+  }
+}
+
+// Same per-axis "clamp to edges, or center if it doesn't need panning" idea
+// as devzonesClampToBounds — plus, while it's at it, works out tiltX/tiltY
+// (-1..1, 0 = centered) from exactly the same bounds, since that's already
+// the "how far can this axis pan, and where are we in that range" math.
+function povClampToBounds() {
+  const stage = document.getElementById('devzones-pov-stage');
+  if (!stage) return;
+  const stageW = stage.clientWidth, stageH = stage.clientHeight;
+  const scaledW = povView.imgW * povView.scale;
+  const scaledH = povView.imgH * povView.scale;
+
+  var minTx, maxTx, minTy, maxTy;
+  if (scaledW <= stageW) {
+    minTx = maxTx = (stageW - scaledW) / 2;
+    povView.tx = minTx;
+  } else {
+    minTx = stageW - scaledW; maxTx = 0;
+    povView.tx = Math.min(maxTx, Math.max(minTx, povView.tx));
+  }
+  if (scaledH <= stageH) {
+    minTy = maxTy = (stageH - scaledH) / 2;
+    povView.ty = minTy;
+  } else {
+    minTy = stageH - scaledH; maxTy = 0;
+    povView.ty = Math.min(maxTy, Math.max(minTy, povView.ty));
+  }
+
+  povView.tiltX = maxTx > minTx ? ((povView.tx - minTx) / (maxTx - minTx)) * 2 - 1 : 0;
+  povView.tiltY = maxTy > minTy ? ((povView.ty - minTy) / (maxTy - minTy)) * 2 - 1 : 0;
+}
+
+function povLocalPoint(stage, clientX, clientY) {
+  const r = stage.getBoundingClientRect();
+  return { x: clientX - r.left, y: clientY - r.top };
+}
+
+function povZoomAt(stage, localX, localY, newScale) {
+  newScale = Math.min(povView.maxScale, Math.max(povView.minScale, newScale));
+  const imgX = (localX - povView.tx) / povView.scale;
+  const imgY = (localY - povView.ty) / povView.scale;
+  povView.scale = newScale;
+  povView.tx = localX - imgX * newScale;
+  povView.ty = localY - imgY * newScale;
+  povClampToBounds();
+}
+
+// Bound once — the stage element itself never changes, only which photo is
+// loaded into it, so there's nothing to re-bind on each openDevzonePOV call.
+function initPovViewer() {
+  if (povViewerInited) return;
+  povViewerInited = true;
+  const stage = document.getElementById('devzones-pov-stage');
+  if (!stage) return;
+
+  window.addEventListener('resize', function () {
+    const pov = document.getElementById('devzones-pov');
+    if (pov && pov.classList.contains('is-open')) fitPovImage();
+  });
+
+  stage.addEventListener('pointerdown', e => {
+    stage.setPointerCapture(e.pointerId);
+    const p = povLocalPoint(stage, e.clientX, e.clientY);
+    povPointers.set(e.pointerId, p);
+    stage.classList.add('dragging');
+
+    if (povPointers.size === 1) {
+      povDragLast = p;
+      povPinch = null;
+    } else if (povPointers.size === 2) {
+      povDragLast = null;
+      const pts = [...povPointers.values()];
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      povPinch = {
+        startDist: dist || 1,
+        startScale: povView.scale,
+        anchorX: (mid.x - povView.tx) / povView.scale,
+        anchorY: (mid.y - povView.ty) / povView.scale,
+      };
+    }
+    e.preventDefault();
+  });
+
+  stage.addEventListener('pointermove', e => {
+    if (!povPointers.has(e.pointerId)) return;
+    const p = povLocalPoint(stage, e.clientX, e.clientY);
+    povPointers.set(e.pointerId, p);
+
+    if (povPointers.size === 1 && povDragLast) {
+      povView.tx += p.x - povDragLast.x;
+      povView.ty += p.y - povDragLast.y;
+      povDragLast = p;
+      povClampToBounds();
+      applyPovTransform(false);
+    } else if (povPointers.size === 2 && povPinch) {
+      const pts = [...povPointers.values()];
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      const newScale = povPinch.startScale * (dist / povPinch.startDist);
+      povView.scale = Math.min(povView.maxScale, Math.max(povView.minScale, newScale));
+      povView.tx = mid.x - povPinch.anchorX * povView.scale;
+      povView.ty = mid.y - povPinch.anchorY * povView.scale;
+      povClampToBounds();
+      applyPovTransform(false);
+    }
+    e.preventDefault();
+  });
+
+  function endPointer(e) {
+    povPointers.delete(e.pointerId);
+    if (stage.hasPointerCapture && stage.hasPointerCapture(e.pointerId)) {
+      stage.releasePointerCapture(e.pointerId);
+    }
+    if (povPointers.size === 0) stage.classList.remove('dragging');
+
+    if (povPointers.size === 1) {
+      const [remaining] = [...povPointers.values()];
+      povDragLast = remaining;
+      povPinch = null;
+    } else if (povPointers.size === 0) {
+      povDragLast = null;
+      povPinch = null;
+    }
+  }
+  stage.addEventListener('pointerup', endPointer);
+  stage.addEventListener('pointercancel', endPointer);
+
+  stage.addEventListener('wheel', e => {
+    e.preventDefault();
+    const p = povLocalPoint(stage, e.clientX, e.clientY);
+    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    povZoomAt(stage, p.x, p.y, povView.scale * factor);
+    applyPovTransform(false);
+  }, { passive: false });
+
+  // Double-click / double-tap to toggle between fit and ~2.4x the fit scale.
+  stage.addEventListener('pointerup', e => {
+    const now = Date.now();
+    const p = povLocalPoint(stage, e.clientX, e.clientY);
+    const isDoubleTap = povLastTap
+      && (now - povLastTap.t) < 320
+      && Math.hypot(p.x - povLastTap.x, p.y - povLastTap.y) < 24;
+    povLastTap = { t: now, x: p.x, y: p.y };
+    if (!isDoubleTap) return;
+    povLastTap = null;
+    if (povView.scale > povView.baseScale + 0.01) {
+      povView.scale = povView.baseScale;
+      povView.tx = (stage.clientWidth - povView.imgW * povView.scale) / 2;
+      povView.ty = (stage.clientHeight - povView.imgH * povView.scale) / 2;
+      povClampToBounds();
+      applyPovTransform(true);
+    } else {
+      povZoomAt(stage, p.x, p.y, povView.baseScale * 2.4);
+      applyPovTransform(true);
+    }
+  });
+}
+
 function openDevzonePOV(zone) {
   const pov = document.getElementById('devzones-pov');
   const img = document.getElementById('devzones-pov-img');
   const label = document.getElementById('devzones-pov-label');
   if (!pov || !img || !label) return;
-  img.src = zone.photo;
+
+  initPovViewer();
+
+  // Fresh gesture state for the new photo — stray pointers from whatever
+  // was happening on the satellite map shouldn't leak in here.
+  povPointers.clear();
+  povPinch = null;
+  povDragLast = null;
+  povLastTap = null;
+
   label.textContent = zone.label;
   pov.classList.add('is-open');
+
+  // Setting .src resets img.complete immediately, so this "already loaded"
+  // check right after is safe — it only fires true for a cached repeat view
+  // of the same photo. Otherwise the load listener picks it up once it's in.
+  img.classList.remove('animated');
+  img.onload = function () { fitPovImage(); };
+  img.src = zone.photo;
+  if (img.complete && img.naturalWidth) fitPovImage();
 }
 
 function closeDevzonePOV() {

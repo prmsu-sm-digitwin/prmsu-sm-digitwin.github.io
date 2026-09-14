@@ -918,15 +918,15 @@
   .devzones-marker svg { width: 100%; height: 100%; display: block; }
   .devzones-marker:active { color: #ff8a6a; }
 
-  /* Full-screen "street view"-style POV overlay for a tapped zone. */
+  /* Full-screen "street view"-style POV overlay for a tapped zone. The
+     photo pans/zooms the same way the satellite map does (see the povView
+     JS block: drag to pan, pinch/wheel/double-tap to zoom, starts fit to
+     fill the screen). */
   .devzones-pov {
     position: fixed;
     inset: 0;
     z-index: 200;
     background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease;
@@ -935,13 +935,42 @@
     opacity: 1;
     visibility: visible;
   }
-  .devzones-pov-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  /* The gesture surface — same size as the overlay, holds the perspective
+     so the tilt layer inside it has something to rotate "into". */
+  .devzones-pov-stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    perspective: 850px;
+    touch-action: none; /* we own all pan/pinch/tilt gestures ourselves */
+    cursor: grab;
   }
+  .devzones-pov-stage.dragging { cursor: grabbing; }
+  /* Rotates in 3D based on how far the photo has been panned from center —
+     a cheap "looking around" illusion on a flat photo (see applyPovTransform
+     in js/ui.js). Separate from the image's own pan/zoom transform below so
+     the tilt can't throw off the pixel-accurate pan math. */
+  .devzones-pov-tilt {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+  }
+  .devzones-pov-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none; /* the stage handles gestures, not the img itself */
+  }
+  .devzones-pov-img.animated { transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
   .devzones-pov-label {
     position: absolute;
+    z-index: 1; /* stage/tilt/img come after it in the DOM, so pin it above them */
     left: 16px;
     bottom: 20px;
     padding: 8px 14px;
@@ -956,6 +985,7 @@
   }
   .devzones-pov-close {
     position: absolute;
+    z-index: 1; /* stage/tilt/img come after it in the DOM, so pin it above them */
     top: 16px;
     right: 16px;
     width: 38px;
