@@ -858,8 +858,9 @@
     font-weight: 500;
   }
 
-  /* Placeholder body for pages with no content yet (Campus Walkthrough,
-     Development Zones) — swap this out once each page's real design lands. */
+  /* Placeholder body for pages with no content yet — swap this out once each
+     page's real design lands. (Campus Walkthrough has since moved to its own
+     .walkthrough-showcase below; Development Zones has its own build too.) */
   .page-placeholder-content {
     flex: 1;
     display: flex;
@@ -870,6 +871,128 @@
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     color: var(--text-light);
+  }
+
+  /* ---- Campus Walkthrough — first-person prototype (js/walkthrough.js) ----
+     Full-bleed 3D stage (same footprint pattern as .devzones-map-wrap below)
+     with a draggable joystick overlay. See the HTML comment above
+     #page-walkthrough for how movement/collision/the fenced-off gap work. */
+  .wt-fp-stage {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: #B9C6D6;
+    touch-action: none;
+  }
+
+  .wt-fp-stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .wt-fp-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    text-align: center;
+    background: rgba(10,15,20,0.55);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: #fff;
+    transition: opacity 0.3s ease;
+  }
+  .wt-fp-loading.wt-hidden { opacity: 0; pointer-events: none; }
+
+  .wt-fp-badge {
+    position: absolute;
+    z-index: 2;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .wt-fp-hint {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .wt-fp-hint.wt-hidden { opacity: 0; }
+
+  .wt-fp-toast {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: 100px;
+    transform: translate(-50%, 8px);
+    padding: 8px 14px;
+    border-radius: 8px;
+    max-width: 80%;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11.5px;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .wt-fp-toast.wt-show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* Base is repositioned to the touch-down point by js/walkthrough.js, so
+     it reads as an "invisible wheel" that appears wherever you touch down,
+     rather than a fixed on-screen control. */
+  .wt-fp-joystick-base {
+    position: absolute;
+    z-index: 2;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+    border: 2px solid rgba(255,255,255,0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    transform: translate(-50%, -50%);
+  }
+  .wt-fp-joystick-base.wt-active { opacity: 1; }
+  .wt-fp-joystick-nub {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transform: translate(-50%, -50%);
   }
 
   /* Development Zones — full-bleed pannable/zoomable satellite map. Same

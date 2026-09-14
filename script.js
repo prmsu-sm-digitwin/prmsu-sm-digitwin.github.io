@@ -89,10 +89,18 @@ function sidebarGoTo(pageId) {
   const prevEl = document.getElementById('page-' + current);
   const nextEl = document.getElementById('page-' + pageId);
   if (nextEl && pageId !== current) {
+    const leavingWalkthrough = current === 'walkthrough';
     prevEl.classList.remove('active');
     nextEl.classList.add('active');
     current = pageId;
     updateNav(pageId);
+
+    // The sidebar drawer swaps pages itself instead of going through goTo()
+    // above, so the Walkthrough prototype needs the same enter/leave hooks here.
+    if (window.CampusWalkthrough) {
+      if (pageId === 'walkthrough') window.CampusWalkthrough.onEnter();
+      else if (leavingWalkthrough) window.CampusWalkthrough.onLeave();
+    }
   }
 
   if (openedFromInner) {
@@ -371,6 +379,23 @@ window.addEventListener('popstate', function (e) {
     goTo(state.page, true);
   }
 });
+
+// Hand the Campus Walkthrough first-person prototype (js/walkthrough.js) its
+// own enter/leave hooks, same idiom as the map-page sheet wrapper above:
+// start/resume its render loop only while that page is actually visible,
+// pause it (not destroy it -- the loaded model + heightmap stay in memory)
+// the moment the user navigates elsewhere.
+(function () {
+  var _goTo3 = window.goTo;
+  window.goTo = function (p, fromPopState) {
+    var leavingWalkthrough = current === 'walkthrough' && p !== 'walkthrough';
+    _goTo3(p, fromPopState);
+    if (window.CampusWalkthrough) {
+      if (p === 'walkthrough') window.CampusWalkthrough.onEnter();
+      else if (leavingWalkthrough) window.CampusWalkthrough.onLeave();
+    }
+  };
+})();
 
 function toggleMenu() {
   goTo('main');
