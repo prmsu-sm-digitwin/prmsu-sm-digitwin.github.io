@@ -352,10 +352,20 @@ function applyDevzonesTransform(animated) {
   img.style.height = devzonesView.imgH + 'px';
   const t = 'translate(' + devzonesView.tx + 'px, ' + devzonesView.ty + 'px) scale(' + devzonesView.scale + ')';
   img.style.transform = t;
-  // Markers (added in a later pass) live in image-pixel coordinates too, so
-  // they ride along with exactly the same transform and stay pinned to the
-  // spot on the map they mark, at any pan/zoom level.
-  if (markers) markers.style.transform = t;
+  // Markers live in image-pixel coordinates too, so they ride along with
+  // exactly the same transform and stay pinned to the spot on the map they
+  // mark, at any pan/zoom level.
+  if (markers) {
+    markers.style.transform = t;
+    // ...but the pins themselves should look the same size no matter how
+    // zoomed-in the map is, not grow with it. Each pin gets its own inverse
+    // scale to cancel out the container's — same trick map apps use for
+    // markers on a zoomable tile layer.
+    const invScale = 1 / devzonesView.scale;
+    Array.prototype.forEach.call(markers.children, function (pin) {
+      pin.style.transform = 'translate(-50%, -100%) scale(' + invScale + ')';
+    });
+  }
 }
 
 // Keeps the map from being panned past its own edges — but only on axes
@@ -400,10 +410,68 @@ function devzonesZoomAt(wrap, localX, localY, newScale) {
   devzonesClampToBounds();
 }
 
+// Each zone's x/y is a pixel position in the *original* DEV_ZONES_SATMAP.jpg
+// (1327×703) — the same pixel space #devzones-markers is transformed in, so
+// a marker just needs its left/top set once and it rides along with every
+// pan/zoom for free (see the transform block in applyDevzonesTransform).
+const DEVZONES_DATA = [
+  { id: 'mango_greenhouse', label: 'Mango Greenhouse Farm', photo: 'images/Mango_Greenhouse_FarmDZ.jpg', x: 711.5, y: 272.2 },
+  { id: 'stadium',          label: 'Stadium',                photo: 'images/StadiumDZ.jpg',                x: 1042.5, y: 248.1 },
+  { id: 'bangar',           label: 'Bangar',                  photo: 'images/BangarDZ.jpg',                 x: 702.5, y: 423.1 }
+];
+
+// Builds the marker pins once (guarded by _built, same pattern as the
+// directory carousel) — DEVZONES_DATA never changes at runtime so there's
+// nothing to re-render later.
+function buildDevzonesMarkers() {
+  const host = document.getElementById('devzones-markers');
+  if (!host || host._built) return;
+  host._built = true;
+
+  DEVZONES_DATA.forEach(function (zone) {
+    const pin = document.createElement('button');
+    pin.type = 'button';
+    pin.className = 'devzones-marker';
+    pin.style.left = zone.x + 'px';
+    pin.style.top = zone.y + 'px';
+    pin.setAttribute('aria-label', zone.label);
+    pin.title = zone.label;
+    pin.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="currentColor">' +
+      '<path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>' +
+      '</svg>';
+    pin.addEventListener('click', function (e) {
+      e.stopPropagation();
+      openDevzonePOV(zone);
+    });
+    host.appendChild(pin);
+  });
+}
+
+// Full-screen "street view"-style POV for a tapped zone — just the zone's
+// photo for now; the plan is to swap the <img> for an actual 3D model
+// preview once those exist, without needing to touch this open/close logic.
+function openDevzonePOV(zone) {
+  const pov = document.getElementById('devzones-pov');
+  const img = document.getElementById('devzones-pov-img');
+  const label = document.getElementById('devzones-pov-label');
+  if (!pov || !img || !label) return;
+  img.src = zone.photo;
+  label.textContent = zone.label;
+  pov.classList.add('is-open');
+}
+
+function closeDevzonePOV() {
+  const pov = document.getElementById('devzones-pov');
+  if (pov) pov.classList.remove('is-open');
+}
+
 function initDevzonesViewer() {
   const wrap = document.getElementById('devzones-map-wrap');
   const img = document.getElementById('devzones-map-img');
   if (!wrap || !img) return;
+
+  buildDevzonesMarkers();
 
   if (img.complete && img.naturalWidth) {
     fitDevzonesMap();
@@ -418,6 +486,13 @@ function initDevzonesViewer() {
   });
 
   wrap.addEventListener('pointerdown', e => {
+    // A tap on a marker pin should open its POV photo, not start a pan —
+    // if we captured the pointer here regardless of target, the marker's
+    // own click event would never fire (the wrap would swallow the
+    // matching pointerup). Bail out before touching gesture state so the
+    // button gets a normal, uninterrupted click.
+    if (e.target.closest && e.target.closest('.devzones-marker')) return;
+
     wrap.setPointerCapture(e.pointerId);
     const p = devzonesLocalPoint(wrap, e.clientX, e.clientY);
     devzonesPointers.set(e.pointerId, p);

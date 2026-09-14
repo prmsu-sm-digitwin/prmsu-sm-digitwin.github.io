@@ -897,6 +897,78 @@
     pointer-events: none; /* the wrap handles gestures, not the img itself */
   }
   .devzones-map-img.animated { transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
+  /* Pin markers. Positioned via left/top in image-pixel space (set once in
+     JS) and anchored so the tip of the pin, not its center, points at the
+     spot — translate(-50%,-100%) — combined with a counter-scale so it
+     stays a constant screen size at any zoom (see applyDevzonesTransform). */
+  .devzones-marker {
+    position: absolute;
+    transform-origin: 50% 100%;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #ff5a3c;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.55));
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .devzones-marker svg { width: 100%; height: 100%; display: block; }
+  .devzones-marker:active { color: #ff8a6a; }
+
+  /* Full-screen "street view"-style POV overlay for a tapped zone. */
+  .devzones-pov {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+  }
+  .devzones-pov.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .devzones-pov-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .devzones-pov-label {
+    position: absolute;
+    left: 16px;
+    bottom: 20px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .devzones-pov-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
   .devzones-markers {
     position: absolute;
     top: 0;

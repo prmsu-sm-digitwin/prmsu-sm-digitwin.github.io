@@ -349,12 +349,23 @@
         </button>
       </div>
 
-      <!-- Pannable/zoomable satellite map. Markers come next — for now this
-           is just the map itself, full-bleed under the top bar. -->
+      <!-- Pannable/zoomable satellite map with tappable zone markers
+           (DEVZONES_DATA in js/ui.js). Tapping one opens the full-screen
+           "POV" photo overlay below — a placeholder for the 3D-model preview
+           planned later. -->
       <div class="devzones-map-wrap" id="devzones-map-wrap">
         <img src="images/DEV_ZONES_SATMAP.jpg" alt="Campus satellite map"
              id="devzones-map-img" class="devzones-map-img" draggable="false">
         <div class="devzones-markers" id="devzones-markers"></div>
+      </div>
+
+      <!-- Full-screen "street view"-style POV for a tapped zone. Just a
+           photo for now (per-zone future-plan render); the plan is to swap
+           this for an actual 3D model preview once those exist. -->
+      <div class="devzones-pov" id="devzones-pov" onclick="if (event.target === this) closeDevzonePOV()">
+        <button class="devzones-pov-close" onclick="closeDevzonePOV()" title="Close">✕</button>
+        <div class="devzones-pov-label" id="devzones-pov-label">Zone name</div>
+        <img class="devzones-pov-img" id="devzones-pov-img" src="" alt="Future development plan">
       </div>
     </div>
 
