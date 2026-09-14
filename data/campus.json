@@ -65,7 +65,8 @@
       "neighbors": [
         "main_gate",
         "z1_int1",
-        "womendorm_entryroad"
+        "womendorm_entryroad",
+        "guard_house_roadentry"
       ]
     },
     {
@@ -84,7 +85,8 @@
         "z1_int2",
         "z3_start",
         "canteen_pathway",
-        "womendorm_entryroad"
+        "womendorm_entryroad",
+        "guard_house_roadentry"
       ]
     },
     {
@@ -102,7 +104,8 @@
         "z1_int1",
         "z2_start",
         "z1_int2b",
-        "prachouse_raodentry"
+        "prachouse_raodentry",
+        "guard_house_roadentry"
       ]
     },
     {
@@ -1354,6 +1357,39 @@
         "z1_int2b",
         "z1_int2"
       ]
+    },
+    {
+      "id": "guard_house_roadentry",
+      "label": "Guard house road entry",
+      "latLng": {
+        "lat": 14.968328729087942,
+        "lng": 120.19552500153333
+      },
+      "position": {
+        "x": 482.7,
+        "z": 20.3
+      },
+      "neighbors": [
+        "entrance_guard_house",
+        "z1_int1",
+        "inner_gate",
+        "z1_int2"
+      ]
+    },
+    {
+      "id": "entrance_guard_house",
+      "label": "Entrance Guard's House",
+      "latLng": {
+        "lat": 14.96829098106006,
+        "lng": 120.19554254489411
+      },
+      "position": {
+        "x": 484.6,
+        "z": 24.5
+      },
+      "neighbors": [
+        "guard_house_roadentry"
+      ]
     }
   ],
   "buildings": [
@@ -1398,15 +1434,15 @@
         "z": 4.7
       },
       "size": {
-        "width": 20.1,
-        "depth": 27.9,
-        "height": 10
+        "width": 11.5,
+        "depth": 33.0,
+        "height": 9.6
       },
       "glbModel": "models/SCNav.glb",
       "texturedModel": null,
       "rotation": 105,
       "entryWaypoint": "sc_entry",
-      "modelScale": 1.2
+      "modelScale": 1
     },
     {
       "id": "gabaldon",
@@ -1447,9 +1483,9 @@
         "z": -17.6
       },
       "size": {
-        "width": 34.1,
-        "depth": 60.2,
-        "height": 12
+        "width": 12.8,
+        "depth": 34.6,
+        "height": 7.8
       },
       "glbModel": "models/BEEDNav.glb",
       "texturedModel": null,
@@ -1472,15 +1508,15 @@
         "z": -44.5
       },
       "size": {
-        "width": 24.3,
-        "depth": 43,
-        "height": 12
+        "width": 11.7,
+        "depth": 14.7,
+        "height": 4.5
       },
       "glbModel": "models/LIBNav.glb",
       "texturedModel": null,
       "rotation": 113.5,
       "entryWaypoint": "lib_entry",
-      "modelScale": 1.1
+      "modelScale": 1
     },
     {
       "id": "asb",
@@ -1716,16 +1752,16 @@
         "z": -159.5
       },
       "size": {
-        "width": 20,
-        "depth": 15,
-        "height": 8
+        "width": 25.3,
+        "depth": 13.5,
+        "height": 8.3
       },
       "glbModel": "models/AdminCourtNav.glb",
       "texturedModel": null,
       "rotation": 195,
       "entryWaypoint": "z1_int13",
       "glbTint": true,
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "agritech_1",
@@ -1866,7 +1902,7 @@
         "depth": 30,
         "height": 20
       },
-      "glbModel": null,
+      "glbModel": "models/RMCNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "regional_mango_center_door"
@@ -1910,16 +1946,16 @@
         "z": -246.2
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 5.1,
+        "depth": 5.6,
+        "height": 2.1
       },
       "glbModel": "models/Housing1Nav.glb",
       "texturedModel": null,
       "rotation": 300,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_2",
@@ -1936,16 +1972,16 @@
         "z": -256.3
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 5.0,
+        "depth": 11.9,
+        "height": 6.8
       },
       "glbModel": "models/Housing2Nav.glb",
       "texturedModel": null,
       "rotation": 285,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_3",
@@ -1962,16 +1998,16 @@
         "z": -265.5
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 4.1,
+        "depth": 8.4,
+        "height": 2.6
       },
       "glbModel": "models/Housing3Nav.glb",
       "texturedModel": null,
       "rotation": 195,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_4",
@@ -1988,16 +2024,16 @@
         "z": -276.2
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 5.4,
+        "depth": 5.9,
+        "height": 3.7
       },
       "glbModel": "models/Housing4Nav.glb",
       "texturedModel": null,
       "rotation": 300,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_5",
@@ -2014,16 +2050,16 @@
         "z": -290.7
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 3.0,
+        "depth": 3.0,
+        "height": 3.8
       },
       "glbModel": "models/Housing5Nav.glb",
       "texturedModel": null,
       "rotation": 120,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_6",
@@ -2040,16 +2076,16 @@
         "z": -384.6
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 6.4,
+        "depth": 7.4,
+        "height": 2.4
       },
       "glbModel": "models/Housing6Nav.glb",
       "texturedModel": null,
       "rotation": 15,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_7",
@@ -2066,16 +2102,16 @@
         "z": -398.5
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 2.9,
+        "depth": 6.9,
+        "height": 1.8
       },
       "glbModel": "models/Housing7Nav.glb",
       "texturedModel": null,
       "rotation": 30,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_8",
@@ -2092,16 +2128,16 @@
         "z": -424.3
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 6.2,
+        "depth": 6.9,
+        "height": 2.3
       },
       "glbModel": "models/Housing8Nav.glb",
       "texturedModel": null,
       "rotation": 300,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_9",
@@ -2118,16 +2154,16 @@
         "z": -437.2
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 6.9,
+        "depth": 7.7,
+        "height": 2.6
       },
       "glbModel": "models/Housing9Nav.glb",
       "texturedModel": null,
       "rotation": 285,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_10",
@@ -2144,16 +2180,16 @@
         "z": -446.6
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 11.3,
+        "depth": 7.6,
+        "height": 5.8
       },
       "glbModel": "models/Housing10Nav.glb",
       "texturedModel": null,
       "rotation": 195,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_11",
@@ -2170,16 +2206,16 @@
         "z": -540.5
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 4.1,
+        "depth": 8.4,
+        "height": 2.6
       },
       "glbModel": "models/Housing11Nav.glb",
       "texturedModel": null,
       "rotation": 210,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "housing_12",
@@ -2196,16 +2232,16 @@
         "z": -551.4
       },
       "size": {
-        "width": 10,
-        "depth": 8,
-        "height": 5
+        "width": 6.4,
+        "depth": 7.4,
+        "height": 2.4
       },
       "glbModel": "models/Housing12Nav.glb",
       "texturedModel": null,
       "rotation": 30,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "executive_house",
@@ -2226,7 +2262,7 @@
         "depth": 8,
         "height": 5
       },
-      "glbModel": null,
+      "glbModel": "models/ExecutiveHouseNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
@@ -2271,15 +2307,15 @@
         "z": 93.1
       },
       "size": {
-        "width": 20,
-        "depth": 15,
-        "height": 8
+        "width": 23.1,
+        "depth": 16.0,
+        "height": 5.6
       },
       "glbModel": "models/WomenDormNav.glb",
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "womendorm_entrance",
-      "modelScale": 2
+      "modelScale": 1
     },
     {
       "id": "prachouse",
@@ -2305,6 +2341,30 @@
       "rotation": 181.8,
       "entryWaypoint": null,
       "modelScale": 1
+    },
+    {
+      "id": "guard_house",
+      "name": "Guard's House",
+      "category": "facility",
+      "description": "The Guard's house.",
+      "color": "#585e65",
+      "latLng": {
+        "lat": 14.968258891185677,
+        "lng": 120.19554831513243
+      },
+      "position": {
+        "x": 485.2,
+        "z": 28.1
+      },
+      "size": {
+        "width": 20,
+        "depth": 15,
+        "height": 8
+      },
+      "glbModel": "models/GuardHouseNav.glb",
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "entrance_guard_house"
     }
   ],
   "pavedEdges": [
