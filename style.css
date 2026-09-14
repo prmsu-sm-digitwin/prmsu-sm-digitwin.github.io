@@ -946,7 +946,7 @@
     background-size: cover;
     background-position: center;
     transform: scale(1.2);
-    filter: blur(70px) saturate(1.25) brightness(0.6);
+    filter: blur(70px) saturate(1.25);
   }
   /* The gesture surface — same size as the overlay, holds the perspective
      so the tilt layer inside it has something to rotate "into". Masked
