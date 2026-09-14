@@ -1449,24 +1449,26 @@
       "name": "Gabaldon Court",
       "category": "court",
       "description": "Gabaldon Court",
-      "color": "#202121",
+      "color": "#797c80",
       "latLng": {
-        "lat": 14.968868495681374,
-        "lng": 120.19766902206796
+        "lat": 14.968748540566072,
+        "lng": 120.19761978828953
       },
       "position": {
-        "x": 713.5,
-        "z": -40
+        "x": 708.2,
+        "z": -26.6
       },
       "size": {
         "width": 20,
-        "depth": 15,
+        "depth": 19.9,
         "height": 10
       },
-      "glbModel": "models/GabaldonNav.glb",
+      "glbModel": "models/GABALDONNav.glb",
       "texturedModel": null,
-      "rotation": 21.4,
-      "entryWaypoint": "gabaldon_beed_entry"
+      "rotation": 113.2,
+      "entryWaypoint": "gabaldon_beed_entry",
+      "glbTint": true,
+      "modelScale": 1.8
     },
     {
       "id": "cte_beed",
@@ -1475,12 +1477,12 @@
       "description": "College of Teacher Education BEED",
       "color": "#a9aaab",
       "latLng": {
-        "lat": 14.968637537325046,
-        "lng": 120.19767645358168
+        "lat": 14.968610681702216,
+        "lng": 120.19767924039932
       },
       "position": {
-        "x": 714.3,
-        "z": -14.2
+        "x": 714.6,
+        "z": -11.2
       },
       "size": {
         "width": 20,
