@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v3.00'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v2.80'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -16,13 +16,10 @@ const STATIC_ASSETS = [
   './js/walkthrough.js',
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
-  // Note: walkthroughPathHeightmap.json is small (precomputed grid), but
-  // GATE2LHSdt.glb is ~17MB -- the raw pathway scan. Caching it offline is
-  // consistent with the rest of this app; worth decimating/compressing
-  // later if cache size or first-load time on mobile becomes a problem.
-  './data/walkthroughPathHeightmap.json',
+  // Campus Walkthrough is currently a placeholder (see js/walkthrough.js) --
+  // it doesn't load a model or heightmap right now, so they're not precached
+  // here either. Add them back if/when the real prototype is restored.
   './models/QuadrangleNav.glb',
-  './models/GATE2LHSdt.glb',
   './images/admin-building.png',
   './images/university-gate.jpg',
   './images/LegendMap.png',

@@ -288,22 +288,12 @@
         </button>
       </div>
 
-      <!-- Early first-person prototype (js/walkthrough.js): walk over the
-           reconstructed pathway mesh (models/GATE2LHSdt.glb), steered by a
-           joystick fixed at the bottom-middle of the screen (its touch
-           catchment is more generous than its graphic, so you don't need to
-           land a thumb exactly on it); dragging anywhere else looks around.
-           Ground height and the spawn point come from
-           data/walkthroughPathHeightmap.json, a precomputed grid (built
-           offline from the raw scan, including a road-vs-vegetation color
-           read so the spawn lands on the actual path) rather than
-           raycasting the 400k polygons live -- see that file's header
-           comment in the repo notes for how it's built. The reconstruction
-           has a real gap in the middle where the LHS-side and Canteen-side
-           scans don't share a consistent elevation (not just a
-           missing-geometry hole), so that region is fenced off with an
-           invisible wall instead of being hidden -- it stays honest about
-           what's incomplete. -->
+      <!-- Campus Walkthrough is currently a placeholder -- js/walkthrough.js
+           just shows a "coming soon" message here instead of the real
+           first-person prototype (raw scan + joystick movement). See that
+           file's header comment for why and how to bring it back. The HTML
+           structure below is left in place (canvas/joystick/etc.) so the
+           real prototype's JS can be restored without touching this file. -->
       <div class="wt-fp-stage" id="wt-fp-stage">
         <canvas id="wt-fp-canvas"></canvas>
         <div class="wt-fp-loading" id="wt-fp-loading">Loading pathway preview…</div>
