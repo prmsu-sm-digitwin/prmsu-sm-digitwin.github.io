@@ -36,7 +36,7 @@
   // third-party viewer (glb.ee) that auto-corrects it with a ~+80deg rotation
   // about X on import. Without this, straight-down raycasting slices through
   // the corridor sideways instead of from above, which is what made earlier
-  // heightmap attempts on this file (and LHS2Canteendt.glb) look catastrophically
+  // heightmap attempts on this file look catastrophically
   // warped. The heightmap JSON below was rebuilt AFTER applying this same
   // rotation, so both must travel together -- don't change one without the other.
   var MODEL_ROTATE_X_DEG = 80;

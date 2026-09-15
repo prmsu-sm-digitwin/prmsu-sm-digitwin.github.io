@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v2.79'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v2.80'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -17,11 +17,9 @@ const STATIC_ASSETS = [
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
   // Note: walkthroughPathHeightmap.json is small (precomputed grid), but
-  // GATE2LHSdt.glb is ~17MB -- the raw pathway scan walkthrough.js now uses
-  // (previously LHS2Canteendt.glb, ~44MB, no longer loaded by the app).
-  // Caching it offline is consistent with the rest of this app; worth
-  // decimating/compressing later if cache size or first-load time on
-  // mobile becomes a problem.
+  // GATE2LHSdt.glb is ~17MB -- the raw pathway scan. Caching it offline is
+  // consistent with the rest of this app; worth decimating/compressing
+  // later if cache size or first-load time on mobile becomes a problem.
   './data/walkthroughPathHeightmap.json',
   './models/QuadrangleNav.glb',
   './models/GATE2LHSdt.glb',
