@@ -288,12 +288,21 @@
         </button>
       </div>
 
-      <!-- Campus Walkthrough is currently a placeholder -- js/walkthrough.js
-           just shows a "coming soon" message here instead of the real
-           first-person prototype (raw scan + joystick movement). See that
-           file's header comment for why and how to bring it back. The HTML
-           structure below is left in place (canvas/joystick/etc.) so the
-           real prototype's JS can be restored without touching this file. -->
+      <!-- Early first-person prototype (js/walkthrough.js): walk over the
+           reconstructed pathway mesh (models/GATE2LHSdt.glb), steered by a
+           joystick fixed at the bottom-middle of the screen (its touch
+           catchment is more generous than its graphic, so you don't need to
+           land a thumb exactly on it); dragging anywhere else looks around
+           (look-up is capped well below level so the camera can't tilt into
+           the roughest/most broken part of the reconstruction, the tree
+           canopy overhead). Ground height and the spawn point come from
+           data/walkthroughPathHeightmap.json, a precomputed grid (built
+           offline from the raw scan, after correcting its tilted axes --
+           see that file's header comment) rather than raycasting the mesh
+           live. Spawn faces down the corridor from one end toward the
+           other, hugging the ground the whole way; collision against the
+           precomputed walkable mask keeps the camera from passing through
+           the mesh. -->
       <div class="wt-fp-stage" id="wt-fp-stage">
         <canvas id="wt-fp-canvas"></canvas>
         <div class="wt-fp-loading" id="wt-fp-loading">Loading pathway preview…</div>
