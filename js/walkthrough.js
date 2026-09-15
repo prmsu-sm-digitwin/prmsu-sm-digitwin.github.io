@@ -224,6 +224,19 @@
     return { x: cl[n - 1][0], y: cl[n - 1][1], z: cl[n - 1][2] };
   }
 
+  // Local direction the path is running at a given distance along it (unit
+  // XZ vector), used to figure out which way "forward" on the joystick
+  // should actually move you -- see stepMovement below.
+  function pathTangentAt(dist) {
+    var maxDist = hm.centerlineCumDist[hm.centerlineCumDist.length - 1];
+    var eps = 0.05;
+    var a = sampleCenterline(clamp(dist - eps, 0, maxDist));
+    var b = sampleCenterline(clamp(dist + eps, 0, maxDist));
+    var dx = b.x - a.x, dz = b.z - a.z;
+    var len = Math.hypot(dx, dz) || 1;
+    return { x: dx / len, z: dz / len };
+  }
+
   function showFenceToast() {
     var now = performance.now();
     if (now - toastLastShown < 3000) return;
@@ -240,14 +253,27 @@
   // for why free 2D movement got dropped. Position is read straight off the
   // line each frame (it's already smoothed offline), so there's no runtime
   // lag to overshoot into a "floating" look, and no way to end up beside the
-  // path instead of on it. ----
+  // path instead of on it.
+  //
+  // "Forward" is relative to where you're currently LOOKING, not a fixed
+  // walk direction -- turn around and pushing up on the joystick walks you
+  // back the way you came (in view terms), same as any normal FPS control,
+  // even though under the hood it's still just one number (distance along
+  // the path) moving up or down. Which way that is gets figured out each
+  // frame by comparing the camera's facing direction to the path's own
+  // local direction at the current spot. ----
   function stepMovement(dt) {
     if (!hm) return;
-    var forward = clamp(joyVec.y, -1, 1);
-    if (Math.abs(forward) < 0.05) return;
+    var joyAmount = clamp(joyVec.y, -1, 1);
+    if (Math.abs(joyAmount) < 0.05) return;
+
+    var fwdX = Math.sin(yaw), fwdZ = Math.cos(yaw);
+    var tangent = pathTangentAt(pathDist);
+    var alignment = fwdX * tangent.x + fwdZ * tangent.z; // facing with the path (+1) or against it (-1)
+    var dirSign = alignment >= 0 ? 1 : -1;
 
     var maxDist = hm.centerlineCumDist[hm.centerlineCumDist.length - 1];
-    var newDist = clamp(pathDist + forward * moveSpeed * dt, 0, maxDist);
+    var newDist = clamp(pathDist + dirSign * joyAmount * moveSpeed * dt, 0, maxDist);
     if (newDist === pathDist) showFenceToast(); // hit either end of the path
     pathDist = newDist;
 
