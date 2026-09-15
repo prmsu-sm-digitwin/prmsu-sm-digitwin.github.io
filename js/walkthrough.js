@@ -30,8 +30,16 @@
 // fly through a cliff or fall into the gap -- staying honest about what's
 // incomplete instead of hiding it.
 (function () {
-  var MODEL_URL = 'models/LHS2Canteendt.glb';
+  var MODEL_URL = 'models/GATE2LHSdt.glb';
   var HEIGHTMAP_URL = 'data/walkthroughPathHeightmap.json';
+  // GATE2LHSdt.glb's raw scan axes aren't gravity-aligned -- confirmed via a
+  // third-party viewer (glb.ee) that auto-corrects it with a ~+80deg rotation
+  // about X on import. Without this, straight-down raycasting slices through
+  // the corridor sideways instead of from above, which is what made earlier
+  // heightmap attempts on this file (and LHS2Canteendt.glb) look catastrophically
+  // warped. The heightmap JSON below was rebuilt AFTER applying this same
+  // rotation, so both must travel together -- don't change one without the other.
+  var MODEL_ROTATE_X_DEG = 80;
 
   var stage, canvas, loadingEl, hintEl, toastEl, joyBaseEl, joyNubEl;
   var renderer, scene, camera;
@@ -100,7 +108,12 @@
       function (gltf) {
         // Loaded at its original coordinates on purpose -- the heightmap
         // grid was built from this same raw space, so recentering the model
-        // here would desync it from the ground/collision data.
+        // here would desync it from the ground/collision data. The rotation
+        // below corrects the scan's tilted axes (see MODEL_ROTATE_X_DEG note
+        // above) -- the heightmap is built in this SAME rotated space.
+        if (MODEL_ROTATE_X_DEG) {
+          gltf.scene.rotation.x = MODEL_ROTATE_X_DEG * Math.PI / 180;
+        }
         scene.add(gltf.scene);
         modelReady = true;
         maybeFinishLoading();
