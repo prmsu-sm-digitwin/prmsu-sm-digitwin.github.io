@@ -170,9 +170,11 @@
         pos.x = p0.x; pos.z = p0.z; pos.y = p0.y + eyeHeight;
         var p1 = sampleCenterline(Math.min(1, hm.centerlineCumDist[hm.centerlineCumDist.length - 1]));
         yaw = Math.atan2(p1.x - p0.x, p1.z - p0.z);
-        // Slight downward tilt so the reconstructed scene is visible right
-        // away instead of spawning while looking flat into the sky.
-        pitch = -0.12;
+        // Nearly level -- with eye height back up around normal standing
+        // height, a bigger downward tilt just points straight at the gravel
+        // a couple feet ahead instead of showing the path stretching out
+        // and the canopy arching overhead.
+        pitch = -0.04;
         updateCameraFromState();
 
         hmReady = true;
