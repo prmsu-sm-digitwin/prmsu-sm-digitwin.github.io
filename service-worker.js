@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v2.84'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v3.16'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -12,8 +12,11 @@ const STATIC_ASSETS = [
   './js/gps.js',
   './js/ui.js',
   './js/main.js',
+  './js/navfp.js',
   './js/directory.js',
   './js/walkthrough.js',
+  './js/tour360.js',
+  './data/tour360.json',
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
   // Note: walkthroughPathHeightmap.json is small (precomputed grid), but
@@ -72,6 +75,10 @@ self.addEventListener('fetch', event => {
 
   // Skip non-GET and cross-origin requests we don't control
   if (event.request.method !== 'GET') return;
+
+  // The campus editor is a developer tool, not part of the app: never serve it
+  // (or the data it edits) from this cache, or edits show up stale.
+  if (url.pathname.endsWith('/campus-editor.html')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {

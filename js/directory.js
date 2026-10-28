@@ -13,7 +13,7 @@
 
    Each item takes:
      name  - building name shown beside the photo        (required)
-     photo - path to the image, e.g. 'images/ccit.jpg'   (optional)
+     photo - path to the image, e.g. 'images/directory/ccit.jpg'   (optional)
              leave it as null (or point it at a file that isn't there yet)
              and the slide shows a neat "Photo of the building" placeholder
              instead of a broken image.
@@ -28,25 +28,25 @@ const DIRECTORY_DATA = [
     id: 'academic',
     title: 'Academic',
     items: [
-      { name: 'Agriculture Technology (Agri-Tech)', photo: 'images/AGRITECH.jpg',
+      { name: 'Agriculture Technology (Agri-Tech)', photo: 'images/directory/AGRITECH.jpg',
         text: 'Some College of Agriculture (CAg) classrooms, located in front of the Mitos Magsaysay Building.' },
-      { name: 'ASB Building', photo: 'images/ASB.jpg',
+      { name: 'ASB Building', photo: 'images/directory/ASB.jpg',
         text: 'CAg building with classrooms and a faculty office.' },
-      { name: 'CCIT Main', photo: 'images/CCIT_MAIN.jpg',
+      { name: 'CCIT Main', photo: 'images/directory/CCIT_MAIN.jpg',
         text: 'Faculty offices and a computer laboratory, with first year classrooms.' },
-      { name: 'CHM 1', photo: 'images/CHM_1.jpg',
+      { name: 'CHM 1', photo: 'images/directory/CHM_1.jpg',
         text: 'CHM building near the canteen, with classrooms.' },
-      { name: 'CHM 2', photo: 'images/CHM_2.jpg',
+      { name: 'CHM 2', photo: 'images/directory/CHM_2.jpg',
         text: 'Second CHM building with the faculty office and some classrooms.' },
-      { name: 'CTE (BEED)', photo: 'images/CTE_BEED.jpg',
+      { name: 'CTE (BEED)', photo: 'images/directory/CTE_BEED.jpg',
         text: 'CTE building in front of Gabaldon Court.' },
-      { name: 'CTE (BSED)', photo: 'images/CTE_BSED.jpg',
+      { name: 'CTE (BSED)', photo: 'images/directory/CTE_BSED.jpg',
         text: 'CTE building with a faculty office and classrooms.' },
-      { name: 'LHS Building', photo: 'images/LHS.jpg',
+      { name: 'LHS Building', photo: 'images/directory/LHS.jpg',
         text: 'LHS building with classrooms.' },
-      { name: 'LHS Faculty / CCIT', photo: 'images/LHS_CCIT.jpg',
+      { name: 'LHS Faculty / CCIT', photo: 'images/directory/LHS_CCIT.jpg',
         text: 'Joint building for LHS faculty and CCIT second to fourth year classrooms.' },
-      { name: 'Mitos Magsaysay Building', photo: 'images/MITOS.jpg',
+      { name: 'Mitos Magsaysay Building', photo: 'images/directory/MITOS.jpg',
         text: 'A CAg building in front of Agri-Tech.' }
     ]
   },
@@ -54,29 +54,29 @@ const DIRECTORY_DATA = [
     id: 'facility',
     title: 'Facility',
     items: [
-      { name: 'Admin Building', photo: 'images/ADMIN_BUILDING.jpg',
+      { name: 'Admin Building', photo: 'images/directory/ADMIN_BUILDING.jpg',
         text: "Cashier, Registrar, and HRMO on the first floor. Second floor: the campus director's office and the accreditation room." },
-      { name: 'Canteen', photo: "images/CANTEEN.jpg",
+      { name: 'Canteen', photo: "images/directory/CANTEEN.jpg",
         text: 'Has four food stalls.' },
-      { name: "Guard's House", photo: 'images/GUARD_HOUSE.jpg',
+      { name: "Guard's House", photo: 'images/directory/GUARD_HOUSE.jpg',
         text: "A small building located beside the inner gate." },
-      { name: 'Library', photo: "images/LIBRARY.jpg",
+      { name: 'Library', photo: "images/directory/LIBRARY.jpg",
         text: 'The campus library, with reading areas and study space.' },
-      { name: "Men's Dormitory", photo: 'images/MENS_DORMITORY.jpg',
+      { name: "Men's Dormitory", photo: 'images/directory/MENS_DORMITORY.jpg',
         text: 'Dormitory housing for male students and faculty.' },
-      { name: 'Motorpool', photo: "images/MOTORPOOL.jpg",
+      { name: 'Motorpool', photo: "images/directory/MOTORPOOL.jpg",
         text: 'Campus motorpool and service garage.' },
-      { name: 'Practice House', photo: 'images/GUEST_HOUSE.jpg',
+      { name: 'Practice House', photo: 'images/directory/GUEST_HOUSE.jpg',
         text: 'Abandoned building that could be used as a campus landmark.' },
-      { name: 'Regional Mango Center', photo: 'images/RMC.jpg',
+      { name: 'Regional Mango Center', photo: 'images/directory/RMC.jpg',
         text: 'Has an event hall and some offices.' },
-      { name: 'RMTU Organic Mango Center', photo: "images/ROMC.jpg",
+      { name: 'RMTU Organic Mango Center', photo: "images/directory/ROMC.jpg",
         text: 'Organic mango research and production facility.' },
-      { name: 'RMTU Research and Development Center', photo: "images/RND_CENTER.jpg",
+      { name: 'RMTU Research and Development Center', photo: "images/directory/RND_CENTER.jpg",
         text: 'PRMSU research services office.' },
-      { name: 'Student Center', photo: "images/SC.jpg",
+      { name: 'Student Center', photo: "images/directory/SC.jpg",
         text: 'Office of Student Affairs, Clinic, Dental, and SSG office.' },
-      { name: "Women's Dormitory", photo: 'images/WOMENS_DORMITORY.jpg',
+      { name: "Women's Dormitory", photo: 'images/directory/WOMENS_DORMITORY.jpg',
         text: 'Dormitory housing for female students and faculty.' }
     ]
   },
@@ -84,11 +84,11 @@ const DIRECTORY_DATA = [
     id: 'court',
     title: 'Multi-Court',
     items: [
-      { name: 'Admin Court', photo: 'images/ADMIN_COURT.jpg',
+      { name: 'Admin Court', photo: 'images/directory/ADMIN_COURT.jpg',
         text: 'Covered court beside the Admin Building, used for campus activities.' },
-      { name: 'Gabaldon Court', photo: 'images/GABALDON_COURT.jpg',
+      { name: 'Gabaldon Court', photo: 'images/directory/GABALDON_COURT.jpg',
         text: 'Covered court used for campus activities.' },
-      { name: 'Multi-purpose Quad', photo: 'images/QUADRANGLE_COURT.jpg',
+      { name: 'Multi-purpose Quad', photo: 'images/directory/QUADRANGLE_COURT.jpg',
         text: 'Open court used for sports and CHM programs.' }
     ]
   }

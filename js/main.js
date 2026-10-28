@@ -18,7 +18,7 @@ function initScene() {
   const canvas = document.getElementById('three-canvas');
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87CEEB); // sky blue
+  scene.background = new THREE.Color(0x7cb87a); // ground green — nothing blue shows past the map edge (first-person view swaps in a sky)
 
   // Camera: tilted top-down (the OSM-style view)
   const aspect = canvas.clientWidth / canvas.clientHeight || window.innerWidth / window.innerHeight;
@@ -67,6 +67,7 @@ function loadCampus() {
       buildRoads(data.waypoints);
       (data.ovals || []).forEach(buildOval);
       buildBuildings(data.buildings);
+      if (window.NavFP) NavFP.onCampusLoaded(data);   // building name tags + first-person walk graph (js/navfp.js)
       positionCamera(data.camera);
 
       // GPS blue dot (gps.js)
@@ -153,79 +154,48 @@ function buildGround(g) {
   ground.position.set(g.offsetX, 0, g.offsetZ);
   ground.receiveShadow = true;
   scene.add(ground);
+
+  // Huge same-colour plane just under the map so no empty/blue background can
+  // ever show past the edge of the real ground, however far the view tilts or
+  // the first-person camera looks.
+  const backing = new THREE.Mesh(
+    new THREE.PlaneGeometry(9000, 9000),
+    new THREE.MeshLambertMaterial({ color: g.color || 0x7cb87a })
+  );
+  backing.rotation.x = -Math.PI / 2;
+  backing.position.set(g.offsetX, -0.3, g.offsetZ);
+  scene.add(backing);
 }
 
+// All walkable routes are one style now: a single gray strip called
+// "Pathways" (no more paved/unpaved split, no centre dashes). Per the thesis
+// adviser. campus.json's old "pavedEdges" list is ignored.
+const PATH_WIDTH = 5;
+const PATH_Y     = 0.2;   // strip centre; strip is 0.3 tall so its top sits at 0.35
+
 function buildRoads(waypoints) {
-  // Which edges render "paved" (wide gray) vs the default "unpaved" (narrow
-  // beige) now lives in the data itself — campus.json's top-level
-  // "pavedEdges" array, a list of [waypointId, waypointId] pairs — instead
-  // of being hardcoded here. Edit it with campus-editor.html (or by hand)
-  // rather than touching this function whenever a road changes.
-  const mainEdges = new Set(
-    (campusData.pavedEdges || []).map(([a, b]) => edgeKey(a, b))
-  );
+  const mat = new THREE.MeshLambertMaterial({ color: 0x9a9a9a }); // gray
 
-  // Materials
-  const matMain  = new THREE.MeshLambertMaterial({ color: 0x9a9a9a }); // gray tarmac
-  const matPath  = new THREE.MeshLambertMaterial({ color: 0xc0b090 }); // beige path
-
-  // The unpaved path sits below the main road's height so wherever they cross,
-  // the main road renders on top instead of the two fighting for the same
-  // z-height (which looked like the path clipping/cutting through the road).
-  // Each road strip is a BoxGeometry with 0.3 total height (0.15 half-height
-  // above/below its y), so the gap between ROAD_Y_MAIN and ROAD_Y_PATH must
-  // be at least 0.3 or the two boxes still physically overlap and z-fight
-  // wherever a path crosses the main road (this is what "clipping" was,
-  // even after an earlier bump from 0.15 to 0.20 — 0.20 still isn't enough
-  // margin, only 0.10 short of the minimum). 0.40 gives a safe 0.10 margin.
-  const ROAD_Y_MAIN = 0.40;
-  const ROAD_Y_PATH = 0.00;
-
-  // Track drawn edges so we don't double-draw
   const drawn = new Set();
-
   waypoints.forEach(wp => {
     const [ax, az] = [wp.position.x, wp.position.z];
     wp.neighbors.forEach(nid => {
       const key = edgeKey(wp.id, nid);
       if (drawn.has(key)) return;
       drawn.add(key);
-
       const nb = waypointMap[nid];
       if (!nb) return;
-      const [bx, bz] = [nb.position.x, nb.position.z];
-
-      const isMain = mainEdges.has(key);
-      const roadWidth = isMain ? 7 : 3.5;
-      const mat = isMain ? matMain : matPath;
-      const roadY = isMain ? ROAD_Y_MAIN : ROAD_Y_PATH;
-
-      buildRoadStrip(ax, az, bx, bz, roadWidth, mat, roadY);
-
-      if (isMain) {
-        buildCenterLine(ax, az, bx, bz);
-      }
+      buildRoadStrip(ax, az, nb.position.x, nb.position.z, PATH_WIDTH, mat, PATH_Y);
     });
   });
 
-  // Plug the seams: each edge above is its own flat rectangle with a flat end,
-  // so anywhere 2+ edges meet at an angle (a bend or a fork) the ends don't
-  // line up — you get a gap or an overlapping notch. A small flat circle at
-  // every junction covers that seam regardless of the angle between edges.
+  // Plug the seams where 2+ strips meet at an angle (bends, forks): a flat
+  // disc at every junction, just above the strip tops so nothing z-fights.
   waypoints.forEach(wp => {
-    if (wp.neighbors.length < 2) return; // dead end — nothing to seam here
-
-    const hasMainEdge = wp.neighbors.some(nid => mainEdges.has(edgeKey(wp.id, nid)));
-    const width = hasMainEdge ? 7 : 3.5;
-    const mat = hasMainEdge ? matMain : matPath;
-    const jointY = hasMainEdge ? ROAD_Y_MAIN : ROAD_Y_PATH;
-
-    const joint = new THREE.Mesh(
-      new THREE.CircleGeometry(width / 2, 16),
-      mat
-    );
+    if (wp.neighbors.length < 2) return;
+    const joint = new THREE.Mesh(new THREE.CircleGeometry(PATH_WIDTH / 2, 16), mat);
     joint.rotation.x = -Math.PI / 2;
-    joint.position.set(wp.position.x, jointY, wp.position.z);
+    joint.position.set(wp.position.x, PATH_Y + 0.2, wp.position.z);
     joint.receiveShadow = true;
     scene.add(joint);
   });
@@ -251,29 +221,96 @@ function buildRoadStrip(ax, az, bx, bz, width, mat, y) {
   scene.add(strip);
 }
 
-function buildCenterLine(ax, az, bx, bz) {
-  const dx = bx - ax, dz = bz - az;
-  const length = Math.sqrt(dx*dx + dz*dz);
-  const angle = -Math.atan2(dz, dx);
-  const dashLen = 3, gapLen = 4, total = dashLen + gapLen;
-  const count = Math.floor(length / total);
-  const mat = new THREE.MeshBasicMaterial({ color: 0xffffaa, transparent: true, opacity: 0.5 });
+// ── Place Blocks (visual preview only) ───────────────────────
+// Small placeholder blocks so the team can see where extra campus places sit on
+// the NavMap (sheds, chairs, statues, gates...). They live in data/campus.json as
+// buildings with  "category": "place"  — so the campus editor can show, move,
+// resize, recolor and delete them like any building. By design they are:
+//   • NOT tappable   — never added to buildingMeshes, no userData.buildingId,
+//                      so onPointerDown's raycast can't hit them.
+//   • NOT navigable  — no entryWaypoint, left out of the search list.
+//   • NO pathway     — no waypoints / roads are created for them.
+let placeBlockMeshes = [];   // kept only so they can be removed/toggled later — NOT used for picking
 
-  for (let i = 0; i < count; i++) {
-    const t = (i * total + dashLen / 2) / length;
-    const cx = ax + dx * t;
-    const cz = az + dz * t;
-    const dash = new THREE.Mesh(new THREE.BoxGeometry(dashLen, 0.32, 0.4), mat);
-    dash.position.set(cx, 0.16, cz);
-    dash.rotation.y = angle;
-    scene.add(dash);
+let placeGen = 0;            // bumped on every rebuild so a slow GLB load can't add itself to a stale scene
+
+function spawnPlaceBox(p) {
+  const { width, depth, height } = p.size;
+  const color = parseInt((p.color || '#7f8c8d').replace('#', ''), 16);
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(width, height, depth),
+    new THREE.MeshLambertMaterial({ color })
+  );
+  // y offset keeps the base clear of road strips (up to y≈0.4) so nothing z-fights
+  mesh.position.set(p.position.x, height / 2 + 0.5, p.position.z);
+  mesh.rotation.y = THREE.MathUtils.degToRad(p.rotation || 0);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  mesh.name = 'place:' + (p.name || p.id);   // label for debugging only; no buildingId on purpose
+  scene.add(mesh);
+  placeBlockMeshes.push(mesh);
+}
+
+// The artist's place models are NOT centered on their own origin (each file keeps
+// its spot from the artist's scene), so — unlike the building scans — they are
+// re-centered here: horizontally on their bounding box, base on the ground.
+// p.glbStrip (optional) = name prefixes of parts to leave out (e.g. the tree
+// clusters that came bundled inside the statue files).
+function preparePlaceModel(root, strip) {
+  if (strip && strip.length) {
+    const drop = [];
+    root.traverse(o => {
+      if (!o.isMesh) return;
+      const names = [o.name || '', (o.parent && o.parent.name) || ''];
+      if (strip.some(x => names.some(n => n.startsWith(x)))) drop.push(o);
+    });
+    drop.forEach(o => o.parent && o.parent.remove(o));
   }
+  root.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(root);
+  const c = box.getCenter(new THREE.Vector3());
+  const wrapper = new THREE.Group();
+  root.position.set(-c.x, -box.min.y, -c.z);
+  wrapper.add(root);
+  return { obj: wrapper, nativeSize: { x: box.max.x - box.min.x, y: box.max.y - box.min.y, z: box.max.z - box.min.z } };
+}
+
+function spawnPlace(p) {
+  if (!p.glbModel) { spawnPlaceBox(p); return; }
+  const gen = placeGen;
+  new THREE.GLTFLoader().load(
+    p.glbModel,
+    (gltf) => {
+      if (gen !== placeGen) return;                       // scene was rebuilt while loading
+      const { obj, nativeSize } = preparePlaceModel(gltf.scene, p.glbStrip);
+      const extra = p.modelScale || 1;
+      const sx = nativeSize.x > 1e-6 ? (p.size.width  / nativeSize.x) * extra : extra;
+      const sy = nativeSize.y > 1e-6 ? (p.size.height / nativeSize.y) * extra : extra;
+      const sz = nativeSize.z > 1e-6 ? (p.size.depth  / nativeSize.z) * extra : extra;
+      obj.scale.set(sx, sy, sz);
+      obj.position.set(p.position.x, 0.45, p.position.z);   // base clear of road strips
+      obj.rotation.y = THREE.MathUtils.degToRad(p.rotation || 0);
+      obj.name = 'place:' + (p.name || p.id);               // no buildingId on purpose -> not tappable
+      obj.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
+      scene.add(obj);
+      placeBlockMeshes.push(obj);
+    },
+    undefined,
+    (err) => {
+      console.error(`Failed to load place model ${p.id} (${p.glbModel}):`, err);
+      if (gen === placeGen) spawnPlaceBox(p);
+    }
+  );
 }
 
 function buildBuildings(buildings) {
   buildingMeshes = [];
+  placeBlockMeshes.forEach(m => scene.remove(m));
+  placeBlockMeshes = [];
+  placeGen++;
 
   buildings.forEach(bldg => {
+    if (bldg.category === 'place') { spawnPlace(bldg); return; }   // visual-only
     // If a real mesh file exists, load the GLB. Otherwise spawn a box.
     if (bldg.glbModel) {
       loadGLB(bldg);
@@ -486,15 +523,65 @@ function navigateTo(targetBuildingId) {
   if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg);
 }
 
+// Route is drawn twice: a solid orange LINE (map / top view, as before) and a
+// row of flat ARROWHEADS lying on the pathway (first-person view, per the
+// adviser). Only the one that fits the current view is visible.
+let routeLineGroup = null, routeArrowGroup = null;
+let activeRouteIds = null;           // waypoint ids of the current route (first-person start uses it)
+
+function setRouteStyle(firstPerson) {
+  if (routeLineGroup)  routeLineGroup.visible  = !firstPerson;
+  if (routeArrowGroup) routeArrowGroup.visible =  firstPerson;
+}
+
+// One chevron, pointing +x, lying flat (y=0). Shared by every arrow.
+const ARROW_GEO = (function () {
+  const g = new THREE.BufferGeometry();
+  const v = new Float32Array([
+     1.5, 0,  0,     -1.0, 0,  1.6,    -0.3, 0, 0,
+     1.5, 0,  0,     -0.3, 0,  0,      -1.0, 0, -1.6
+  ]);
+  g.setAttribute('position', new THREE.BufferAttribute(v, 3));
+  g.computeVertexNormals();
+  return g;
+})();
+
+function addArrowsAlong(group, ax, az, bx, bz, startOffset, spacing, arrowMat, haloMat) {
+  const dx = bx - ax, dz = bz - az;
+  const len = Math.sqrt(dx * dx + dz * dz); 
+  if (len < 0.1) return startOffset;
+  const ang = -Math.atan2(dz, dx);
+  let d = startOffset;
+  while (d <= len) {
+    const t = d / len;
+    const x = ax + dx * t, z = az + dz * t;
+    const halo = new THREE.Mesh(ARROW_GEO, haloMat);
+    halo.position.set(x, 0.5, z); halo.rotation.y = ang; halo.scale.set(0.62, 1, 0.62);
+    const arrow = new THREE.Mesh(ARROW_GEO, arrowMat);
+    arrow.position.set(x, 0.55, z); arrow.rotation.y = ang; arrow.scale.set(0.46, 1, 0.46);
+    group.add(halo); group.add(arrow);
+    d += spacing;
+  }
+  return d - len;          // carry-over so spacing continues across segments
+}
+
 function drawPath(waypointIds, fromPos) {
   clearPath();
+  activeRouteIds = waypointIds.slice();
 
-  // Use flat box strips instead of THREE.Line — linewidth is ignored on iOS/WebGL.
-  // Same technique as buildRoadStrip but raised higher and orange-colored.
+  routeLineGroup  = new THREE.Group(); routeLineGroup.userData.isPathDot  = true;
+  routeArrowGroup = new THREE.Group(); routeArrowGroup.userData.isPathDot = true;
+
+  // Flat box strips instead of THREE.Line — linewidth is ignored on iOS/WebGL.
   const pathMat  = new THREE.MeshBasicMaterial({ color: 0xf39c12 }); // orange
-  const stripW   = 3.5; // width of path strip in scene units
+  const arrowMat = new THREE.MeshBasicMaterial({ color: 0xf39c12, side: THREE.DoubleSide });
+  const haloMat  = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+  const stripW   = 3.5;
+  const SPACING  = 6;
 
-  // If user is on campus, draw a connector from the GPS blue dot to the first waypoint
+  let carry = 0;           // distance into the next arrow slot
+
+  // If user is on campus, draw a connector from the GPS dot to the first waypoint
   if (fromPos && waypointIds.length > 0) {
     const firstWp = waypointMap[waypointIds[0]];
     if (firstWp) {
@@ -505,8 +592,8 @@ function drawPath(waypointIds, fromPos) {
         const connector = new THREE.Mesh(new THREE.BoxGeometry(length, 0.5, stripW), pathMat);
         connector.position.set((fromPos.x + firstWp.position.x) / 2, 0.6, (fromPos.z + firstWp.position.z) / 2);
         connector.rotation.y = -Math.atan2(dz, dx);
-        connector.userData.isPathDot = true;
-        scene.add(connector);
+        routeLineGroup.add(connector);
+        carry = addArrowsAlong(routeArrowGroup, fromPos.x, fromPos.z, firstWp.position.x, firstWp.position.z, 5, SPACING, arrowMat, haloMat);
       }
     }
   }
@@ -521,14 +608,13 @@ function drawPath(waypointIds, fromPos) {
     const length = Math.sqrt(dx * dx + dz * dz);
     if (length < 0.1) continue;
 
-    const strip = new THREE.Mesh(
-      new THREE.BoxGeometry(length, 0.5, stripW),
-      pathMat
-    );
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(length, 0.5, stripW), pathMat);
     strip.position.set((ax + bx) / 2, 0.6, (az + bz) / 2);
     strip.rotation.y = -Math.atan2(dz, dx);
-    strip.userData.isPathDot = true;
-    scene.add(strip);
+    routeLineGroup.add(strip);
+
+    const first = i === 0 && carry === 0 ? 6 : Math.max(0.5, SPACING - carry);
+    carry = addArrowsAlong(routeArrowGroup, ax, az, bx, bz, first, SPACING, arrowMat, haloMat);
   }
 
   const dotMat = new THREE.MeshBasicMaterial({ color: 0xf39c12 });
@@ -537,9 +623,12 @@ function drawPath(waypointIds, fromPos) {
     if (!wp) return;
     const dot = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 8), dotMat);
     dot.position.set(wp.position.x, 0.8, wp.position.z);
-    dot.userData.isPathDot = true;
-    scene.add(dot);
+    routeLineGroup.add(dot);
   });
+
+  scene.add(routeLineGroup);
+  scene.add(routeArrowGroup);
+  setRouteStyle(!!(window.NavFP && NavFP.active));
 }
 
 function clearPath() {
@@ -551,7 +640,8 @@ function clearPath() {
     if (obj.material) obj.material.dispose();
     scene.remove(obj);
   });
-  pathLine = null; 
+  pathLine = null;
+  routeLineGroup = null; routeArrowGroup = null; activeRouteIds = null;
 
   if (typeof hidePathInfo === 'function') hidePathInfo();
 }
@@ -582,7 +672,7 @@ function updateGPSMarker(x, z, isOnCampus) {
     gpsMarker.visible = false;
     return;
   }
-  gpsMarker.visible = true;
+  gpsMarker.visible = !(window.NavFP && NavFP.active);
   gpsMarker.position.set(x, 4, z);
 }
 
@@ -624,6 +714,7 @@ const pan = { active: false, lastX: 0, lastY: 0, mode: 'pan' };
 const lookTarget = { x: 700, y: 0, z: -80 };
 
 function panStart(e) {
+  if (window.NavFP && NavFP.active) { NavFP.pointerDown(e); return; }
   pan.active = true;
   // Shift+drag rotates instead of panning — a one-pointer stand-in for the
   // two-finger rotate gesture below, so rotation is also testable with a mouse.
@@ -633,6 +724,7 @@ function panStart(e) {
 }
 
 function panMove(e) {
+  if (window.NavFP && NavFP.active) { NavFP.pointerMove(e); return; }
   if (!pan.active || !campusData) return;
   const cx = e.clientX ?? (e.touches?.[0]?.clientX ?? 0);
   const cy = e.clientY ?? (e.touches?.[0]?.clientY ?? 0);
@@ -666,7 +758,7 @@ function panMove(e) {
   updateCameraFromTarget();
 }
 
-function panEnd() { pan.active = false; }
+function panEnd() { pan.active = false; if (window.NavFP) NavFP.pointerUp(); }
 
 // Zoom + rotate state (two-finger gesture does both at once, like most map apps)
 let pinchStartDist    = null;
@@ -676,6 +768,7 @@ let twoFingerLastY    = null;
 let twoFingerLastDist = null;
 
 function onTouchStart(e) {
+  if (window.NavFP && NavFP.active) { if (e.touches.length === 2) e.preventDefault(); return; }
   if (e.touches.length === 2) {
     e.preventDefault();
     pinchStartDist = getTouchDist(e.touches);
@@ -689,6 +782,7 @@ function onTouchStart(e) {
 }
 
 function onTouchMove(e) {
+  if (window.NavFP && NavFP.active) { if (e.touches.length === 2) e.preventDefault(); return; }
   if (e.touches.length === 2) {
     e.preventDefault();
     const dist = getTouchDist(e.touches);
@@ -734,6 +828,7 @@ function onTouchEnd() {
 
 function onWheel(e) {
   e.preventDefault();
+  if (window.NavFP && NavFP.active) return;
   zoomCamera(camera.position.y + e.deltaY * 0.3);
 }
 
@@ -750,8 +845,13 @@ function getTouchMidpoint(touches) {
   };
 }
 
+// Zoom limits (thesis adviser): can't get so close the map is just a blob, or so
+// far the campus becomes a speck.
+const ZOOM_MIN = 70;
+const ZOOM_MAX = 330;
+
 function zoomCamera(newY) {
-  const clampedY = Math.max(50, Math.min(500, newY));
+  const clampedY = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, newY));
   // Scale the whole offset so the tilt angle is preserved at every zoom level
   const scale = clampedY / camOffset.y;
   camOffset.x *= scale;
@@ -800,6 +900,7 @@ function animate() {
   requestAnimationFrame(animate);
   const mapPage = document.getElementById('page-map');
   if (mapPage && mapPage.classList.contains('active')) {
+    if (window.NavFP) NavFP.frame();   // first-person movement + name-tag layout (js/navfp.js)
     renderer.render(scene, camera);
   }
 }

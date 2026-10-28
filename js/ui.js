@@ -415,9 +415,9 @@ function devzonesZoomAt(wrap, localX, localY, newScale) {
 // a marker just needs its left/top set once and it rides along with every
 // pan/zoom for free (see the transform block in applyDevzonesTransform).
 const DEVZONES_DATA = [
-  { id: 'mango_greenhouse', label: 'Mango Greenhouse Farm', photo: 'images/Mango_Greenhouse_FarmDZ.jpg', x: 711.5, y: 272.2 },
-  { id: 'stadium',          label: 'Stadium',                photo: 'images/StadiumDZ.jpg',                x: 1042.5, y: 248.1 },
-  { id: 'bangar',           label: 'Bangar',                  photo: 'images/BangarDZ.jpg',                 x: 702.5, y: 423.1 }
+  { id: 'mango_greenhouse', label: 'Mango Greenhouse Farm', photo: 'images/devzones/Mango_Greenhouse_FarmDZ.jpg', x: 711.5, y: 272.2 },
+  { id: 'stadium',          label: 'Stadium',                photo: 'images/devzones/StadiumDZ.jpg',                x: 1042.5, y: 248.1 },
+  { id: 'bangar',           label: 'Bangar',                  photo: 'images/devzones/BangarDZ.jpg',                 x: 702.5, y: 423.1 }
 ];
 
 // Builds the marker pins once (guarded by _built, same pattern as the
@@ -874,7 +874,7 @@ initDevzonesViewer();
 function filterBuildingSheet(query) {
   if (!campusData || !campusData.buildings) return;
   const q = query.trim().toLowerCase();
-  const searchable = campusData.buildings.filter(b => b.category !== 'housing');
+  const searchable = campusData.buildings.filter(b => b.category !== 'housing' && b.category !== 'place');
   const filtered = !q
     ? searchable
     : searchable.filter(b => (b.name || '').toLowerCase().includes(q));
@@ -953,7 +953,7 @@ function onSceneReady(data) {
   // Housing buildings are intentionally excluded from the search / building
   // sheet list — they are unconnected private-property markers, tappable in
   // the 3D view only (see showBuildingInfo via raycast pick in main.js).
-  campusBuildings = data.buildings.filter(b => b.category !== 'housing');
+  campusBuildings = data.buildings.filter(b => b.category !== 'housing' && b.category !== 'place');
   populateBuildingSheet(campusBuildings);
 
   // Auto-start GPS so the blue dot appears immediately without pressing the button

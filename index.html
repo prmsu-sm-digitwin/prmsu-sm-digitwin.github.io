@@ -54,9 +54,6 @@
     <span id="swipe-back-arrow" style="color:#F5C842; font-size:20px; line-height:1; opacity:0.6;">&#8249;</span>
   </div>
 
-  <div class="top-bar">
-    <span class="top-bar-url">prmsu-sm-digitwin.github.io</span>
-  </div>
 
   <div class="pages">
 
@@ -194,6 +191,17 @@
           </button>
 
           
+          <!-- First-person view toggle (js/navfp.js): top-angled view by default; this camera button
+               switches to walking the Pathways with a joystick, and back. -->
+          <button id="fp-btn" title="First-person view" aria-label="First-person view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </button>
+          <div id="fp-hint" class="fp-hint fp-hint-hidden">Joystick to walk · drag to look around</div>
+          <div id="fp-joy" class="fp-joy"><div id="fp-joy-nub" class="fp-joy-nub"></div></div>
+
           <button id="legend-btn" onclick="toggleLegend()" title="Map legend">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="7" rx="1.5"/>
@@ -303,6 +311,15 @@
            other, hugging the ground the whole way; collision against the
            precomputed walkable mask keeps the camera from passing through
            the mesh. -->
+      <!-- Mode switch: interim 360° photo tour (js/tour360.js, default) or the
+           photogrammetry 3D prototype (js/walkthrough.js). Only the active
+           one runs/loads, so the 17 MB mesh is not fetched unless chosen. -->
+      <div class="wt-mode-bar" id="wt-mode-bar">
+        <button class="wt-mode-btn active" id="wt-mode-tour" type="button">360° Tour</button>
+        <button class="wt-mode-btn" id="wt-mode-3d" type="button">3D Prototype</button>
+      </div>
+      <div class="tour-stage" id="tour-stage"></div>
+
       <div class="wt-fp-stage" id="wt-fp-stage">
         <canvas id="wt-fp-canvas"></canvas>
         <div class="wt-fp-loading" id="wt-fp-loading">Loading pathway preview…</div>
@@ -376,7 +393,7 @@
            "POV" photo overlay below — a placeholder for the 3D-model preview
            planned later. -->
       <div class="devzones-map-wrap" id="devzones-map-wrap">
-        <img src="images/DEV_ZONES_SATMAP.jpg" alt="Campus satellite map"
+        <img src="images/devzones/DEV_ZONES_SATMAP.jpg" alt="Campus satellite map"
              id="devzones-map-img" class="devzones-map-img" draggable="false">
         <div class="devzones-markers" id="devzones-markers"></div>
       </div>
@@ -494,7 +511,7 @@
                 </div>
                 <span class="dept-name">CTE</span>
               </a>
-              <a class="info-dept-item" href="#" target="_blank">
+              <a class="info-dept-item" href="https://www.facebook.com/share/1Ez6nzge2Y/" target="_blank">
                 <div class="dept-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -820,8 +837,10 @@
 <script defer src="js/gps.js"></script>
 <script defer src="js/ui.js"></script>
 <script defer src="js/main.js"></script>
+<script defer src="js/navfp.js"></script>
 <script defer src="js/directory.js"></script>
 <script defer src="js/walkthrough.js"></script>
+<script defer src="js/tour360.js"></script>
 
 </body>
 </html>

@@ -93,6 +93,10 @@
   #preview3DToggleBtn { background: #eef0f3; color: #24303d; }
   #preview3DToggleBtn:hover { background: #e2e6ec; }
   #preview3DToggleBtn.active { background: var(--navy); color: #fff; }
+  #labelsToggleBtn { background: var(--navy); color: #fff; }
+  #labelsToggleBtn:hover { background: #164074; }
+  #labelsToggleBtn.off { background: #eef0f3; color: #24303d; }
+  #labelsToggleBtn.off:hover { background: #e2e6ec; }
 
   #zoomControls {
     position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 6px;
@@ -194,11 +198,14 @@
     <button class="mode-btn active" data-mode="select">Select / Move</button>
     <button class="mode-btn" data-mode="addWaypoint">+ Waypoint</button>
     <button class="mode-btn" data-mode="addBuilding">+ Building</button>
+    <button class="mode-btn" data-mode="addPlace" title="A small visual-only block (shed, chairs, statue...) shown in the NavMap, not tappable or navigable">+ Place</button>
     <button class="mode-btn" data-mode="link">Link Roads</button>
     <div class="divider"></div>
     <button class="btn-ghost" id="fitViewBtn">Fit view</button>
     <div class="divider"></div>
     <button class="btn-ghost" id="preview3DToggleBtn">3D Preview</button>
+    <div class="divider"></div>
+    <button class="btn-ghost" id="labelsToggleBtn" title="Show or hide building name tags on this map">Labels: On</button>
     <span class="hint" id="modeHint">Drag to pan · scroll to zoom · click a point, building, or oval to select it, drag to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it</span>
   </div>
 
@@ -211,8 +218,7 @@
           <button id="zoomOutBtn">–</button>
         </div>
         <div id="legend">
-          <div class="row"><span class="swatch" style="background:#8a8f97;"></span>paved road</div>
-          <div class="row"><span class="swatch" style="background:#c7ab7a;"></span>unpaved road</div>
+          <div class="row"><span class="swatch" style="background:#8a8f97;"></span>Pathways</div>
           <div class="row"><span class="swatch" style="background:#5a8f5f; height:10px; border-radius:2px;"></span>building</div>
           <div class="row"><span class="swatch" style="background:transparent; border:1px dashed #7a8896; height:0;"></span>bounds</div>
         </div>
@@ -221,6 +227,8 @@
         <div id="p3dHeader">
           <span class="p3d-title" id="p3dTitle">3D Preview</span>
           <span class="p3d-hint">Left-drag to orbit · right-drag to pan · scroll to zoom</span>
+          <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dModelsBtn" title="Building 3D models: click to reload them">Models: …</button>
+          <button class="btn-ghost" style="background:#1f7a4d;color:#fff;" id="p3dLabelsBtn" title="Show or hide building name tags in this 3D preview">Labels: On</button>
           <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dFrameBtn">Frame selected</button>
           <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dFitBtn">Fit map</button>
           <button class="btn-ghost" style="background:#24344a;color:#fff;" id="p3dCloseBtn">✕</button>
@@ -288,6 +296,7 @@
     dirty: false,
     history: [],
     idSeq: 1,
+    showLabels: true,      // draw the draggable building name tags
   };
 
   const canvas = document.getElementById('canvas');
@@ -304,8 +313,9 @@
 
   // ---------- Load ----------
   function setData(data, sourceLabel) {
-    // normalize: ensure pavedEdges array exists
-    if (!Array.isArray(data.pavedEdges)) data.pavedEdges = [];
+    // The app now draws every route as one gray "Pathways" style, so the old
+    // paved/unpaved split is dropped (pavedEdges is kept as an empty list).
+    data.pavedEdges = [];
     if (!Array.isArray(data.ovals)) data.ovals = [];
     state.data = data;
     state.selected = null;
@@ -326,7 +336,7 @@
   }
 
   function tryFetchDefault() {
-    fetch('data/campus.json')
+    fetch('data/campus.json?v=' + Date.now())
       .then(r => { if (!r.ok) throw new Error('not ok'); return r.json(); })
       .then(d => setData(d, 'data/campus.json'))
       .catch(() => {
@@ -420,6 +430,12 @@
     state.view.z = g.offsetZ;
   }
   document.getElementById('fitViewBtn').addEventListener('click', () => { fitView(); redraw(); });
+  document.getElementById('labelsToggleBtn').addEventListener('click', (e) => {
+    state.showLabels = !state.showLabels;
+    e.currentTarget.textContent = 'Labels: ' + (state.showLabels ? 'On' : 'Off');
+    e.currentTarget.classList.toggle('off', !state.showLabels);
+    redraw();
+  });
   document.getElementById('zoomInBtn').addEventListener('click', () => { zoomAt(canvas.clientWidth/2, canvas.clientHeight/2, 1.25); });
   document.getElementById('zoomOutBtn').addEventListener('click', () => { zoomAt(canvas.clientWidth/2, canvas.clientHeight/2, 0.8); });
   function zoomAt(sx, sy, factor) {
@@ -457,10 +473,8 @@
 
   function edgeKeyOf(a, b) { return [a, b].sort().join('|'); }
 
-  function isPaved(a, b) {
-    const key = edgeKeyOf(a, b);
-    return (state.data.pavedEdges || []).some(([x, y]) => edgeKeyOf(x, y) === key);
-  }
+  // Every road is a "Pathway" now (no paved / unpaved split).
+  function isPaved(a, b) { return true; }
 
   function redraw() {
     const r = canvas.getBoundingClientRect();
@@ -486,7 +500,7 @@
     ctx.strokeRect(bTL.x, bTL.y, bBR.x - bTL.x, bBR.y - bTL.y);
     ctx.restore();
 
-    // roads: unpaved first, then paved on top
+    // roads (all Pathways)
     const drawn = new Set();
     const edgesToDraw = [];
     d.waypoints.forEach(wp => {
@@ -554,6 +568,13 @@
       }
     });
 
+    // building name tags (selected one last so it is on top)
+    if (state.showLabels) {
+      const selId = state.selected && state.selected.type === 'building' ? state.selected.id : null;
+      d.buildings.forEach(b => { if (b.id !== selId) drawLabel(b, false); });
+      if (selId) { const sb = d.buildings.find(b => b.id === selId); if (sb) drawLabel(sb, true); }
+    }
+
     // resize + rotate handles for the selected building/oval (drawn last, on top)
     if (state.selected && state.mode === 'select') {
       if (state.selected.type === 'building') {
@@ -579,6 +600,97 @@
     });
   }
 
+  // ---------- Building name tags (what the NavMap shows above each building) ----------
+  // A tag is anchored at (building position + labelOffset) in metres; its tip sits
+  // on that point. Drag a tag to move it in any direction; the app reads the same
+  // building.labelOffset {x, y, z} (y = extra height above the roof), labelText
+  // (optional text; falls back to Name) and labelHidden (true = no tag).
+  const LABEL_CAT_COLOR = { academic: '#2f6fb5', facility: '#d49a12', court: '#6d7480', housing: '#2a9d8f' };
+  const LABEL_FONT = '600 12px "DM Sans", system-ui, sans-serif';
+
+  function labelTextOf(bld) { return (bld.labelText && String(bld.labelText).trim()) || bld.name || bld.id; }
+  function labelOffsetOf(bld) {
+    const o = bld.labelOffset || {};
+    return { x: +o.x || 0, y: +o.y || 0, z: +o.z || 0 };
+  }
+  function labelAnchorWorld(bld) {
+    const o = labelOffsetOf(bld);
+    return { x: bld.position.x + o.x, z: bld.position.z + o.z };
+  }
+  function labelMetrics(bld) {
+    ctx.save();
+    ctx.font = LABEL_FONT;
+    const words = String(labelTextOf(bld)).split(/\s+/);
+    const lines = []; let cur = '';
+    words.forEach(w => {
+      const t = cur ? cur + ' ' + w : w;
+      if (ctx.measureText(t).width > 130 && cur) { lines.push(cur); cur = w; } else cur = t;
+    });
+    if (cur) lines.push(cur);
+    let tw = 0; lines.forEach(l => { tw = Math.max(tw, ctx.measureText(l).width); });
+    ctx.restore();
+    return { lines, w: Math.ceil(tw + 18), h: lines.length * 15 + 16 };   // h includes the 6px pointer
+  }
+  function labelRect(bld) {
+    const a = worldToScreen(...Object.values(labelAnchorWorld(bld)));
+    const m = labelMetrics(bld);
+    return { ax: a.x, ay: a.y, x0: a.x - m.w / 2, y0: a.y - m.h, x1: a.x + m.w / 2, y1: a.y, m };
+  }
+  function roundRectPath(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+  }
+  function drawLabel(bld, selected) {
+    const hidden = !!bld.labelHidden;
+    if (hidden && !selected) return;
+    const r = labelRect(bld), m = r.m;
+    const o = labelOffsetOf(bld);
+    ctx.save();
+    if (hidden) ctx.globalAlpha = 0.4;
+    // leader line from the building centre to the tag's tip when it has been moved
+    if (o.x || o.z) {
+      const c = worldToScreen(bld.position.x, bld.position.z);
+      ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(r.ax, r.ay);
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(30,40,55,0.6)'; ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    const bodyH = m.h - 6;
+    ctx.fillStyle = 'rgba(255,255,255,0.96)';
+    ctx.strokeStyle = selected ? '#1A4B8C' : 'rgba(0,0,0,0.25)';
+    ctx.lineWidth = selected ? 2 : 1;
+    roundRectPath(r.x0 + 0.5, r.y0 + 0.5, m.w - 1, bodyH - 1, 7); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(r.ax - 5, r.y0 + bodyH - 0.5); ctx.lineTo(r.ax, r.ay); ctx.lineTo(r.ax + 5, r.y0 + bodyH - 0.5); ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,0.96)'; ctx.fill();
+    ctx.font = LABEL_FONT; ctx.fillStyle = '#2b1a1a'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    m.lines.forEach((l, i) => ctx.fillText(l, r.x0 + 9, r.y0 + 5 + 15 * i + 8.5));
+    // anchor dot
+    ctx.beginPath(); ctx.arc(r.ax, r.ay, 2.6, 0, Math.PI * 2); ctx.fillStyle = '#e74c3c'; ctx.fill();
+    ctx.restore();
+  }
+  function hitTestLabel(sx, sy) {
+    if (!state.data || !state.showLabels) return null;
+    const blds = state.data.buildings;
+    // the selected building's tag sits on top, then reverse draw order
+    const order = blds.slice().reverse();
+    if (state.selected && state.selected.type === 'building') {
+      const i = order.findIndex(b => b.id === state.selected.id);
+      if (i > 0) order.unshift(order.splice(i, 1)[0]);
+    }
+    for (const b of order) {
+      if (b.labelHidden && !(state.selected && state.selected.type === 'building' && state.selected.id === b.id)) continue;
+      const r = labelRect(b);
+      if (sx >= r.x0 && sx <= r.x1 && sy >= r.y0 && sy <= r.y1 + 2) return { id: b.id, bld: b };
+    }
+    return null;
+  }
+  function setLabelOffset(bld, x, y, z) {
+    x = round1(x); y = round1(y); z = round1(z);
+    if (!x && !y && !z) delete bld.labelOffset; else bld.labelOffset = { x, y, z };
+  }
+
   function drawBuilding(bld, selected) {
     const corners = buildingCorners(bld);
     ctx.beginPath();
@@ -588,9 +700,11 @@
     ctx.fill();
     ctx.lineWidth = selected ? 3 : 1.4;
     ctx.strokeStyle = selected ? '#1A4B8C' : '#2c3a48';
+    if (bld.category === 'place' && !selected) ctx.setLineDash([4, 3]);
     ctx.stroke();
+    ctx.setLineDash([]);
     const center = worldToScreen(bld.position.x, bld.position.z);
-    if (selected || state.view.scale > 0.5) {
+    if (!state.showLabels && bld.category !== 'place' && (selected || state.view.scale > 0.5)) {
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 11px sans-serif';
       ctx.textAlign = 'center';
@@ -1003,6 +1117,11 @@
       addWaypointAt(w.x, w.z);
       return;
     }
+    if (state.mode === 'addPlace') {
+      const w = screenToWorld(sx, sy);
+      addPlaceAt(w.x, w.z);
+      return;
+    }
     if (state.mode === 'addBuilding') {
       const w = screenToWorld(sx, sy);
       addBuildingAt(w.x, w.z);
@@ -1054,6 +1173,16 @@
       canvas.classList.add('dragging');
       return;
     }
+    const labelHit = hitTestLabel(sx, sy);
+    if (labelHit) {
+      const w0 = screenToWorld(sx, sy);
+      const anchor = labelAnchorWorld(labelHit.bld);
+      if (!(state.selected && state.selected.type === 'building' && state.selected.id === labelHit.id)) selectItem({ type: 'building', id: labelHit.id });
+      snapshot();
+      state.dragging = { kind: 'moveLabel', id: labelHit.id, grab: { x: w0.x - anchor.x, z: w0.z - anchor.z } };
+      canvas.classList.add('dragging');
+      return;
+    }
     const hit = hitTest(sx, sy);
     if (hit) {
       selectItem(hit);
@@ -1076,6 +1205,18 @@
       state.view.x = state.dragging.startView.x - dx / state.view.scale;
       state.view.z = state.dragging.startView.z - dy / state.view.scale;
       redraw();
+    } else if (state.dragging.kind === 'moveLabel') {
+      const bld = state.data.buildings.find(b => b.id === state.dragging.id);
+      if (bld) {
+        const w = screenToWorld(sx, sy);
+        const o = labelOffsetOf(bld);
+        setLabelOffset(bld, w.x - state.dragging.grab.x - bld.position.x, o.y, w.z - state.dragging.grab.z - bld.position.z);
+        state.dirty = true;
+        const no = labelOffsetOf(bld);
+        const fx = document.getElementById('f_lx'), fz = document.getElementById('f_lz');
+        if (fx) fx.value = no.x; if (fz) fz.value = no.z;
+        redraw();
+      }
     } else if (state.dragging.kind === 'moveNode') {
       const w = screenToWorld(sx, sy);
       moveItem(state.dragging.item, w.x, w.z);
@@ -1109,9 +1250,10 @@
 
   // ---------- Mode switching ----------
   const hints = {
-    select: 'Drag to pan · scroll to zoom · click a point, building, or oval to select it, drag it to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it (hold Shift to snap to 15\u00b0)',
+    select: 'Drag to pan · scroll to zoom · click a point, building, or oval to select it, drag it to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it (hold Shift to snap to 15\u00b0) · drag a white name tag to move its label',
     addWaypoint: 'Click anywhere on the map to drop a new waypoint',
     addBuilding: 'Click anywhere on the map to place a new building',
+    addPlace: 'Click anywhere on the map to drop a small place block (shed, chairs, statue...). It shows in the NavMap but is not tappable or navigable.',
     link: 'Click a waypoint, then click a second one to connect or disconnect a road between them',
   };
   function setMode(mode) {
@@ -1120,7 +1262,7 @@
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
     document.getElementById('modeHint').textContent = hints[mode] || '';
     canvas.classList.remove('mode-add', 'mode-link');
-    if (mode === 'addWaypoint' || mode === 'addBuilding') canvas.classList.add('mode-add');
+    if (mode === 'addWaypoint' || mode === 'addBuilding' || mode === 'addPlace') canvas.classList.add('mode-add');
     if (mode === 'link') canvas.classList.add('mode-link');
     redraw();
   }
@@ -1148,6 +1290,23 @@
     selectItem({ type: 'waypoint', id });
     redraw();
     toast('Waypoint added — set a real id/label in the panel, then use Link Roads to connect it.');
+  }
+
+  function addPlaceAt(x, z) {
+    snapshot();
+    const id = genId('place_new');
+    const ll = xzToLL(x, z, state.data.origin);
+    const bld = {
+      id, name: 'New Place', category: 'place', kind: 'shed', description: '', color: '#d98f3a',
+      latLng: { lat: ll.lat, lng: ll.lng }, position: { x: round1(x), z: round1(z) },
+      size: { width: 6, depth: 4, height: 3 }, glbModel: null, texturedModel: null, rotation: 0, labelHidden: true
+    };
+    state.data.buildings.push(bld);
+    if (preview3D.isOpen) preview3D.rebuildBuilding(bld);
+    state.dirty = true;
+    selectItem({ type: 'building', id });
+    redraw();
+    toast('Place added — move, resize or recolor it. (Shown in the NavMap, not tappable.)');
   }
 
   function addBuildingAt(x, z) {
@@ -1208,7 +1367,7 @@
     } else {
       a.neighbors.push(idB);
       b.neighbors.push(idA);
-      toast('Connected ' + (a.label || idA) + ' ↔ ' + (b.label || idB) + ' (unpaved by default — tick "paved" in the panel if it should be a paved road)');
+      toast('Connected ' + (a.label || idA) + ' ↔ ' + (b.label || idB) + ' (Pathway)');
     }
     state.dirty = true;
     if (preview3D.isOpen) preview3D.fullRebuild();
@@ -1427,9 +1586,8 @@
     if (!wp.neighbors.length) html += '<p class="empty" style="font-size:12px;">No roads connect here yet. Use "Link Roads" mode to connect it.</p>';
     wp.neighbors.forEach(nid => {
       const nb = waypointMap[nid];
-      const paved = isPaved(wp.id, nid);
       html += '<div class="neighbor-chip"><span class="nb-id">' + escHtml(nb ? (nb.label || nid) : nid + ' (missing!)') + '</span>' +
-        '<label><input type="checkbox" class="paved-toggle" data-nid="' + escAttr(nid) + '" ' + (paved ? 'checked' : '') + '> paved</label>' +
+        '<span style="font-size:11px;opacity:.65;">Pathway</span>' +
         '<button class="unlink-btn" data-unlink="' + escAttr(nid) + '" title="Disconnect">✕</button></div>';
     });
     html += '</div>';
@@ -1442,9 +1600,6 @@
       if (!renameWaypoint(wp.id, e.target.value)) e.target.value = wp.id; else { renderPanel(); redraw(); }
     });
     el.querySelector('#f_label').addEventListener('change', (e) => { snapshot(); wp.label = e.target.value; state.dirty = true; redraw(); });
-    el.querySelectorAll('.paved-toggle').forEach(cb => {
-      cb.addEventListener('change', (e) => { togglePaved(wp.id, e.target.dataset.nid, e.target.checked); });
-    });
     el.querySelectorAll('[data-unlink]').forEach(btn => {
       btn.addEventListener('click', (e) => { toggleLink(wp.id, e.target.dataset.unlink); renderPanel(); redraw(); });
     });
@@ -1463,9 +1618,19 @@
     let html = '<h2>Building</h2>';
     html += '<div class="id-row">' + field('ID', '<input type="text" id="f_id" value="' + escAttr(bld.id) + '">') + '</div>';
     html += field('Name', '<input type="text" id="f_name" value="' + escAttr(bld.name || '') + '">');
-    html += field('Category', '<select id="f_cat">' + ['academic', 'facility', 'court'].map(c => '<option value="' + c + '"' + (bld.category === c ? ' selected' : '') + '>' + c + '</option>').join('') + '</select>');
+    html += field('Category', '<select id="f_cat">' + ['academic', 'facility', 'court', 'housing', 'place'].map(c => '<option value="' + c + '"' + (bld.category === c ? ' selected' : '') + '>' + c + '</option>').join('') + '</select>');
     html += field('Description', '<textarea id="f_desc">' + escHtml(bld.description || '') + '</textarea>');
     html += field('Color', '<input type="color" id="f_color" value="' + (bld.color || '#4a90d9') + '">');
+    const lo = labelOffsetOf(bld);
+    html += '<div class="field" style="border-top:1px solid #e3e6ea;padding-top:8px;margin-top:6px;"><label style="font-weight:700;">Name tag (shown above the building in the app)</label>' +
+      '<p style="font-size:11px;opacity:.65;margin:2px 0 6px;">Drag the white tag on the map to move it, or type exact offsets here.</p></div>';
+    html += field('Tag text', '<input type="text" id="f_ltext" placeholder="(uses Name)" value="' + escAttr(bld.labelText || '') + '">');
+    html += '<div class="field-row">' + field('Offset X (m)', '<input type="number" step="0.5" id="f_lx" value="' + lo.x + '">') + field('Offset Z (m)', '<input type="number" step="0.5" id="f_lz" value="' + lo.z + '">') + '</div>';
+    html += '<div class="field-row">' + field('Extra height (m)', '<input type="number" step="0.5" id="f_ly" value="' + lo.y + '">') +
+      '<div class="field"><label>&nbsp;</label><button class="btn-ghost" style="background:#eef0f3;color:#24303d;width:100%;" id="resetLabelBtn">Reset tag position</button></div></div>';
+    html += '<div class="field"><label style="display:flex;align-items:center;gap:6px;font-weight:400;"><input type="checkbox" id="f_lhide"' + (bld.labelHidden ? ' checked' : '') + '> Hide this tag in the app</label></div>';
+    html += '<div class="section-title">Walking (first-person view)</div>';
+    html += '<div class="field"><label style="display:flex;align-items:center;gap:6px;font-weight:400;"><input type="checkbox" id="f_nocol"' + (bld.noCollision ? ' checked' : '') + '> Let people walk through this building</label><p class="empty" style="font-size:11.5px;margin:4px 0 0;">Off by default: walls stop the camera. A Pathway drawn through a building is always walkable.</p></div>';
     html += '<div class="field-row">' + field('X (m)', '<input type="number" step="0.1" id="f_x" value="' + bld.position.x + '">') + field('Z (m)', '<input type="number" step="0.1" id="f_z" value="' + bld.position.z + '">') + '</div>';
     html += '<div class="field-row">' + field('Latitude', '<input type="number" step="0.0000001" id="f_lat" value="' + bld.latLng.lat + '">') + field('Longitude', '<input type="number" step="0.0000001" id="f_lng" value="' + bld.latLng.lng + '">') + '</div>';
     html += '<div class="field-row">' + field('Width (m)', '<input type="number" step="0.5" id="f_w" value="' + bld.size.width + '">') + field('Depth (m)', '<input type="number" step="0.5" id="f_d" value="' + bld.size.depth + '">') + '</div>';
@@ -1475,6 +1640,9 @@
     ).join('');
     html += field('Entry waypoint', '<select id="f_entry">' + wpOptions + '</select>');
     html += field('GLB model path', '<input type="text" id="f_glb" placeholder="models/example.glb" value="' + escAttr(bld.glbModel || '') + '">');
+    if (bld.category === 'place') {
+      html += '<div class="field"><button class="btn-ghost" style="background:#eef0f3;color:#24303d;width:100%;" id="fitModelBtn">Set size from model</button><p class="empty" style="font-size:11.5px;margin:4px 0 0;">Sets Width / Depth / Height to the model\'s real size (so it isn\'t stretched). Use this after typing a new GLB path.</p></div>';
+    }
     html += field('Model scale (\u00d7)', '<input type="number" step="0.01" min="0.01" id="f_scale" value="' + (bld.modelScale != null ? bld.modelScale : 1) + '">');
     html += '<div class="field"><label style="display:flex;align-items:center;gap:6px;font-weight:400;"><input type="checkbox" id="f_tint"' + (bld.glbTint ? ' checked' : '') + '> Tint this model with the Color field above</label>' +
       '<p style="font-size:11px;opacity:.65;margin:4px 0 0;">Replaces the model\'s own material with a flat color \u2014 useful for a scan that renders solid black or with the wrong color, no Blender needed.</p></div>';
@@ -1499,6 +1667,17 @@
     el.querySelector('#f_color').addEventListener('input', (e) => { bld.color = e.target.value; redraw(); if (preview3D.isOpen) preview3D.rebuildBuilding(bld); });
     el.querySelector('#f_color').addEventListener('change', () => { snapshot(); state.dirty = true; });
     el.querySelector('#f_entry').addEventListener('change', (e) => { snapshot(); bld.entryWaypoint = e.target.value || null; state.dirty = true; });
+    const fitBtn = el.querySelector('#fitModelBtn');
+    if (fitBtn) fitBtn.addEventListener('click', () => {
+      if (!bld.glbModel) { alert('Type a GLB model path first.'); return; }
+      fitBtn.textContent = 'Measuring\u2026';
+      preview3D.measureModel(bld).then(ns => {
+        snapshot();
+        bld.size.width = +ns.x.toFixed(2); bld.size.depth = +ns.z.toFixed(2); bld.size.height = +ns.y.toFixed(2);
+        state.dirty = true; redraw(); renderPanel();
+        if (preview3D.isOpen) preview3D.rebuildBuilding(bld);
+      }).catch(() => { fitBtn.textContent = 'Could not load that model'; });
+    });
     el.querySelector('#f_scale').addEventListener('change', (e) => {
       snapshot();
       let v = parseFloat(e.target.value);
@@ -1528,6 +1707,36 @@
       bld.rotation = ((v % 360) + 360) % 360;
       state.dirty = true; redraw();
       if (preview3D.isOpen) preview3D.syncTransform(bld);
+    });
+    function commitLabelOffset() {
+      snapshot();
+      setLabelOffset(bld,
+        parseFloat(el.querySelector('#f_lx').value) || 0,
+        parseFloat(el.querySelector('#f_ly').value) || 0,
+        parseFloat(el.querySelector('#f_lz').value) || 0);
+      state.dirty = true; redraw();
+    }
+    ['f_lx', 'f_ly', 'f_lz'].forEach(fid => el.querySelector('#' + fid).addEventListener('change', commitLabelOffset));
+    el.querySelector('#f_ltext').addEventListener('change', (e) => {
+      snapshot();
+      const v = e.target.value.trim();
+      if (v) bld.labelText = v; else delete bld.labelText;
+      state.dirty = true; redraw();
+    });
+    el.querySelector('#f_nocol').addEventListener('change', (e) => {
+      snapshot();
+      if (e.target.checked) bld.noCollision = true; else delete bld.noCollision;
+      state.dirty = true;
+    });
+    el.querySelector('#f_lhide').addEventListener('change', (e) => {
+      snapshot();
+      if (e.target.checked) bld.labelHidden = true; else delete bld.labelHidden;
+      state.dirty = true; redraw();
+    });
+    el.querySelector('#resetLabelBtn').addEventListener('click', () => {
+      snapshot();
+      delete bld.labelOffset;
+      state.dirty = true; renderPanel(); redraw();
     });
     el.querySelector('#deleteBtn').addEventListener('click', () => {
       if (confirm('Delete "' + (bld.name || bld.id) + '"?')) deleteSelected();
@@ -1830,9 +2039,100 @@
       }, { passive: false });
     }
 
+    // ---------- Name tags (same look + data as the NavMap's tags) ----------
+    // One floating sprite per building at (position + labelOffset), at roof height
+    // + 1.5 + labelOffset.y. Kept in sync every frame (cheap: ~40 buildings) so
+    // any edit — dragging a tag on the 2D map, the panel fields, renaming,
+    // resizing — shows up immediately. Constant on-screen size, like the app.
+    let showLabels3 = true;
+    let labelRecs = {};        // buildingId -> { sprite, key, lw, lh }
+    const tagTexCache = {};    // "text|color" -> { tex, lw, lh }
+
+    function makeTag3(text, accent) {
+      const ck = text + '|' + accent;
+      if (tagTexCache[ck]) return tagTexCache[ck];
+      const S = 2, fs = 12, lineH = 15, padX = 9, padY = 5, maxW = 130;
+      const font = '600 ' + fs + 'px "DM Sans", system-ui, sans-serif';
+      const meas = document.createElement('canvas').getContext('2d');
+      meas.font = font;
+      const words = String(text).split(/\s+/), lines = []; let cur = '';
+      words.forEach(w => {
+        const t = cur ? cur + ' ' + w : w;
+        if (meas.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+      });
+      if (cur) lines.push(cur);
+      let tw = 0; lines.forEach(l => { tw = Math.max(tw, meas.measureText(l).width); });
+      const lw = Math.ceil(tw + padX * 2), lh = lines.length * lineH + padY * 2 + 6;
+      const c = document.createElement('canvas');
+      c.width = lw * S; c.height = lh * S;
+      const g = c.getContext('2d');
+      g.scale(S, S);
+      const bodyH = lh - 6;
+      const rr = (x, y, w, h, r) => {
+        g.beginPath();
+        g.moveTo(x + r, y); g.lineTo(x + w - r, y); g.quadraticCurveTo(x + w, y, x + w, y + r);
+        g.lineTo(x + w, y + h - r); g.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        g.lineTo(x + r, y + h); g.quadraticCurveTo(x, y + h, x, y + h - r);
+        g.lineTo(x, y + r); g.quadraticCurveTo(x, y, x + r, y); g.closePath();
+      };
+      g.fillStyle = 'rgba(255,255,255,0.95)'; g.strokeStyle = 'rgba(0,0,0,0.18)'; g.lineWidth = 1;
+      rr(0.5, 0.5, lw - 1, bodyH - 1, 7); g.fill(); g.stroke();
+      g.beginPath(); g.moveTo(lw / 2 - 5, bodyH - 0.5); g.lineTo(lw / 2, lh - 0.5); g.lineTo(lw / 2 + 5, bodyH - 0.5); g.closePath();
+      g.fillStyle = 'rgba(255,255,255,0.95)'; g.fill();
+      g.font = font; g.fillStyle = '#2b1a1a'; g.textBaseline = 'middle'; g.textAlign = 'left';
+      lines.forEach((l, i) => g.fillText(l, padX, padY + lineH * i + lineH / 2 + 1));
+      const tex = new THREE.CanvasTexture(c);
+      tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+      return (tagTexCache[ck] = { tex, lw, lh });
+    }
+
+    function clearLabels3() {
+      Object.keys(labelRecs).forEach(id => { scene3.remove(labelRecs[id].sprite); labelRecs[id].sprite.material.dispose(); });
+      labelRecs = {};
+    }
+
+    function syncLabels3() {
+      if (!state.data) return;
+      if (!showLabels3) { Object.keys(labelRecs).forEach(id => { labelRecs[id].sprite.visible = false; }); return; }
+      const wrap = canvasWrapEl();
+      const H = wrap.clientHeight || 200;
+      const tanHalf = Math.tan(THREE.MathUtils.degToRad(camera3.fov) / 2);
+      const seen = {};
+      state.data.buildings.forEach(b => {
+        seen[b.id] = true;
+        let rec = labelRecs[b.id];
+        if (b.labelHidden) { if (rec) rec.sprite.visible = false; return; }
+        const text = labelTextOf(b), color = LABEL_CAT_COLOR[b.category] || '#6d7480';
+        const key = text + '|' + color;
+        if (!rec || rec.key !== key) {
+          if (rec) { scene3.remove(rec.sprite); rec.sprite.material.dispose(); }
+          const made = makeTag3(text, color);
+          const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: made.tex, transparent: true, depthTest: false, depthWrite: false }));
+          sp.center.set(0.5, 0);
+          sp.renderOrder = 20;
+          scene3.add(sp);
+          rec = labelRecs[b.id] = { sprite: sp, key, lw: made.lw, lh: made.lh };
+        }
+        const o = labelOffsetOf(b);
+        const x = b.position.x + o.x, z = b.position.z + o.z;
+        const y = ((b.size && b.size.height) || 8) + 1.5 + o.y;
+        rec.sprite.position.set(x, y, z);
+        const dx = x - camera3.position.x, dy = y - camera3.position.y, dz = z - camera3.position.z;
+        const depth = Math.max(1, Math.sqrt(dx * dx + dy * dy + dz * dz));
+        const wH = rec.lh * (2 * depth * tanHalf) / H;           // world height that is lh px tall
+        rec.sprite.scale.set(wH * rec.lw / rec.lh, wH, 1);
+        rec.sprite.visible = true;
+      });
+      Object.keys(labelRecs).forEach(id => {
+        if (!seen[id]) { scene3.remove(labelRecs[id].sprite); labelRecs[id].sprite.material.dispose(); delete labelRecs[id]; }
+      });
+    }
+
+    function setShowLabels3(v) { showLabels3 = !!v; }
+
     function animate3() {
       requestAnimationFrame(animate3);
-      if (panelOpen && ready) renderer3.render(scene3, camera3);
+      if (panelOpen && ready) { syncLabels3(); renderer3.render(scene3, camera3); }
     }
 
     function clearScene() {
@@ -1842,6 +2142,7 @@
       ovalMeshes = {};
       roadGroup = null;
       groundMesh = null;
+      labelRecs = {};
     }
 
     function fullRebuild() {
@@ -1854,6 +2155,7 @@
       (d.ovals || []).forEach(rebuildOval);
       d.buildings.forEach(rebuildBuilding);
       if (!cameraPositioned) frameFit(d);
+      updateModelStatus();
     }
 
     // ---------- Ovals (running track) ----------
@@ -1942,9 +2244,7 @@
 
     function buildRoads3(d) {
       roadGroup = new THREE.Group();
-      const mainEdges = new Set((d.pavedEdges || []).map(([a, b]) => [a, b].sort().join('|')));
       const matMain = new THREE.MeshLambertMaterial({ color: 0x9a9a9a });
-      const matPath = new THREE.MeshLambertMaterial({ color: 0xc0b090 });
       const drawn = new Set();
       d.waypoints.forEach(wp => {
         wp.neighbors.forEach(nid => {
@@ -1953,16 +2253,16 @@
           drawn.add(key);
           const nb = waypointMap[nid];
           if (!nb) return;
-          const isMain = mainEdges.has(key);
+          const isMain = true;   // one style: Pathways
           const ax = wp.position.x, az = wp.position.z, bx = nb.position.x, bz = nb.position.z;
           const dx = bx - ax, dz = bz - az;
           const length = Math.sqrt(dx * dx + dz * dz);
           if (length < 0.1) return;
           const strip = new THREE.Mesh(
-            new THREE.BoxGeometry(length, 0.3, isMain ? 7 : 3.5),
-            isMain ? matMain : matPath
+            new THREE.BoxGeometry(length, 0.3, 5),
+            matMain
           );
-          strip.position.set((ax + bx) / 2, isMain ? 0.4 : 0, (az + bz) / 2);
+          strip.position.set((ax + bx) / 2, 0.2, (az + bz) / 2);
           strip.rotation.y = -Math.atan2(dz, dx);
           roadGroup.add(strip);
         });
@@ -1985,10 +2285,78 @@
               z: box.max.z - box.min.z,
             };
             resolve({ scene, nativeSize });
-          }, undefined, reject);
+          }, undefined, (err) => {
+            delete glbCache[path];           // don't cache a failure: allow a retry
+            reject(err);
+          });
         });
       }
       return glbCache[path];
+    }
+
+    // ---------- model-load status (so a failure is visible, not silent) ----------
+    const modelErrors = {};   // buildingId -> reason text
+    function errText(err) {
+      if (location.protocol === 'file:') return 'page opened from a file:// address (browsers block model files there)';
+      if (!err) return 'unknown error';
+      if (err.message) return err.message;
+      if (err.target && (err.target.status || err.target.responseURL)) return 'HTTP ' + err.target.status;
+      if (err.type === 'error') return 'network error (server not reachable, or blocked by the browser)';
+      return err.type || String(err);
+    }
+    function updateModelStatus() {
+      const btn = document.getElementById('p3dModelsBtn');
+      if (!btn) return;
+      let total = 0, ok = 0, bad = 0;
+      Object.keys(meshes).forEach(id => {
+        const r = meshes[id];
+        if (r.kind === 'box') return;            // plain box building (no model assigned)
+        total++;
+        if (r.kind === 'glb' && r.instance) ok++;
+        else if (r.kind === 'box-fallback') bad++;
+      });
+      if (bad) {
+        const ids = Object.keys(modelErrors).slice(0, 4).map(id => id + ': ' + modelErrors[id]).join(' | ');
+        btn.textContent = '⚠ ' + bad + ' model' + (bad > 1 ? 's' : '') + ' failed — retry';
+        btn.style.background = '#b3261e';
+        btn.title = 'Showing grey boxes instead of the 3D model for ' + bad + ' building(s). ' + ids + '. Click to retry. (Open the editor from a local web server, e.g. VS Code Live Server — not by double-clicking the file.)';
+      } else {
+        btn.textContent = 'Models: ' + ok + '/' + total + (ok < total ? ' …' : '');
+        btn.style.background = '#24344a';
+        btn.title = 'Building 3D models loaded. Click to reload them.';
+      }
+    }
+    function reloadModels() {
+      Object.keys(glbCache).forEach(k => delete glbCache[k]);
+      Object.keys(modelErrors).forEach(k => delete modelErrors[k]);
+      fullRebuild();
+    }
+
+    // Place models from the artist are not centered on their own origin, so (like
+    // js/main.js's preparePlaceModel) they are re-centered: horizontally on their
+    // bounding box, base at the ground. bld.glbStrip = name prefixes of parts to
+    // leave out (e.g. the trees bundled into the statue files).
+    function preparePlace(root, strip) {
+      if (strip && strip.length) {
+        const drop = [];
+        root.traverse(o => {
+          if (!o.isMesh) return;
+          const names = [o.name || '', (o.parent && o.parent.name) || ''];
+          if (strip.some(x => names.some(n => n.startsWith(x)))) drop.push(o);
+        });
+        drop.forEach(o => o.parent && o.parent.remove(o));
+      }
+      root.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(root);
+      const c = box.getCenter(new THREE.Vector3());
+      const wrapper = new THREE.Group();
+      root.position.set(-c.x, -box.min.y, -c.z);
+      wrapper.add(root);
+      return { obj: wrapper, nativeSize: { x: box.max.x - box.min.x, y: box.max.y - box.min.y, z: box.max.z - box.min.z } };
+    }
+    // Resolves to the model's real size {x,y,z} (after glbStrip) — for "Set size from model".
+    function measureModel(bld) {
+      return loadGLBTemplate(bld.glbModel).then(({ scene }) => preparePlace(scene.clone(true), bld.glbStrip).nativeSize);
     }
 
     // Scales a cloned GLB instance to fit a building's declared footprint
@@ -2066,16 +2434,25 @@
         positionGroup(group, bld);
         loadGLBTemplate(bld.glbModel).then(({ scene, nativeSize }) => {
           if (meshes[bld.id] !== rec) return; // superseded by a later edit
-          const inst = scene.clone(true);
+          let inst = scene.clone(true), ns = nativeSize;
+          if (bld.category === 'place') {
+            const pp = preparePlace(inst, bld.glbStrip);
+            inst = pp.obj; ns = pp.nativeSize;
+            inst.position.y = 0.45;            // base clear of the road strips, same as the app
+          }
           rec.instance = inst;
-          rec.nativeSize = nativeSize;
-          applyGlbScale(inst, bld, nativeSize);
-          applyGlbTint(inst, bld);
+          rec.nativeSize = ns;
+          applyGlbScale(inst, bld, ns);
+          if (bld.category !== 'place') applyGlbTint(inst, bld);
           group.add(inst);
-        }).catch(() => {
+          updateModelStatus();
+        }).catch((err) => {
+          console.error('3D preview: could not load model for ' + bld.id + ' (' + bld.glbModel + '):', err);
           if (meshes[bld.id] !== rec) return;
+          modelErrors[bld.id] = errText(err);
           addBoxVisual(group, bld);
           rec.kind = 'box-fallback';
+          updateModelStatus();
         });
       } else {
         addBoxVisual(group, bld);
@@ -2150,9 +2527,11 @@
 
     return {
       setPanelOpen, fullRebuild, rebuildBuilding, syncTransform, removeBuildingMesh,
-      renameKey, frameOn,
+      renameKey, frameOn, measureModel,
       rebuildOval, syncOvalTransform: rebuildOval, removeOvalMesh, renameOvalKey, frameOnOval,
       fitMap: () => { if (state.data) frameFit(state.data); },
+      setShowLabels: setShowLabels3,
+      reloadModels,
       get isOpen() { return panelOpen; },
     };
   })();
@@ -2168,6 +2547,13 @@
     document.getElementById('preview3DPanel').classList.remove('open');
     document.getElementById('preview3DToggleBtn').classList.remove('active');
     preview3D.setPanelOpen(false);
+  });
+  document.getElementById('p3dModelsBtn').addEventListener('click', () => preview3D.reloadModels());
+  document.getElementById('p3dLabelsBtn').addEventListener('click', (e) => {
+    state.showLabels3D = state.showLabels3D === false ? true : false;
+    preview3D.setShowLabels(state.showLabels3D);
+    e.currentTarget.textContent = 'Labels: ' + (state.showLabels3D ? 'On' : 'Off');
+    e.currentTarget.style.background = state.showLabels3D ? '#1f7a4d' : '#24344a';
   });
   document.getElementById('p3dFrameBtn').addEventListener('click', () => {
     if (state.selected && state.selected.type === 'building') {

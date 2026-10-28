@@ -6,10 +6,10 @@
     "_note": "Main Gate — (0,0) in Three.js"
   },
   "ground": {
-    "width": 1269.1,
-    "depth": 749.3,
-    "offsetX": 584.6,
-    "offsetZ": -231.7,
+    "width": 1288.1,
+    "depth": 868.7,
+    "offsetX": 594.1,
+    "offsetZ": -172,
     "texture": null,
     "color": "#7cb87a",
     "_note": "texture=null uses solid color. Change to 'images/campus-topdown.jpg' later."
@@ -29,9 +29,9 @@
   },
   "bounds": {
     "minX": -20,
-    "maxX": 1189.1,
+    "maxX": 1208.1,
     "minZ": -576.4,
-    "maxZ": 112.9,
+    "maxZ": 232.3,
     "_note": "Used by gps.js to clamp blue dot to scene area"
   },
   "waypoints": [
@@ -66,7 +66,8 @@
         "main_gate",
         "z1_int1",
         "womendorm_entryroad",
-        "guard_house_roadentry"
+        "guard_house_roadentry",
+        "z5_start"
       ]
     },
     {
@@ -86,7 +87,8 @@
         "z3_start",
         "canteen_pathway",
         "womendorm_entryroad",
-        "guard_house_roadentry"
+        "guard_house_roadentry",
+        "wp_new_3"
       ]
     },
     {
@@ -146,12 +148,12 @@
       "id": "z1_int5",
       "label": "Z1 Int 5",
       "latLng": {
-        "lat": 14.969032540034839,
-        "lng": 120.1973137606458
+        "lat": 14.968981289297256,
+        "lng": 120.1972649335092
       },
       "position": {
-        "x": 674.6,
-        "z": -58.1
+        "x": 670,
+        "z": -52.6
       },
       "neighbors": [
         "z1_int4",
@@ -163,12 +165,12 @@
       "id": "z1_int6",
       "label": "Z1 Int 6",
       "latLng": {
-        "lat": 14.96910784285833,
-        "lng": 120.19751715668423
+        "lat": 14.969152270095933,
+        "lng": 120.19760678314051
       },
       "position": {
-        "x": 696.5,
-        "z": -66.5
+        "x": 706.8,
+        "z": -71.7
       },
       "neighbors": [
         "z1_int5",
@@ -338,12 +340,12 @@
       "id": "z2_wp3",
       "label": "Z2 WP3",
       "latLng": {
-        "lat": 14.96926685408667,
-        "lng": 120.19721012609548
+        "lat": 14.969281177085511,
+        "lng": 120.19715346080335
       },
       "position": {
-        "x": 664.1,
-        "z": -84.5
+        "x": 658,
+        "z": -86.1
       },
       "neighbors": [
         "z2_wp2",
@@ -356,12 +358,12 @@
       "id": "z2_wp4",
       "label": "Z2 WP4",
       "latLng": {
-        "lat": 14.969419175667317,
-        "lng": 120.19747231846226
+        "lat": 14.969419035949366,
+        "lng": 120.19749438149543
       },
       "position": {
-        "x": 691.6,
-        "z": -101.2
+        "x": 694.7,
+        "z": -101.5
       },
       "neighbors": [
         "z2_wp3",
@@ -374,18 +376,17 @@
       "id": "z2_wp5",
       "label": "Z2 WP5",
       "latLng": {
-        "lat": 14.96968252184026,
-        "lng": 120.19824999634871
+        "lat": 14.969637461681709,
+        "lng": 120.1981334916757
       },
       "position": {
-        "x": 764.7,
-        "z": -126.3
+        "x": 763.5,
+        "z": -125.9
       },
       "neighbors": [
         "z2_wp4",
         "z2_wp6",
-        "z1_int9",
-        "lhs_entry"
+        "z1_int9"
       ]
     },
     {
@@ -535,19 +536,20 @@
         "z": -78.4
       },
       "neighbors": [
-        "asb_path_start"
+        "asb_path_start",
+        "z5_int2"
       ]
     },
     {
       "id": "chm1_branch",
       "label": "CHM1 Branch",
       "latLng": {
-        "lat": 14.968921311739605,
-        "lng": 120.1961929376545
+        "lat": 14.968904303178478,
+        "lng": 120.19611676463883
       },
       "position": {
-        "x": 554.6,
-        "z": -45.9
+        "x": 546.4,
+        "z": -44
       },
       "neighbors": [
         "chm1_entry",
@@ -559,12 +561,12 @@
       "id": "chm1_entry",
       "label": "CHM 1 Entry",
       "latLng": {
-        "lat": 14.968943133528034,
-        "lng": 120.19618040130989
+        "lat": 14.968980394109828,
+        "lng": 120.19609725691531
       },
       "position": {
-        "x": 549.6,
-        "z": -53.6
+        "x": 544.3,
+        "z": -52.5
       },
       "neighbors": [
         "chm1_branch"
@@ -604,12 +606,12 @@
       "id": "cte_bsed_entry",
       "label": "CTE BSED Entry",
       "latLng": {
-        "lat": 14.969538991064669,
-        "lng": 120.19704756173277
+        "lat": 14.969543467001806,
+        "lng": 120.19707357203082
       },
       "position": {
-        "x": 646.6,
-        "z": -114.9
+        "x": 649.4,
+        "z": -115.4
       },
       "neighbors": [
         "z2_wp3"
@@ -619,12 +621,12 @@
       "id": "cte_walk_entry",
       "label": "CTE BSED Walk",
       "latLng": {
-        "lat": 14.96971534298791,
-        "lng": 120.19730766471312
+        "lat": 14.969423511886504,
+        "lng": 120.19749066573857
       },
       "position": {
-        "x": 674.6,
-        "z": -134.6
+        "x": 694.3,
+        "z": -102
       },
       "neighbors": [
         "z2_wp4"
@@ -634,15 +636,15 @@
       "id": "lhs_entry",
       "label": "LHS Entry",
       "latLng": {
-        "lat": 14.96988184784945,
-        "lng": 120.19809819198552
+        "lat": 14.970163831889154,
+        "lng": 120.19806475017376
       },
       "position": {
-        "x": 759.7,
-        "z": -153.2
+        "x": 756.1,
+        "z": -184.7
       },
       "neighbors": [
-        "z2_wp5"
+        "wp_new_2"
       ]
     },
     {
@@ -675,7 +677,8 @@
       "neighbors": [
         "z3_wp2",
         "z4_start",
-        "z1_int1"
+        "z1_int1",
+        "z34_a"
       ]
     },
     {
@@ -692,7 +695,9 @@
       "neighbors": [
         "z3_start",
         "z3_wp3",
-        "z3_spur1"
+        "z3_spur1",
+        "z34_b",
+        "z34_a"
       ]
     },
     {
@@ -726,7 +731,8 @@
         "z3_wp4",
         "z3_spur2",
         "agritech_1_entry",
-        "mitos_magsaysay_building_entry"
+        "mitos_magsaysay_building_entry",
+        "z34_b"
       ]
     },
     {
@@ -787,30 +793,15 @@
       ]
     },
     {
-      "id": "z1_int13",
-      "label": "Z1 Int 13",
-      "latLng": {
-        "lat": 14.96991228422199,
-        "lng": 120.20075774495953
-      },
-      "position": {
-        "x": 1046,
-        "z": -156.6
-      },
-      "neighbors": [
-        "connector_adco_to_z1int12"
-      ]
-    },
-    {
       "id": "LHS_Faculty_and_CCIT_2-4_Entry",
       "label": "LHS Faculty / CCIT Entry",
       "latLng": {
-        "lat": 14.96999553665276,
-        "lng": 120.19881811987754
+        "lat": 14.96989348528601,
+        "lng": 120.19888593244028
       },
       "position": {
-        "x": 837.2,
-        "z": -165.9
+        "x": 844.5,
+        "z": -154.5
       },
       "neighbors": [
         "z2_wp6"
@@ -847,44 +838,48 @@
         "z4_wp1",
         "z3_start",
         "z4_end",
-        "mensdorm_roadentry"
+        "mensdorm_roadentry",
+        "zone 4_int1"
       ]
     },
     {
       "id": "z4_wp1",
       "label": "Z4 Path 1",
       "latLng": {
-        "lat": 14.972435817580479,
-        "lng": 120.19916089844807
+        "lat": 14.97241612345707,
+        "lng": 120.19916461420493
       },
       "position": {
-        "x": 874.1,
-        "z": -438.5
+        "x": 874.5,
+        "z": -436.3
       },
       "neighbors": [
         "z4_start",
         "z4_end",
         "mensdorm_roadentry",
         "regional_mango_center_entry",
-        "z3_wp5"
+        "z3_wp5",
+        "Z4_int2"
       ]
     },
     {
       "id": "z4_end",
       "label": "Back Exit",
       "latLng": {
-        "lat": 14.973416601800466,
-        "lng": 120.2014956202407
+        "lat": 14.973400673176783,
+        "lng": 120.20148949962523
       },
       "position": {
-        "x": 1125.4,
-        "z": -548.1
+        "x": 1124.8,
+        "z": -546.3
       },
       "neighbors": [
         "z4_wp1",
         "z3_oval_end",
         "mensdorm_roadentry",
-        "z4_start"
+        "z4_start",
+        "Z4_int2",
+        "ltda_entry"
       ]
     },
     {
@@ -1014,17 +1009,18 @@
       "id": "z3_oval_end",
       "label": "Zone 3 End (near Oval)",
       "latLng": {
-        "lat": 14.971986827896323,
-        "lng": 120.20190166678721
+        "lat": 14.971631071923444,
+        "lng": 120.20205257611966
       },
       "position": {
-        "x": 1169.1,
-        "z": -388.3
+        "x": 1185.4,
+        "z": -348.6
       },
       "neighbors": [
         "z3_wp5",
         "z4_end",
-        "connector_z3_to_z1"
+        "connector_z3_to_z1",
+        "ltda_entry"
       ]
     },
     {
@@ -1091,12 +1087,12 @@
       "id": "regional_mango_center_door",
       "label": "Regional Mango Center Door",
       "latLng": {
-        "lat": 14.971700868702394,
-        "lng": 120.19916368526572
+        "lat": 14.971735781012072,
+        "lng": 120.19928723418138
       },
       "position": {
-        "x": 874.4,
-        "z": -356.4
+        "x": 887.7,
+        "z": -360.3
       },
       "neighbors": [
         "regional_mango_center_entry"
@@ -1154,12 +1150,12 @@
       "id": "gabaldon_beed_entry",
       "label": "Gabaldon and CTE BEED Entry",
       "latLng": {
-        "lat": 14.96903231498063,
-        "lng": 120.19753153906406
+        "lat": 14.969092292538281,
+        "lng": 120.19751110240132
       },
       "position": {
-        "x": 698.7,
-        "z": -58.3
+        "x": 696.5,
+        "z": -65
       },
       "neighbors": [
         "z1_int6",
@@ -1232,18 +1228,19 @@
       "id": "mensdorm_roadentry",
       "label": "Men's Dorm Road Entry",
       "latLng": {
-        "lat": 14.972864612358313,
-        "lng": 120.20016972643612
+        "lat": 14.972849394172043,
+        "lng": 120.20017901582827
       },
       "position": {
-        "x": 982.7,
-        "z": -486.4
+        "x": 983.7,
+        "z": -484.7
       },
       "neighbors": [
         "mendorm_entrance",
         "z4_wp1",
         "z4_end",
-        "z4_start"
+        "z4_start",
+        "Z4_int2"
       ]
     },
     {
@@ -1265,18 +1262,19 @@
       "id": "womendorm_entryroad",
       "label": "Women's Dorm Road Entry",
       "latLng": {
-        "lat": 14.9683412302865,
-        "lng": 120.19528815085859
+        "lat": 14.968340335099072,
+        "lng": 120.19516181512529
       },
       "position": {
-        "x": 457.2,
-        "z": 18.9
+        "x": 443.6,
+        "z": 19
       },
       "neighbors": [
         "womendorm_entrance",
         "z1_int1",
         "inner_gate",
-        "main_gate"
+        "main_gate",
+        "wp_new_4"
       ]
     },
     {
@@ -1306,8 +1304,9 @@
         "z": -155.8
       },
       "neighbors": [
-        "z1_int13",
-        "z1_int12"
+        "z1_int12",
+        "z5_int3",
+        "wp_new_1"
       ]
     },
     {
@@ -1362,12 +1361,12 @@
       "id": "guard_house_roadentry",
       "label": "Guard house road entry",
       "latLng": {
-        "lat": 14.968376142596178,
-        "lng": 120.1955157409664
+        "lat": 14.968427168279552,
+        "lng": 120.19562907155068
       },
       "position": {
-        "x": 481.7,
-        "z": 15
+        "x": 493.9,
+        "z": 9.3
       },
       "neighbors": [
         "entrance_guard_house",
@@ -1380,15 +1379,358 @@
       "id": "entrance_guard_house",
       "label": "Entrance Guard's House",
       "latLng": {
-        "lat": 14.96829098106006,
-        "lng": 120.19554254489411
+        "lat": 14.968306317976822,
+        "lng": 120.19566715805853
       },
       "position": {
-        "x": 484.6,
-        "z": 24.5
+        "x": 498,
+        "z": 22.8
       },
       "neighbors": [
         "guard_house_roadentry"
+      ]
+    },
+    {
+      "id": "z5_start",
+      "label": "Zone 5 Start",
+      "latLng": {
+        "lat": 14.968268354727105,
+        "lng": 120.1954657911478
+      },
+      "position": {
+        "x": 475.3,
+        "z": 26.9
+      },
+      "neighbors": [
+        "inner_gate",
+        "z5_corner"
+      ]
+    },
+    {
+      "id": "z5_corner",
+      "label": "Zone 5 Corner",
+      "latLng": {
+        "lat": 14.966601171939201,
+        "lng": 120.19603616023882
+      },
+      "position": {
+        "x": 536.6,
+        "z": 212.3
+      },
+      "neighbors": [
+        "z5_start",
+        "z5_int1"
+      ]
+    },
+    {
+      "id": "z5_int1",
+      "label": "Zone 5 Int 1",
+      "latLng": {
+        "lat": 14.967793632816782,
+        "lng": 120.19939402545005
+      },
+      "position": {
+        "x": 897.3,
+        "z": 79.7
+      },
+      "neighbors": [
+        "z5_corner",
+        "z5_int2",
+        "granary_entry"
+      ]
+    },
+    {
+      "id": "z5_int2",
+      "label": "Zone 5 Int 2",
+      "latLng": {
+        "lat": 14.967986764543449,
+        "lng": 120.1999606930654
+      },
+      "position": {
+        "x": 958.2,
+        "z": 58.2
+      },
+      "neighbors": [
+        "z5_int1",
+        "z5_int3",
+        "asb_entry"
+      ]
+    },
+    {
+      "id": "z5_int3",
+      "label": "Zone 5 Int 3",
+      "latLng": {
+        "lat": 14.96828538700671,
+        "lng": 120.20060033026441
+      },
+      "position": {
+        "x": 1026.9,
+        "z": 25
+      },
+      "neighbors": [
+        "z5_int2",
+        "z5_end",
+        "connector_adco_to_z1int12"
+      ]
+    },
+    {
+      "id": "z5_end",
+      "label": "Zone 5 End (Bridge)",
+      "latLng": {
+        "lat": 14.968596358703374,
+        "lng": 120.20190034019461
+      },
+      "position": {
+        "x": 1169,
+        "z": -9.6
+      },
+      "neighbors": [
+        "z5_int3"
+      ]
+    },
+    {
+      "id": "granary_entry",
+      "label": "Granary Entry",
+      "latLng": {
+        "lat": 14.968126050090397,
+        "lng": 120.19933125515122
+      },
+      "position": {
+        "x": 890.6,
+        "z": 42.7
+      },
+      "neighbors": [
+        "z5_int1",
+        "mrf_entry",
+        "MRF_Granary"
+      ]
+    },
+    {
+      "id": "mrf_entry",
+      "label": "MRF Entry",
+      "latLng": {
+        "lat": 14.968350182160776,
+        "lng": 120.19922499525394
+      },
+      "position": {
+        "x": 881,
+        "z": 17.9
+      },
+      "neighbors": [
+        "granary_entry",
+        "MRF_Granary"
+      ]
+    },
+    {
+      "id": "ltda_entry",
+      "label": "LTDA Entry",
+      "latLng": {
+        "lat": 14.972732124619023,
+        "lng": 120.20170061826327
+      },
+      "position": {
+        "x": 1147.5,
+        "z": -471.6
+      },
+      "neighbors": [
+        "z3_oval_end",
+        "z4_end",
+        "LTDA"
+      ]
+    },
+    {
+      "id": "wp_new_1",
+      "label": "Admin Court",
+      "latLng": {
+        "lat": 14.969862999713088,
+        "lng": 120.20075783221378
+      },
+      "position": {
+        "x": 1046,
+        "z": -151.1
+      },
+      "neighbors": [
+        "connector_adco_to_z1int12"
+      ]
+    },
+    {
+      "id": "LTDA",
+      "label": "LTDA_Entrance",
+      "latLng": {
+        "lat": 14.972777330464053,
+        "lng": 120.20188100573746
+      },
+      "position": {
+        "x": 1166.9,
+        "z": -476.6
+      },
+      "neighbors": [
+        "ltda_entry"
+      ]
+    },
+    {
+      "id": "MRF_Granary",
+      "label": "MRF to Granary",
+      "latLng": {
+        "lat": 14.969570710356672,
+        "lng": 120.1987481862988
+      },
+      "position": {
+        "x": 829.7,
+        "z": -118.4
+      },
+      "neighbors": [
+        "mrf_entry",
+        "granary_entry"
+      ]
+    },
+    {
+      "id": "z34_a",
+      "label": "Zone 3-4 Path (behind Central Nursery)",
+      "latLng": {
+        "lat": 14.969547047751517,
+        "lng": 120.19553803550757
+      },
+      "position": {
+        "x": 484.1,
+        "z": -115.8
+      },
+      "neighbors": [
+        "zone 4_int1",
+        "z3_start",
+        "z3_wp2"
+      ]
+    },
+    {
+      "id": "z34_b",
+      "label": "Zone 3-4 Path (inside Mango Greenhouse Farm)",
+      "latLng": {
+        "lat": 14.970370620184937,
+        "lng": 120.19770432175814
+      },
+      "position": {
+        "x": 717.3,
+        "z": -207.8
+      },
+      "neighbors": [
+        "z3_wp3",
+        "Z4_int2",
+        "z3_wp2"
+      ]
+    },
+    {
+      "id": "zone 4_int1",
+      "label": "Zone 4 Intersction 1",
+      "latLng": {
+        "lat": 14.970719743281713,
+        "lng": 120.19515531255078
+      },
+      "position": {
+        "x": 442.9,
+        "z": -246.8
+      },
+      "neighbors": [
+        "z34_a",
+        "z4_start",
+        "Z4_int2"
+      ]
+    },
+    {
+      "id": "Z4_int2",
+      "label": "zone 4 intersection 2",
+      "latLng": {
+        "lat": 14.971549582027125,
+        "lng": 120.1971209479308
+      },
+      "position": {
+        "x": 654.5,
+        "z": -339.5
+      },
+      "neighbors": [
+        "z34_b",
+        "z4_wp1",
+        "mensdorm_roadentry",
+        "z4_end",
+        "zone 4_int1"
+      ]
+    },
+    {
+      "id": "wp_new_3",
+      "label": "New Waypoint",
+      "latLng": {
+        "lat": 14.968244550044316,
+        "lng": 120.19539312098995
+      },
+      "position": {
+        "x": 468.5,
+        "z": 29.7
+      },
+      "neighbors": [
+        "z1_int1",
+        "wp_new_4",
+        "wp_new_6"
+      ]
+    },
+    {
+      "id": "wp_new_4",
+      "label": "New Waypoint",
+      "latLng": {
+        "lat": 14.96825081635631,
+        "lng": 120.19521940935665
+      },
+      "position": {
+        "x": 449.8,
+        "z": 29
+      },
+      "neighbors": [
+        "womendorm_entryroad",
+        "wp_new_3",
+        "wp_new_5"
+      ]
+    },
+    {
+      "id": "wp_new_5",
+      "label": "New Waypoint",
+      "latLng": {
+        "lat": 14.968228436670618,
+        "lng": 120.19521476466056
+      },
+      "position": {
+        "x": 449.3,
+        "z": 31.5
+      },
+      "neighbors": [
+        "wp_new_4"
+      ]
+    },
+    {
+      "id": "wp_new_6",
+      "label": "New Waypoint",
+      "latLng": {
+        "lat": 14.968228436670618,
+        "lng": 120.19539776568602
+      },
+      "position": {
+        "x": 469,
+        "z": 31.5
+      },
+      "neighbors": [
+        "wp_new_3"
+      ]
+    },
+    {
+      "id": "wp_new_2",
+      "label": "New Waypoint",
+      "latLng": {
+        "lat": 14.9696858018028,
+        "lng": 120.19827190361882
+      },
+      "position": {
+        "x": 778.4,
+        "z": -131.3
+      },
+      "neighbors": [
+        "lhs_entry"
       ]
     }
   ],
@@ -1424,7 +1766,7 @@
       "name": "Student Center",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
         "lat": 14.96845849983952,
         "lng": 120.19722127336608
@@ -1442,7 +1784,8 @@
       "texturedModel": null,
       "rotation": 105,
       "entryWaypoint": "sc_entry",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "gabaldon",
@@ -1468,46 +1811,52 @@
       "rotation": 113.2,
       "entryWaypoint": "gabaldon_beed_entry",
       "glbTint": true,
-      "modelScale": 1.8
+      "modelScale": 1.8,
+      "labelOffset": {
+        "x": -6.3,
+        "y": 0,
+        "z": -20
+      }
     },
     {
       "id": "cte_beed",
       "name": "CTE (BEED)",
       "category": "academic",
       "description": "College of Teacher Education (Bachelor of Elementary Education).",
-      "color": "#a9aaab",
+      "color": "#2f6ec2",
       "latLng": {
-        "lat": 14.968610681702216,
-        "lng": 120.19767924039932
+        "lat": 14.968671554447296,
+        "lng": 120.1976420828307
       },
       "position": {
-        "x": 714.6,
-        "z": -11.2
+        "x": 710.6,
+        "z": -18
       },
       "size": {
-        "width": 20,
-        "depth": 22.8,
-        "height": 10
+        "width": 17,
+        "depth": 27.1,
+        "height": 11.5
       },
       "glbModel": "models/BEEDNav.glb",
       "texturedModel": null,
       "rotation": 113,
       "entryWaypoint": "beed_entry_door",
-      "modelScale": 2
+      "modelScale": 1.2,
+      "glbTint": true
     },
     {
       "id": "library",
       "name": "Library",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.968874761993368,
-        "lng": 120.19829234028157
+        "lat": 14.968894456116775,
+        "lng": 120.19828769558549
       },
       "position": {
-        "x": 780.6,
-        "z": -40.7
+        "x": 780.1,
+        "z": -42.9
       },
       "size": {
         "width": 19,
@@ -1518,39 +1867,41 @@
       "texturedModel": null,
       "rotation": 110.5,
       "entryWaypoint": "lib_entry",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "asb",
       "name": "ASB Building",
       "category": "academic",
       "description": "Agricultural Science Building.",
-      "color": "#a9aaab",
+      "color": "#3d9139",
       "latLng": {
-        "lat": 14.96916032678278,
-        "lng": 120.19938663067744
+        "lat": 14.969184496843328,
+        "lng": 120.19944236703037
       },
       "position": {
-        "x": 898.4,
-        "z": -72.6
+        "x": 904.4,
+        "z": -75.3
       },
       "size": {
-        "width": 51,
+        "width": 42.2,
         "depth": 27.2,
-        "height": 20
+        "height": 15
       },
       "glbModel": "models/ASBNav.glb",
       "texturedModel": null,
       "rotation": 112.5,
       "entryWaypoint": "asb_entry",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "admin",
       "name": "Admin Building",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#d6cdc3",
       "latLng": {
         "lat": 14.970254245819344,
         "lng": 120.20010191387338
@@ -1568,21 +1919,22 @@
       "texturedModel": null,
       "rotation": 200.8,
       "entryWaypoint": "admin_entry",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "canteen",
       "name": "Canteen",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.96894548180015,
-        "lng": 120.19537268432721
+        "lat": 14.968886399429927,
+        "lng": 120.19541077083504
       },
       "position": {
-        "x": 466.3,
-        "z": -48.6
+        "x": 470.4,
+        "z": -42
       },
       "size": {
         "width": 26.4,
@@ -1593,14 +1945,20 @@
       "texturedModel": null,
       "rotation": 286.5,
       "entryWaypoint": "canteen_entry",
-      "modelScale": 2
+      "modelScale": 1.2,
+      "glbTint": true,
+      "labelOffset": {
+        "x": 1.9,
+        "y": 1.5,
+        "z": 5.1
+      }
     },
     {
       "id": "chm1",
       "name": "CHM 1",
       "category": "academic",
       "description": "College of Hospitality Management.",
-      "color": "#a9aaab",
+      "color": "#782722",
       "latLng": {
         "lat": 14.969031419793202,
         "lng": 120.19586409317222
@@ -1618,14 +1976,15 @@
       "texturedModel": null,
       "rotation": 195,
       "entryWaypoint": "chm1_entry",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "chm2",
       "name": "CHM 2",
       "category": "academic",
       "description": "College of Hospitality Management.",
-      "color": "#a9aaab",
+      "color": "#782722",
       "latLng": {
         "lat": 14.969316089395189,
         "lng": 120.19670849891911
@@ -1642,14 +2001,15 @@
       "glbModel": "models/HM2Nav.glb",
       "texturedModel": null,
       "rotation": 293.8,
-      "entryWaypoint": "chm2_entry"
+      "entryWaypoint": "chm2_entry",
+      "glbTint": true
     },
     {
       "id": "cte_bsed",
       "name": "CTE (BSED)",
       "category": "academic",
       "description": "College of Teacher Education (Bachelor of Secondary Education).",
-      "color": "#a9aaab",
+      "color": "#2f6ec2",
       "latLng": {
         "lat": 14.970032239337293,
         "lng": 120.19714231353275
@@ -1667,64 +2027,77 @@
       "texturedModel": null,
       "rotation": 24.6,
       "entryWaypoint": "cte_bsed_entry",
-      "modelScale": 1.5
+      "modelScale": 1.5,
+      "labelOffset": {
+        "x": -6.1,
+        "y": 0,
+        "z": 28.3
+      },
+      "glbTint": true
     },
     {
       "id": "lhs",
       "name": "LHS Building",
       "category": "academic",
       "description": "Laboratory High School.",
-      "color": "#a9aaab",
+      "color": "#d1a733",
       "latLng": {
-        "lat": 14.969923026471122,
-        "lng": 120.19805824759925
+        "lat": 14.969930187970542,
+        "lng": 120.19806660805219
       },
       "position": {
-        "x": 755.4,
-        "z": -157.8
+        "x": 756.3,
+        "z": -158.6
       },
       "size": {
-        "width": 20,
-        "depth": 9.5,
+        "width": 30,
+        "depth": 12.9,
         "height": 8
       },
       "glbModel": "models/LHSNav.glb",
       "texturedModel": null,
       "rotation": 114.2,
       "entryWaypoint": "lhs_entry",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true,
+      "labelOffset": {
+        "x": 1.2,
+        "y": 0,
+        "z": 1.7
+      }
     },
     {
       "id": "lhs_fac_ccit",
       "name": "LHS Faculty / CCIT",
       "category": "academic",
       "description": "LHS faculty with CCIT classrooms.",
-      "color": "#a9aaab",
+      "color": "#d1a733",
       "latLng": {
-        "lat": 14.969991060715621,
-        "lng": 120.1987140786854
+        "lat": 14.969957043593372,
+        "lng": 120.19874566261873
       },
       "position": {
-        "x": 826,
-        "z": -165.4
+        "x": 829.4,
+        "z": -161.6
       },
       "size": {
         "width": 23,
-        "depth": 29.6,
-        "height": 10
+        "depth": 30.3,
+        "height": 8
       },
       "glbModel": "models/CCIT2_LHSFacultyNav.glb",
       "texturedModel": null,
-      "rotation": 291.4,
+      "rotation": 289.4,
       "entryWaypoint": "z2_wp6",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "ccit_main",
       "name": "CCIT Main",
       "category": "academic",
       "description": "College of Communication and Information Technology.",
-      "color": "#a9aaab",
+      "color": "#535453",
       "latLng": {
         "lat": 14.970230970946226,
         "lng": 120.19939870688724
@@ -1742,7 +2115,8 @@
       "texturedModel": null,
       "rotation": 115.1,
       "entryWaypoint": "ccit entrance",
-      "modelScale": 1.5
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "admin_court",
@@ -1751,12 +2125,12 @@
       "description": "",
       "color": "#797c80",
       "latLng": {
-        "lat": 14.969883638224307,
-        "lng": 120.20078932889287
+        "lat": 14.969856782601477,
+        "lng": 120.20079397358894
       },
       "position": {
-        "x": 1049.4,
-        "z": -153.4
+        "x": 1049.9,
+        "z": -150.4
       },
       "size": {
         "width": 20,
@@ -1766,16 +2140,21 @@
       "glbModel": "models/AdminCourtNav.glb",
       "texturedModel": null,
       "rotation": 195,
-      "entryWaypoint": "z1_int13",
+      "entryWaypoint": null,
       "glbTint": true,
-      "modelScale": 2
+      "modelScale": 1.8,
+      "labelOffset": {
+        "x": 3.3,
+        "y": 0,
+        "z": -0.5
+      }
     },
     {
-      "id": "agritech_1",
-      "name": "Agriculture Technology (Agri-Tech)",
+      "id": "3_lab_rooms",
+      "name": "3 Lab Rooms",
       "category": "academic",
       "description": "College of Agriculture classrooms.",
-      "color": "#4b73b4",
+      "color": "#3d9139",
       "latLng": {
         "lat": 14.970538020233903,
         "lng": 120.19852550402466
@@ -1796,11 +2175,11 @@
       "glbTint": true
     },
     {
-      "id": "agritech_2",
-      "name": "Agriculture Technology (Agri-Tech) 2",
+      "id": "processing",
+      "name": "Processing",
       "category": "academic",
       "description": "College of Agriculture classrooms.",
-      "color": "#4b73b4",
+      "color": "#3d9139",
       "latLng": {
         "lat": 14.970616796727535,
         "lng": 120.19880139897167
@@ -1825,7 +2204,7 @@
       "name": "Motorpool Garage",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
         "lat": 14.97071705771943,
         "lng": 120.19915346693435
@@ -1843,21 +2222,27 @@
       "texturedModel": null,
       "rotation": 108.2,
       "entryWaypoint": "motorpool_garage_door",
-      "modelScale": 1.5
+      "modelScale": 1.5,
+      "labelOffset": {
+        "x": 3,
+        "y": 3,
+        "z": 2.3
+      },
+      "glbTint": true
     },
     {
       "id": "organic_mango_center",
-      "name": "RMTU Organic Mango Center",
+      "name": "Organic Mango Center",
       "category": "facility",
-      "description": "",
-      "color": "#4a4a4a",
+      "description": "\n",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.970985613947718,
-        "lng": 120.19893145046184
+        "lat": 14.970967710199165,
+        "lng": 120.19895188712458
       },
       "position": {
-        "x": 849.4,
-        "z": -276.5
+        "x": 851.6,
+        "z": -274.5
       },
       "size": {
         "width": 20,
@@ -1868,14 +2253,20 @@
       "texturedModel": null,
       "rotation": 291.9,
       "entryWaypoint": "organic_mango_center_door",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "labelOffset": {
+        "x": 0,
+        "y": 8,
+        "z": 0
+      },
+      "glbTint": true
     },
     {
       "id": "rmtu_rd_center",
-      "name": "RMTU Research and Development Center",
+      "name": "Research and Development Center",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
         "lat": 14.97106797119106,
         "lng": 120.19932253387157
@@ -1893,39 +2284,46 @@
       "texturedModel": null,
       "rotation": 289.7,
       "entryWaypoint": "rmtu_rd_center_door",
-      "modelScale": 1
+      "modelScale": 1,
+      "glbTint": true
     },
     {
       "id": "regional_mango_center",
       "name": "Regional Mango Center",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.971591655836223,
-        "lng": 120.19946559051075
+        "lat": 14.971617616271624,
+        "lng": 120.19943586445586
       },
       "position": {
-        "x": 906.9,
-        "z": -344.2
+        "x": 903.7,
+        "z": -347.1
       },
       "size": {
-        "width": 25.4,
-        "depth": 47,
-        "height": 20
+        "width": 17.4,
+        "depth": 34.7,
+        "height": 15
       },
       "glbModel": "models/RMCNav.glb",
       "texturedModel": null,
       "rotation": 20.1,
       "entryWaypoint": "regional_mango_center_door",
-      "modelScale": 1.2
+      "modelScale": 1.5,
+      "labelOffset": {
+        "x": -15.4,
+        "y": 6,
+        "z": 7.6
+      },
+      "glbTint": true
     },
     {
       "id": "mitos_magsaysay_building",
       "name": "Mitos Magsaysay Building",
       "category": "academic",
       "description": "One of the CAg buildings.",
-      "color": "#a9aaab",
+      "color": "#3d9139",
       "latLng": {
         "lat": 14.970883562580969,
         "lng": 120.19840474192664
@@ -1943,11 +2341,12 @@
       "texturedModel": null,
       "rotation": 201.5,
       "entryWaypoint": "mitos_magsaysay_building_door",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "glbTint": true
     },
     {
       "id": "housing_1",
-      "name": "Housing 1",
+      "name": "Faculty Housing 1",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b3c8d5",
@@ -1973,7 +2372,7 @@
     },
     {
       "id": "housing_2",
-      "name": "Housing 2",
+      "name": "Faculty Housing 2",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -1999,7 +2398,7 @@
     },
     {
       "id": "housing_3",
-      "name": "Housing 3",
+      "name": "Faculty Housing 3",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2025,7 +2424,7 @@
     },
     {
       "id": "housing_4",
-      "name": "Housing 4",
+      "name": "Faculty Housing 4",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2051,7 +2450,7 @@
     },
     {
       "id": "housing_5",
-      "name": "Housing 5",
+      "name": "Faculty Housing 5",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2077,7 +2476,7 @@
     },
     {
       "id": "housing_6",
-      "name": "Housing 6",
+      "name": "Faculty Housing 6",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2103,7 +2502,7 @@
     },
     {
       "id": "housing_7",
-      "name": "Housing 7",
+      "name": "Faculty Housing 7",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2129,7 +2528,7 @@
     },
     {
       "id": "housing_8",
-      "name": "Housing 8",
+      "name": "Faculty Housing 8",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2155,7 +2554,7 @@
     },
     {
       "id": "housing_9",
-      "name": "Housing 9",
+      "name": "Faculty Housing 9",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2181,7 +2580,7 @@
     },
     {
       "id": "housing_10",
-      "name": "Housing 10",
+      "name": "Faculty Housing 10",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2207,7 +2606,7 @@
     },
     {
       "id": "housing_11",
-      "name": "Housing 11",
+      "name": "Faculty Housing 11",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2233,7 +2632,7 @@
     },
     {
       "id": "housing_12",
-      "name": "Housing 12",
+      "name": "Faculty Housing 12",
       "category": "housing",
       "description": "Private staff/faculty housing unit",
       "color": "#b4cbd9",
@@ -2258,69 +2657,76 @@
       "modelScale": 2
     },
     {
-      "id": "executive_house",
-      "name": "Executive House",
-      "category": "housing",
-      "description": "Executive residence",
-      "color": "#d1a733",
+      "id": "guest_house",
+      "name": "Guest House",
+      "category": "facility",
+      "description": "A guest house with CHM using as a classroom.",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.968561446393696,
-        "lng": 120.19473543202537
+        "lat": 14.96853369558344,
+        "lng": 120.19491471729395
       },
       "position": {
-        "x": 397.7,
-        "z": -5.7
+        "x": 417,
+        "z": -2.6
       },
       "size": {
-        "width": 17.5,
-        "depth": 31.1,
+        "width": 19.4,
+        "depth": 30.3,
         "height": 10
       },
       "glbModel": "models/ExecutiveHouseNav.glb",
       "texturedModel": null,
-      "rotation": 273,
+      "rotation": 262.8,
       "entryWaypoint": null,
       "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
-      "modelScale": 2,
-      "glbTint": true
+      "modelScale": 1.5,
+      "glbTint": true,
+      "labelOffset": {
+        "x": 7.8,
+        "y": 1.5,
+        "z": -7
+      }
     },
     {
       "id": "men_dorm",
       "name": "Men's Dormitory",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.972512803699255,
-        "lng": 120.20034529594784
+        "lat": 14.972587999443174,
+        "lng": 120.20032950398118
       },
       "position": {
-        "x": 1001.6,
-        "z": -447.1
+        "x": 999.9,
+        "z": -455.5
       },
       "size": {
-        "width": 36.3,
-        "depth": 63.6,
+        "width": 29.5,
+        "depth": 47.5,
         "height": 15
       },
       "glbModel": "models/MenDormNav.glb",
       "texturedModel": null,
       "rotation": 113.5,
-      "entryWaypoint": "mendorm_entrance"
+      "entryWaypoint": "mendorm_entrance",
+      "glbTint": true,
+      "modelScale": 1.5
     },
     {
       "id": "women_dorm",
       "name": "Women's Dormitory",
       "category": "facility",
       "description": "",
-      "color": "#4a4a4a",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.967784423706513,
-        "lng": 120.1951023630155
+        "lat": 14.967779947769376,
+        "lng": 120.19511258134686
       },
       "position": {
-        "x": 437.2,
-        "z": 81.1
+        "x": 438.3,
+        "z": 81.6
       },
       "size": {
         "width": 23.1,
@@ -2329,16 +2735,22 @@
       },
       "glbModel": "models/WomenDormNav.glb",
       "texturedModel": null,
-      "rotation": 95.2,
+      "rotation": 88.2,
       "entryWaypoint": "womendorm_entrance",
-      "modelScale": 2
+      "modelScale": 1.5,
+      "labelOffset": {
+        "x": 0,
+        "y": 6,
+        "z": 8.1
+      },
+      "glbTint": true
     },
     {
       "id": "prachouse",
       "name": "Practice House",
       "category": "facility",
       "description": "",
-      "color": "#808080",
+      "color": "#948370",
       "latLng": {
         "lat": 14.96836360997219,
         "lng": 120.19621709007411
@@ -2356,160 +2768,939 @@
       "texturedModel": null,
       "rotation": 181.8,
       "entryWaypoint": "prachouse_entrance",
-      "modelScale": 2
+      "modelScale": 1,
+      "glbTint": true
     },
     {
       "id": "guard_house",
-      "name": "Guard's House",
+      "name": "Guard House",
       "category": "facility",
       "description": "",
-      "color": "#585e65",
+      "color": "#948370",
       "latLng": {
-        "lat": 14.96824634041917,
-        "lng": 120.195587269286
+        "lat": 14.968317955413381,
+        "lng": 120.19571824971538
       },
       "position": {
-        "x": 489.4,
-        "z": 29.5
+        "x": 503.5,
+        "z": 21.5
       },
       "size": {
-        "width": 20,
-        "depth": 15,
+        "width": 19.3,
+        "depth": 20.9,
         "height": 8
       },
       "glbModel": "models/GuardHouseNav.glb",
       "texturedModel": null,
-      "rotation": 103.3,
+      "rotation": 106.7,
       "entryWaypoint": "entrance_guard_house",
-      "modelScale": 2
+      "modelScale": 1,
+      "glbTint": true
+    },
+    {
+      "id": "granary",
+      "name": "Granary",
+      "category": "facility",
+      "description": "",
+      "color": "#948370",
+      "latLng": {
+        "lat": 14.96820698903493,
+        "lng": 120.19933125515122
+      },
+      "position": {
+        "x": 890.6,
+        "z": 33.7
+      },
+      "size": {
+        "width": 20,
+        "depth": 14,
+        "height": 7
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "granary_entry",
+      "glbTint": true
+    },
+    {
+      "id": "mrf",
+      "name": "MRF",
+      "category": "facility",
+      "description": "",
+      "color": "#948370",
+      "latLng": {
+        "lat": 14.968382381759522,
+        "lng": 120.19927854620816
+      },
+      "position": {
+        "x": 884.9,
+        "z": 14.2
+      },
+      "size": {
+        "width": 16,
+        "depth": 12,
+        "height": 6
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "mrf_entry",
+      "glbTint": true
+    },
+    {
+      "id": "ltda",
+      "name": "LTDA",
+      "category": "facility",
+      "description": "",
+      "color": "#948370",
+      "latLng": {
+        "lat": 14.972798710654937,
+        "lng": 120.20198947083797
+      },
+      "position": {
+        "x": 1176.1,
+        "z": -476.8
+      },
+      "size": {
+        "width": 24,
+        "depth": 16,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": "ltda_entry",
+      "glbTint": true
+    },
+    {
+      "id": "place_banggar",
+      "name": "BangarPark",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.969206876529018,
+        "lng": 120.19737919303272
+      },
+      "position": {
+        "x": 682.3,
+        "z": -77.8
+      },
+      "size": {
+        "width": 26,
+        "depth": 31.8,
+        "height": 21.89
+      },
+      "glbModel": "models/places/banggarFIN.glb",
+      "texturedModel": null,
+      "rotation": 113.7,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 1.7,
+        "y": 0,
+        "z": -3.1
+      }
+    },
+    {
+      "id": "place_central_nursery",
+      "name": "CentralNursery",
+      "category": "place",
+      "kind": "green",
+      "description": "",
+      "color": "#2e8b57",
+      "latLng": {
+        "lat": 14.970068,
+        "lng": 120.195087
+      },
+      "position": {
+        "x": 434.6,
+        "z": -173.2
+      },
+      "size": {
+        "width": 36.98,
+        "depth": 24,
+        "height": 8.79
+      },
+      "glbModel": "models/places/CentralNurseryFIN.glb",
+      "texturedModel": null,
+      "rotation": 196.7,
+      "labelHidden": true
+    },
+    {
+      "id": "place_grand_stand",
+      "name": "GrandStand",
+      "category": "place",
+      "kind": "stand",
+      "description": "",
+      "color": "#6c5ce7",
+      "latLng": {
+        "lat": 14.970846859896435,
+        "lng": 120.2003183567106
+      },
+      "position": {
+        "x": 998.7,
+        "z": -261
+      },
+      "size": {
+        "width": 13.5,
+        "depth": 37,
+        "height": 8.39
+      },
+      "glbModel": "models/places/GrandStandFIN.glb",
+      "texturedModel": null,
+      "rotation": 15.6,
+      "labelHidden": true
+    },
+    {
+      "id": "place_unfinished_portal",
+      "name": "2_BrickWalls",
+      "category": "place",
+      "kind": "gate",
+      "description": "",
+      "color": "#c0392b",
+      "latLng": {
+        "lat": 14.969584645623478,
+        "lng": 120.19777120538166
+      },
+      "position": {
+        "x": 724.5,
+        "z": -120
+      },
+      "size": {
+        "width": 7.35,
+        "depth": 6.9,
+        "height": 6.31
+      },
+      "glbModel": "models/places/Random_Nether_Portal_FIN.glb",
+      "texturedModel": null,
+      "rotation": 103.3,
+      "labelHidden": true
+    },
+    {
+      "id": "place_lhs_shelf",
+      "name": "LHS Shed",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.970194268261693,
+        "lng": 120.1982115225698
+      },
+      "position": {
+        "x": 771.9,
+        "z": -188.1
+      },
+      "size": {
+        "width": 10.8,
+        "depth": 5.9,
+        "height": 4.56
+      },
+      "glbModel": "models/places/LHS_Shed_FIN.glb",
+      "texturedModel": null,
+      "rotation": 114.7,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 0,
+        "y": 0,
+        "z": 0.4
+      }
+    },
+    {
+      "id": "place_abandoned_thingy_near_lhs",
+      "name": "AbandonedBuilding_NearLHS_CCIT",
+      "category": "place",
+      "kind": "building",
+      "description": "",
+      "color": "#7f8c8d",
+      "latLng": {
+        "lat": 14.96992392165855,
+        "lng": 120.19848184388152
+      },
+      "position": {
+        "x": 801,
+        "z": -157.9
+      },
+      "size": {
+        "width": 27.94,
+        "depth": 24.72,
+        "height": 6.53
+      },
+      "glbModel": "models/places/Broken_Building.glb",
+      "texturedModel": null,
+      "rotation": 199.2,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 0,
+        "y": 0,
+        "z": 7.2
+      }
+    },
+    {
+      "id": "place_thingy_for_lhs",
+      "name": "LHSConretePark",
+      "category": "place",
+      "kind": "building",
+      "description": "",
+      "color": "#7f8c8d",
+      "latLng": {
+        "lat": 14.969574798561773,
+        "lng": 120.19834714769527
+      },
+      "position": {
+        "x": 786.5,
+        "z": -118.9
+      },
+      "size": {
+        "width": 16.7,
+        "depth": 17.5,
+        "height": 2.13
+      },
+      "glbModel": "models/places/LHS_Thingy.glb",
+      "texturedModel": null,
+      "rotation": 300,
+      "labelHidden": true
+    },
+    {
+      "id": "place_shelf_between_library_and_mrf",
+      "name": "ShedLHSConcretePark",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.969598073434891,
+        "lng": 120.19855058538347
+      },
+      "position": {
+        "x": 808.4,
+        "z": -121.5
+      },
+      "size": {
+        "width": 8.87,
+        "depth": 9.88,
+        "height": 5.55
+      },
+      "glbModel": "models/places/Lib_Shed_FIN.glb",
+      "texturedModel": null,
+      "rotation": 292,
+      "labelHidden": true
+    },
+    {
+      "id": "place_chairs_infront_of_sc",
+      "name": "Cluster_RestingArea_SC",
+      "category": "place",
+      "kind": "seating",
+      "description": "",
+      "color": "#8a6d4b",
+      "latLng": {
+        "lat": 14.96868498225871,
+        "lng": 120.19683018995634
+      },
+      "position": {
+        "x": 623.2,
+        "z": -19.5
+      },
+      "size": {
+        "width": 29.25,
+        "depth": 57.39,
+        "height": 17.75
+      },
+      "glbModel": "models/places/SC_Benches_Trees_FIN.glb",
+      "texturedModel": null,
+      "rotation": 294,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": -1.3,
+        "y": 0,
+        "z": 3
+      }
+    },
+    {
+      "id": "place_bsed_shed_3",
+      "name": "BSED_Shed_1",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.969622243495438,
+        "lng": 120.19754454421307
+      },
+      "position": {
+        "x": 700.1,
+        "z": -124.2
+      },
+      "size": {
+        "width": 5.73,
+        "depth": 6.91,
+        "height": 5.38
+      },
+      "glbModel": "models/places/Bsed_Shed_Ni_Justine_FIN.glb",
+      "texturedModel": null,
+      "rotation": 211.2,
+      "labelHidden": true
+    },
+    {
+      "id": "place_bsed_shed_long",
+      "name": "BSED_Shed_2",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.969264168524386,
+        "lng": 120.19762629086404
+      },
+      "position": {
+        "x": 708.9,
+        "z": -84.2
+      },
+      "size": {
+        "width": 5.73,
+        "depth": 9.88,
+        "height": 5.37
+      },
+      "glbModel": "models/places/BSED_Shed_Long_FIN.glb",
+      "texturedModel": null,
+      "rotation": 19.9,
+      "labelHidden": true
+    },
+    {
+      "id": "place_bsed_shed",
+      "name": "BSED_Shed_3",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.969191658342748,
+        "lng": 120.19710608490335
+      },
+      "position": {
+        "x": 652.9,
+        "z": -76.1
+      },
+      "size": {
+        "width": 5.73,
+        "depth": 6.91,
+        "height": 5.38
+      },
+      "glbModel": "models/places/Bsed_Shed_Near_Banggar_FIN.glb",
+      "texturedModel": null,
+      "rotation": 115.2,
+      "labelHidden": true
+    },
+    {
+      "id": "place_lib_shed",
+      "name": "Library Shed",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.969157641220498,
+        "lng": 120.1978752465738
+      },
+      "position": {
+        "x": 735.7,
+        "z": -72.3
+      },
+      "size": {
+        "width": 11,
+        "depth": 10.8,
+        "height": 4.5
+      },
+      "glbModel": "models/places/Bsed_Shed_uli_FIN.glb",
+      "texturedModel": null,
+      "rotation": 199.2,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 0.4,
+        "y": 0,
+        "z": 0.4
+      }
+    },
+    {
+      "id": "place_shed_at_front",
+      "name": "FrontGreen_Shed",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.968432539404118,
+        "lng": 120.19533366888015
+      },
+      "position": {
+        "x": 462.1,
+        "z": 8.7
+      },
+      "size": {
+        "width": 9.04,
+        "depth": 9.59,
+        "height": 5
+      },
+      "glbModel": "models/places/FrontGateBench_FIN.glb",
+      "texturedModel": null,
+      "rotation": 14,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 1.4,
+        "y": 0,
+        "z": 0.7
+      }
+    },
+    {
+      "id": "place_tractor",
+      "name": "Tractor",
+      "category": "place",
+      "kind": "vehicle",
+      "description": "",
+      "color": "#e67e22",
+      "latLng": {
+        "lat": 14.968293785352836,
+        "lng": 120.19530487176448
+      },
+      "position": {
+        "x": 459,
+        "z": 24.2
+      },
+      "size": {
+        "width": 9.3,
+        "depth": 5.3,
+        "height": 3.7
+      },
+      "glbModel": "models/places/tractorFIN.glb",
+      "texturedModel": null,
+      "rotation": 0,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": -0.1,
+        "y": 0,
+        "z": -1.2
+      }
+    },
+    {
+      "id": "place_shed_near_tractor",
+      "name": "TractorShed",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.96818994361123,
+        "lng": 120.19530394282526
+      },
+      "position": {
+        "x": 458.9,
+        "z": 35.8
+      },
+      "size": {
+        "width": 8.2,
+        "depth": 9.85,
+        "height": 4.31
+      },
+      "glbModel": "models/places/Shed_Near_Tractor_FIN.glb",
+      "texturedModel": null,
+      "rotation": 272.8,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": -0.1,
+        "y": 0,
+        "z": 1.1
+      }
+    },
+    {
+      "id": "place_main_gate",
+      "name": "MainGate",
+      "category": "place",
+      "kind": "gate",
+      "description": "",
+      "color": "#c0392b",
+      "latLng": {
+        "lat": 14.968461185401802,
+        "lng": 120.19145813447304
+      },
+      "position": {
+        "x": 44.9,
+        "z": 5.5
+      },
+      "size": {
+        "width": 40.57,
+        "depth": 35.4,
+        "height": 10
+      },
+      "glbModel": "models/places/Front_Gate_MOO_FIN.glb",
+      "texturedModel": null,
+      "rotation": 174.5,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 2.3,
+        "y": 0,
+        "z": 3.2
+      },
+      "modelScale": 1.5
+    },
+    {
+      "id": "place_1st_statue",
+      "name": "1st_Statue",
+      "category": "place",
+      "kind": "statue",
+      "description": "",
+      "color": "#b0b0b8",
+      "latLng": {
+        "lat": 14.969036790917768,
+        "lng": 120.19697231765632
+      },
+      "position": {
+        "x": 638.5,
+        "z": -58.8
+      },
+      "size": {
+        "width": 20.1,
+        "depth": 22.3,
+        "height": 12
+      },
+      "glbModel": "models/places/1st_Statue.glb",
+      "glbStrip": [
+        "Leaves",
+        "Trunk"
+      ],
+      "texturedModel": null,
+      "rotation": 298.7,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 2,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "id": "place_shed_near_gabaldon",
+      "name": "Shed_NearGabaldon",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.968860438994525,
+        "lng": 120.1971869026151
+      },
+      "position": {
+        "x": 661.6,
+        "z": -39.1
+      },
+      "size": {
+        "width": 9.56,
+        "depth": 10.9,
+        "height": 6.56
+      },
+      "glbModel": "models/places/Shed_Gabaldon_FIN.glb",
+      "texturedModel": null,
+      "rotation": 193,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 1,
+        "y": 0,
+        "z": 0.9
+      }
+    },
+    {
+      "id": "place_bsed_chairs",
+      "name": "BSED_WoodenBench",
+      "category": "place",
+      "kind": "seating",
+      "description": "",
+      "color": "#8a6d4b",
+      "latLng": {
+        "lat": 14.96928923377236,
+        "lng": 120.19707264309159
+      },
+      "position": {
+        "x": 649.3,
+        "z": -87
+      },
+      "size": {
+        "width": 4.43,
+        "depth": 10.71,
+        "height": 4.15
+      },
+      "glbModel": "models/places/bsed chaird.glb",
+      "texturedModel": null,
+      "rotation": 123.8,
+      "labelHidden": true
+    },
+    {
+      "id": "place_Woodenbenches",
+      "name": "woodend benches",
+      "category": "place",
+      "kind": "seating",
+      "description": "",
+      "color": "#8a6d4b",
+      "latLng": {
+        "lat": 14.969430673385926,
+        "lng": 120.19810004986395
+      },
+      "position": {
+        "x": 759.9,
+        "z": -102.8
+      },
+      "size": {
+        "width": 21.45,
+        "depth": 14.54,
+        "height": 4.74
+      },
+      "glbModel": "models/places/Bench_With_Fence_FIN.glb",
+      "texturedModel": null,
+      "rotation": 203.1,
+      "labelHidden": true
+    },
+    {
+      "id": "place_innergate",
+      "name": "InnerGate",
+      "category": "place",
+      "kind": "gate",
+      "description": "",
+      "color": "#c0392b",
+      "latLng": {
+        "lat": 14.968398522281868,
+        "lng": 120.19551759884483
+      },
+      "position": {
+        "x": 481.9,
+        "z": 12.5
+      },
+      "size": {
+        "width": 30.5,
+        "depth": 33.7,
+        "height": 6
+      },
+      "glbModel": "models/places/Front_Harang_FIN.glb",
+      "texturedModel": null,
+      "rotation": 201,
+      "labelHidden": true,
+      "modelScale": 1.3
+    },
+    {
+      "id": "place_fav_spot_infront_of_lhs_lab_ccit",
+      "name": "LHS_CCIT_WoodenBench",
+      "category": "place",
+      "kind": "green",
+      "description": "",
+      "color": "#2e8b57",
+      "latLng": {
+        "lat": 14.969701915176497,
+        "lng": 120.198785607005
+      },
+      "position": {
+        "x": 833.7,
+        "z": -133.1
+      },
+      "size": {
+        "width": 18.6,
+        "depth": 24.8,
+        "height": 5.42
+      },
+      "glbModel": "models/places/Bench-LHS_CCIT_FIN.glb",
+      "texturedModel": null,
+      "rotation": 110,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": -5,
+        "y": 0,
+        "z": -2
+      }
+    },
+    {
+      "id": "place_statue_2",
+      "name": "2nd Statue",
+      "category": "place",
+      "kind": "statue",
+      "description": "",
+      "color": "#b0b0b8",
+      "latLng": {
+        "lat": 14.969400237013385,
+        "lng": 120.19785295203262
+      },
+      "position": {
+        "x": 733.3,
+        "z": -99.4
+      },
+      "size": {
+        "width": 20.58,
+        "depth": 20.58,
+        "height": 21.68
+      },
+      "glbModel": "models/places/2nd_Statue.glb",
+      "glbStrip": [
+        "Leaves",
+        "Trunk"
+      ],
+      "texturedModel": null,
+      "rotation": 290.4,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 1.1,
+        "y": 0,
+        "z": 5.8
+      }
+    },
+    {
+      "id": "place_chairs_one_is_broken_near_statue",
+      "name": "MagsaysayPark",
+      "category": "place",
+      "kind": "seating",
+      "description": "",
+      "color": "#8a6d4b",
+      "latLng": {
+        "lat": 14.96927401558609,
+        "lng": 120.19776563174636
+      },
+      "position": {
+        "x": 723.9,
+        "z": -85.3
+      },
+      "size": {
+        "width": 4.75,
+        "depth": 10.16,
+        "height": 5.27
+      },
+      "glbModel": "models/places/Broken_chairs_FINglb.glb",
+      "texturedModel": null,
+      "rotation": 103,
+      "labelHidden": true
+    },
+    {
+      "id": "place_guard_house_at_the_back",
+      "name": "GuardHouse_Back",
+      "category": "place",
+      "kind": "building",
+      "description": "",
+      "color": "#7f8c8d",
+      "latLng": {
+        "lat": 14.973245962202483,
+        "lng": 120.20173406007504
+      },
+      "position": {
+        "x": 1151.1,
+        "z": -529
+      },
+      "size": {
+        "width": 38.09,
+        "depth": 63.07,
+        "height": 5.89
+      },
+      "glbModel": "models/places/Guard_House_Farm_FIN.glb",
+      "texturedModel": null,
+      "rotation": 196,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 0.7,
+        "y": 0,
+        "z": -0.5
+      }
+    },
+    {
+      "id": "place_building_under_construction",
+      "name": "BuildingUnderConsctruction",
+      "category": "place",
+      "kind": "building",
+      "description": "",
+      "color": "#7f8c8d",
+      "latLng": {
+        "lat": 14.969330412394031,
+        "lng": 120.20012606629298
+      },
+      "position": {
+        "x": 978,
+        "z": -91.6
+      },
+      "size": {
+        "width": 20.3,
+        "depth": 29.8,
+        "height": 13.67
+      },
+      "glbModel": "models/places/Under_ConstrictionFIN.glb",
+      "texturedModel": null,
+      "rotation": 186.2,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 0,
+        "y": 0,
+        "z": -0.2
+      }
+    },
+    {
+      "id": "place_agri_shed",
+      "name": "ASB_Shed",
+      "category": "place",
+      "kind": "shed",
+      "description": "",
+      "color": "#d98f3a",
+      "latLng": {
+        "lat": 14.969736827486175,
+        "lng": 120.19953247413427
+      },
+      "position": {
+        "x": 914.1,
+        "z": -137
+      },
+      "size": {
+        "width": 10.77,
+        "depth": 9.1,
+        "height": 4.5
+      },
+      "glbModel": "models/places/Agri_ShedFIN.glb",
+      "texturedModel": null,
+      "rotation": 109.1,
+      "labelHidden": true
+    },
+    {
+      "id": "place_ccit_resting_area",
+      "name": "CCIT_StoneBench",
+      "category": "place",
+      "kind": "seating",
+      "description": "",
+      "color": "#8a6d4b",
+      "latLng": {
+        "lat": 14.970032239337293,
+        "lng": 120.19946744838919
+      },
+      "position": {
+        "x": 907.1,
+        "z": -170
+      },
+      "size": {
+        "width": 5.4,
+        "depth": 6.1,
+        "height": 1.39
+      },
+      "glbModel": "models/places/CcitPuntodFIN.glb",
+      "texturedModel": null,
+      "rotation": 23.8,
+      "labelHidden": true,
+      "labelOffset": {
+        "x": 1.1,
+        "y": 0,
+        "z": 0.8
+      }
     }
   ],
-  "pavedEdges": [
-    [
-      "main_gate",
-      "inner_gate"
-    ],
-    [
-      "inner_gate",
-      "z1_int1"
-    ],
-    [
-      "z1_int1",
-      "z1_int2"
-    ],
-    [
-      "z1_int3",
-      "z1_int4"
-    ],
-    [
-      "z1_int4",
-      "z1_int5"
-    ],
-    [
-      "z1_int5",
-      "z1_int6"
-    ],
-    [
-      "z1_int6",
-      "z1_int7"
-    ],
-    [
-      "z1_int7",
-      "z1_int8"
-    ],
-    [
-      "z1_int8",
-      "z1_int9"
-    ],
-    [
-      "z1_int9",
-      "z1_int10"
-    ],
-    [
-      "z1_int10",
-      "z1_int11"
-    ],
-    [
-      "z1_int11",
-      "z1_int12"
-    ],
-    [
-      "z2_start",
-      "z2_wp1"
-    ],
-    [
-      "z2_wp1",
-      "z2_wp2"
-    ],
-    [
-      "z2_wp2",
-      "z2_wp3"
-    ],
-    [
-      "z2_wp3",
-      "z2_wp4"
-    ],
-    [
-      "z2_wp4",
-      "z2_wp5"
-    ],
-    [
-      "z2_wp5",
-      "z2_wp6"
-    ],
-    [
-      "z2_wp6",
-      "z2_wp7"
-    ],
-    [
-      "z2_wp7",
-      "z2_end"
-    ],
-    [
-      "z3_start",
-      "z3_wp2"
-    ],
-    [
-      "z3_wp2",
-      "z3_wp3"
-    ],
-    [
-      "z3_wp3",
-      "z3_wp4"
-    ],
-    [
-      "z3_wp4",
-      "z3_wp1"
-    ],
-    [
-      "z1_int2",
-      "z2_start"
-    ],
-    [
-      "z1_int2",
-      "z1_int2b"
-    ],
-    [
-      "z1_int2b",
-      "z1_int3"
-    ],
-    [
-      "z1_int1",
-      "z3_start"
-    ]
-  ],
+  "pavedEdges": [],
   "ovals": [
     {
       "id": "main_oval",
       "label": "Running Oval",
       "center": {
-        "x": 1081.9,
-        "z": -267.3
+        "x": 1086.8,
+        "z": -258.1
       },
-      "majorAxis": 115.3,
-      "minorAxis": 69.1,
+      "majorAxis": 114,
+      "minorAxis": 62.8,
       "trackWidth": 8,
-      "rotation": 11.7,
+      "rotation": 25.8,
       "_note": "center, size (infield 122.5m x 73.1m + 8m trackWidth per side), and rotation (-10.83 deg) all derived from the 4 real corner lat/lng points measured on the satellite photo, converted via the local (unrotated, 1:1 meter) equirectangular projection anchored at z3_wp5 (same method used for the center point, cross-checked against 5 nearby waypoints to ~1.3m). The corner-derived center (14.971052803, 120.20102959) matched the independently-given center point (14.971048266, 120.20104404) to within ~0.5m, confirming both are reliable. Supersedes the earlier ft-measurement-based majorAxis/minorAxis/rotation, which were an axis-aligned bounding-box estimate skewed by the oval's true rotation. Shifted +32m along the road-normal direction (2026-09-10) because the track crossed the unpaved z3_wp5<->z3_oval_end road (was ~0.2m clearance) New position clears that road by ~21m. [2026-09-11: center.x had drifted to 980.22 via a separate edit, landing the oval on top of the z3_wp1/z3_wp5 road junction — reverted to the verified-clear 1089.22.] [2026-09-11: a broader edge-by-edge clearance re-check (not just the single road checked in the original derivation) found the reverted 1089.22 position only cleared the z3_wp5<->z3_oval_end road by ~25m but left z3_oval_end<->connector_z3_to_z1 touching by just 0.55m. Nudged to 1072.31, the x that balances clearance on both roads (~17.4m each).]",
       "trackColor": "#d6a780",
       "fieldColor": "#639c74"
