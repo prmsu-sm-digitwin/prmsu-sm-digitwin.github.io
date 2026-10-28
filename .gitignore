@@ -137,3 +137,8 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# 360 tour: raw 15 MB camera originals + test files stay on this PC; only the compressed pNNN.jpg go online
+images/360/**/CAM_*
+images/360/**/test_*
+images/360/**/*.part

@@ -1,6 +1,12 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v3.18'; // Update this version whenever files change
+// Big photos (360° tour + Development Zones) live in their OWN cache, so a normal
+// app update (new CACHE_NAME) doesn't throw ~90 MB away and make every phone
+// download it all again. Only bump PHOTO_CACHE when you REPLACE photos that keep
+// the same file name (new photos / new file names are picked up automatically).
+const PHOTO_CACHE = 'prmsu-photos-v3';
+const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
+const CACHE_NAME = 'prmsu-digitwin-v3.26'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -55,9 +61,12 @@ self.addEventListener('install', event => {
         // with no change needed here.
         fetch('./data/devzones.json', { cache: 'reload' })
           .then(r => r.json())
-          .then(d => Promise.allSettled(
-            ((d && d.zones) || []).filter(z => z.photo).map(z => cache.add(new Request('./' + z.photo, { cache: 'reload' })))
-          ))
+          .then(d => caches.open(PHOTO_CACHE).then(pc => Promise.allSettled(
+            ((d && d.zones) || []).filter(z => z.photo).map(z => {
+              const req = new Request('./' + z.photo);
+              return pc.match(req).then(hit => hit || pc.add(req));
+            })
+          )))
           .catch(() => {})
       );
     })
@@ -70,7 +79,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys =>
-        Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+        Promise.all(keys.filter(k => k !== CACHE_NAME && k !== PHOTO_CACHE).map(k => caches.delete(k)))
       )
       .then(() => self.clients.claim())
       .then(() =>
@@ -99,7 +108,7 @@ self.addEventListener('fetch', event => {
         // Cache successful same-origin responses
         if (response && response.status === 200 && url.origin === self.location.origin) {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          caches.open(isPhotoPath(url.pathname) ? PHOTO_CACHE : CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
       }).catch(() => {

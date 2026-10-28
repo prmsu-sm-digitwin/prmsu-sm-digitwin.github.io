@@ -10,7 +10,7 @@
 //
 //  Data:   data/tour360.json  (stops in walking order, per-stop title and
 //          "fwd" = where in the photo the next stop lies, 0..1 across the
-//          width).  Photos: images/360/pNN.jpg.
+//          width).  Photos: images/360/<RouteFolder>/pNN.jpg (listed in data/tour360.json).
 //
 //  Not Street View / not photogrammetry: you jump between fixed photo
 //  spots.  Kept separate from walkthrough.js so the 3D prototype can be
@@ -33,7 +33,7 @@
   var velYaw = 0, velPitch = 0;
 
   var stage, canvas, renderer, scene, camera, sphere, mat;
-  var hudTitle, hudCount, scrub, btnFwd, btnBack, btnAuto, fadeEl, toastEl, loadingEl;
+  var btnBack, fadeEl, toastEl, loadingEl;
   var arrowFwd, arrowBack, raycaster;
   var texCache = {};            // file -> THREE.Texture
   var texOrder = [];            // LRU of cached files
@@ -66,26 +66,13 @@
       '<canvas id="tour-canvas"></canvas>' +
       '<div class="tour-loading" id="tour-loading">Loading 360° tour…</div>' +
       '<div class="tour-fade" id="tour-fade"></div>' +
-      '<div class="tour-badge">Interim 360° tour — photogrammetry walkthrough still processing</div>' +
-      '<div class="tour-hud"><div class="tour-title" id="tour-title">—</div><div class="tour-count" id="tour-count"></div></div>' +
       '<div class="tour-hint" id="tour-hint">Drag to look around · tap the arrows to walk</div>' +
       '<div class="tour-toast" id="tour-toast"></div>' +
-      '<div class="tour-bottom">' +
-      '  <input type="range" class="tour-scrub" id="tour-scrub" min="0" max="0" value="0" aria-label="Position along the route">' +
-      '  <div class="tour-btns">' +
-      '    <button class="tour-btn" id="tour-back" aria-label="Step back">&#9664; Back</button>' +
-      '    <button class="tour-btn tour-btn-auto" id="tour-auto" aria-label="Auto walk">&#9654; Auto-walk</button>' +
-      '    <button class="tour-btn tour-btn-fwd" id="tour-fwd" aria-label="Step forward">Forward &#9650;</button>' +
-      '  </div>' +
-      '</div>';
+      '<button class="tour-back" id="tour-back" type="button" aria-label="Back to home" title="Back">' +
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>';
 
     canvas   = document.getElementById('tour-canvas');
-    hudTitle = document.getElementById('tour-title');
-    hudCount = document.getElementById('tour-count');
-    scrub    = document.getElementById('tour-scrub');
-    btnFwd   = document.getElementById('tour-fwd');
     btnBack  = document.getElementById('tour-back');
-    btnAuto  = document.getElementById('tour-auto');
     fadeEl   = document.getElementById('tour-fade');
     toastEl  = document.getElementById('tour-toast');
     loadingEl = document.getElementById('tour-loading');
@@ -121,11 +108,43 @@
       .then(function (r) { return r.json(); })
       .then(function (d) {
         data = d; stops = d.stops || [];
-        scrub.max = Math.max(0, stops.length - 1);
+        resolveLinks();
         loadingEl.classList.add('tour-hidden');
         showStop(0, 'init');
       })
       .catch(function () { loadingEl.textContent = 'Could not load the tour data.'; });
+  }
+
+  // ── Route graph (Street-View style) ──
+  // Stops are walked in list order, but a stop can also:
+  //   "end": true        -> the documented path stops here: no forward arrow
+  //   "id": "name"       -> a name other stops can point to
+  //   "prev": "name"     -> where the Back arrow goes (default: the stop before it in the list)
+  //   "links": [{"to": "name", "u": 0.3}]  -> an extra forward arrow (a fork), pointing at
+  //                         horizontal photo position u (0..1) and leading to stop "name"
+  var idToIdx = {};
+  var linkArrows = [];                       // pooled arrow meshes for fork links
+  function resolveLinks() {
+    idToIdx = {};
+    stops.forEach(function (s, i) { if (s.id) idToIdx[s.id] = i; });
+  }
+  function nextIdx(i) {
+    var s = stops[i];
+    if (!s || s.end || i >= stops.length - 1) return -1;
+    return i + 1;
+  }
+  function prevIdx(i) {
+    var s = stops[i];
+    if (!s) return -1;
+    if (s.prev != null && idToIdx[s.prev] != null) return idToIdx[s.prev];
+    return i > 0 ? i - 1 : -1;
+  }
+  function linksOf(i) {
+    var s = stops[i], out = [];
+    ((s && s.links) || []).forEach(function (l) {
+      if (idToIdx[l.to] != null) out.push({ to: idToIdx[l.to], u: l.u || 0 });
+    });
+    return out;
   }
 
   // Flat chevron lying on the ground, rotated by a parent group.
@@ -227,6 +246,43 @@
     }).catch(function () {});
   }
 
+  // ── Warm the route ahead of you in the background ──
+  // Once a stop is on screen, quietly download the photos around it (a few behind,
+  // plenty ahead), a couple at a time and only while nothing you asked for is
+  // loading. The service worker keeps them, so walking the route never waits on the
+  // network, and they stay available offline. A moving window (not the whole route)
+  // keeps data use sensible now that the tour has hundreds of stops. Skipped on "Data Saver".
+  var WARM_BEHIND = 6, WARM_AHEAD = 40;
+  var warmQueue = [], warmSeen = {}, warmActive = 0, warmFails = 0, warmTimer = null;
+  function warmRoute() {
+    if (!stops.length || !window.fetch || !window.caches) return;
+    try { if (navigator.connection && navigator.connection.saveData) return; } catch (e) {}
+    var lo = Math.max(0, idx - WARM_BEHIND), hi = Math.min(stops.length - 1, idx + WARM_AHEAD);
+    var add = [];
+    for (var i = idx; i <= hi; i++) add.push(i);                       // ahead of you first
+    for (var j = idx - 1; j >= lo; j--) add.push(j);
+    warmQueue = add.map(function (n) { return stops[n].file; }).filter(function (f) { return !warmSeen[f]; });
+    if (!warmTimer) warmTimer = setTimeout(warmPump, 800);
+  }
+  function warmOne(file) {              // own function so each download keeps ITS file name
+    caches.match(file).then(function (hit) {
+      if (hit) return;
+      return fetch(file).then(function (r) { if (!r.ok) throw new Error('http'); return r.arrayBuffer(); });
+    }).then(function () { warmFails = 0; }, function () { warmFails++; })
+      .then(function () { warmActive--; if (!warmTimer) warmTimer = setTimeout(warmPump, 60); });
+  }
+  function warmPump() {
+    warmTimer = null;
+    if (warmFails >= 3) return;                                        // offline / blocked: stop trying
+    while (warmActive < 2 && warmQueue.length) {
+      if (Object.keys(pending).length) { warmTimer = setTimeout(warmPump, 500); return; }   // your photo first
+      var file = warmQueue.shift();
+      if (warmSeen[file]) continue;
+      warmSeen[file] = true; warmActive++;
+      warmOne(file);
+    }
+  }
+
   // ── Navigation ──
   function showStop(i, how) {
     if (!stops.length) return;
@@ -243,9 +299,13 @@
       if (how === 'init') pitch = -0.05;
       velYaw = velPitch = 0;
       updateHud(); updateArrows();
+      if (how === 'fwd' && stops[i].end) toast('This is as far as the path has been photographed.');
       fadeEl.classList.remove('on');
       dirty = true;
       preload(i + 1); preload(i + 2); preload(i - 1); preload(i + 3);
+      linksOf(i).forEach(function (l) { preload(l.to); });
+      preload(prevIdx(i));
+      warmRoute();
     }).catch(function () {
       if (token !== loadToken) return;
       fadeEl.classList.remove('on');
@@ -253,35 +313,28 @@
       stopAuto();
     });
   }
-  function next() { if (idx < stops.length - 1) showStop(idx + 1, 'fwd'); else stopAuto(); }
-  function prev() { if (idx > 0) showStop(idx - 1, 'back'); }
+  function next() { var n = nextIdx(idx); if (n >= 0) showStop(n, 'fwd'); }
+  function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, 'back'); }
 
   function updateHud() {
-    var s = stops[idx];
-    hudTitle.textContent = s.title || 'Campus road';
-    hudCount.textContent = 'Stop ' + (idx + 1) + ' of ' + stops.length;
-    scrub.value = idx;
-    btnFwd.disabled  = idx >= stops.length - 1;
-    btnBack.disabled = idx <= 0;
   }
   function updateArrows() {
     var s = stops[idx], fy = uToYaw(s.fwd || 0);
+    var hasNext = nextIdx(idx) >= 0, hasPrev = prevIdx(idx) >= 0;
     arrowFwd.group.rotation.y  = -fy;
-    arrowBack.group.rotation.y = -(fy + Math.PI);
-    arrowFwd.group.visible  = idx < stops.length - 1;
-    arrowBack.group.visible = idx > 0;
+    arrowBack.group.rotation.y = -(s.back != null ? uToYaw(s.back) : fy + Math.PI);   // optional "back": u for forks
+    arrowFwd.group.visible  = hasNext;          // no arrow at the end of the documented path
+    arrowBack.group.visible = hasPrev;
+    var links = linksOf(idx);
+    while (linkArrows.length < links.length) { var a = makeArrow(1.0); linkArrows.push(a); scene.add(a.group); }
+    linkArrows.forEach(function (a, k) {
+      var l = links[k];
+      a.group.visible = !!l;
+      if (l) { a.group.rotation.y = -uToYaw(l.u); a.target = l.to; }
+    });
   }
 
-  function startAuto() {
-    if (autoTimer) return;
-    btnAuto.innerHTML = '&#10074;&#10074; Pause';
-    btnAuto.classList.add('on');
-    autoTimer = setInterval(next, 2600);
-  }
-  function stopAuto() {
-    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-    if (btnAuto) { btnAuto.innerHTML = '&#9654; Auto-walk'; btnAuto.classList.remove('on'); }
-  }
+  function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
 
   function toast(msg) {
     toastEl.textContent = msg; toastEl.classList.add('tour-show');
@@ -296,10 +349,8 @@
     canvas.addEventListener('pointerup', onUp);
     canvas.addEventListener('pointercancel', onUp);
     canvas.addEventListener('wheel', function (e) { e.preventDefault(); setFov(fov + e.deltaY * 0.04); }, { passive: false });
-    btnFwd.addEventListener('click', function () { stopAuto(); next(); });
-    btnBack.addEventListener('click', function () { stopAuto(); prev(); });
-    btnAuto.addEventListener('click', function () { if (autoTimer) stopAuto(); else { next(); startAuto(); } });
-    scrub.addEventListener('input', function () { stopAuto(); showStop(parseInt(scrub.value, 10), 'jump'); });
+    // Leaves the walkthrough (same as the phone's back button) -> back to where you came from, i.e. home.
+    btnBack.addEventListener('click', function () { stopAuto(); if (typeof goBack === 'function') goBack(); else if (typeof goTo === 'function') goTo('main'); });
     window.addEventListener('resize', resize);
     if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
   }
@@ -352,10 +403,15 @@
     var targets = [];
     if (arrowFwd.group.visible) targets.push(arrowFwd.mesh);
     if (arrowBack.group.visible) targets.push(arrowBack.mesh);
+    linkArrows.forEach(function (a) { if (a.group.visible) targets.push(a.mesh); });
     var hit = raycaster.intersectObjects(targets, false)[0];
     if (!hit) return;
     stopAuto();
-    if (hit.object === arrowFwd.mesh) next(); else prev();
+    if (hit.object === arrowFwd.mesh) next();
+    else if (hit.object === arrowBack.mesh) prev();
+    else {
+      for (var k = 0; k < linkArrows.length; k++) if (linkArrows[k].mesh === hit.object) { showStop(linkArrows[k].target, 'fwd'); break; }
+    }
   }
 
   // ── Render loop ──

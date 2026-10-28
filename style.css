@@ -2116,21 +2116,6 @@
   transition: opacity 0.16s ease;
 }
 .tour-fade.on { opacity: 0.85; }
-.tour-badge {
-  position: absolute; z-index: 2; top: 10px; left: 12px; right: 12px;
-  padding: 6px 12px; border-radius: 999px;
-  background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
-  color: #fff; font-family: 'DM Sans', sans-serif; font-size: 10.5px;
-  letter-spacing: 0.02em; text-align: center; pointer-events: none;
-}
-.tour-hud {
-  position: absolute; z-index: 2; top: 46px; left: 12px;
-  padding: 6px 12px; border-radius: 12px;
-  background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
-  color: #fff; font-family: 'DM Sans', sans-serif; pointer-events: none;
-}
-.tour-title { font-size: 13px; font-weight: 600; }
-.tour-count { font-size: 11px; opacity: 0.8; margin-top: 1px; }
 .tour-hint {
   position: absolute; z-index: 2; left: 50%; top: 30%;
   transform: translate(-50%, -50%);
@@ -2140,7 +2125,7 @@
   pointer-events: none; transition: opacity 0.4s ease;
 }
 .tour-toast {
-  position: absolute; z-index: 5; left: 50%; bottom: 120px;
+  position: absolute; z-index: 5; left: 50%; bottom: 24px;
   transform: translate(-50%, 8px); opacity: 0;
   padding: 9px 16px; border-radius: 999px;
   background: rgba(20,20,20,0.92); color: #fff;
@@ -2149,22 +2134,18 @@
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .tour-toast.tour-show { opacity: 1; transform: translate(-50%, 0); }
-.tour-bottom {
-  position: absolute; z-index: 2; left: 0; right: 0; bottom: 0;
-  padding: 10px 14px calc(14px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+.tour-back {
+  position: absolute; z-index: 4; top: calc(10px + env(safe-area-inset-top, 0px)); right: 10px;
+  width: 38px; height: 38px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%;
+  background: rgba(0,0,0,0.38); backdrop-filter: blur(6px);
+  color: #fff; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.tour-scrub { width: 100%; margin: 0 0 10px; accent-color: #f0c050; }
-.tour-btns { display: flex; gap: 8px; }
-.tour-btn {
-  flex: 1; padding: 12px 8px; border: 0; border-radius: 12px;
-  background: rgba(255,255,255,0.92); color: #1b2430;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
-  cursor: pointer;
-}
-.tour-btn-fwd { flex: 1.5; background: #f0c050; }
-.tour-btn-auto.on { background: #1b2430; color: #fff; }
-.tour-btn:disabled { opacity: 0.4; cursor: default; }
+.tour-back:active { background: rgba(0,0,0,0.6); }
+/* The walkthrough is full-screen now: no top bar (logo text + menu), just the back button. */
+#page-walkthrough > .inner-top-bar { display: none; }
 
 /* HIDE-3D-TAB: the 3D Prototype tab is hidden for now (tour only). Delete this rule to bring the mode switch back. */
 .wt-mode-bar { display: none !important; }
