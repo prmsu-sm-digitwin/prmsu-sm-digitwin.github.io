@@ -365,6 +365,7 @@ function applyDevzonesTransform(animated) {
     Array.prototype.forEach.call(markers.children, function (pin) {
       pin.style.transform = 'translate(-50%, -100%) scale(' + invScale + ')';
     });
+    layoutDevzonesLabels();
   }
 }
 
@@ -410,23 +411,42 @@ function devzonesZoomAt(wrap, localX, localY, newScale) {
   devzonesClampToBounds();
 }
 
-// Each zone's x/y is a pixel position in the *original* DEV_ZONES_SATMAP.jpg
-// (1327×703) — the same pixel space #devzones-markers is transformed in, so
-// a marker just needs its left/top set once and it rides along with every
-// pan/zoom for free (see the transform block in applyDevzonesTransform).
-const DEVZONES_DATA = [
-  { id: 'mango_greenhouse', label: 'Mango Greenhouse Farm', photo: 'images/devzones/Mango_Greenhouse_FarmDZ.jpg', x: 711.5, y: 272.2 },
-  { id: 'stadium',          label: 'Stadium',                photo: 'images/devzones/StadiumDZ.jpg',                x: 1042.5, y: 248.1 },
-  { id: 'bangar',           label: 'Bangar',                  photo: 'images/devzones/BangarDZ.jpg',                 x: 702.5, y: 423.1 }
+// Each zone's x/y is a pixel position in the *original* satellite map image
+// (DEV_ZONES_SATMAP.jpg, 1327×703) — the same pixel space #devzones-markers is
+// transformed in, so a marker just needs its left/top set once and it rides
+// along with every pan/zoom for free (see applyDevzonesTransform).
+//
+// The zones live in data/devzones.json (edit them with devzones-editor.html:
+// drop a pin, type a label, pick a photo). Any number of zones works — pins,
+// labels and photos are all built from that file. The list below is only a
+// last-resort fallback if the file can't be loaded.
+let DEVZONES_DATA = [
+  { id: 'mango_greenhouse', label: 'Mango Greenhouse Farm', photo: 'images/devzones/mangogreenhouse_dz.jpg', x: 711.5, y: 272.2 },
+  { id: 'stadium',          label: 'Stadium',                photo: 'images/devzones/oval_dz.jpg',              x: 1042.5, y: 248.1 },
+  { id: 'bangar',           label: 'Bangar',                  photo: 'images/devzones/bangar_dz.jpg',            x: 702.5, y: 423.1 }
 ];
+let devzonesLoaded = false;
 
-// Builds the marker pins once (guarded by _built, same pattern as the
-// directory carousel) — DEVZONES_DATA never changes at runtime so there's
-// nothing to re-render later.
+function loadDevzonesData() {
+  if (devzonesLoaded) return Promise.resolve();
+  return fetch('data/devzones.json')
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (d) {
+      if (d && Array.isArray(d.zones) && d.zones.length) DEVZONES_DATA = d.zones;
+      const img = document.getElementById('devzones-map-img');
+      if (img && d && d.map && d.map.image && img.getAttribute('src') !== d.map.image) img.src = d.map.image;
+      devzonesLoaded = true;
+    })
+    .catch(function (e) { console.warn('devzones.json not loaded, using built-in list:', e); devzonesLoaded = true; });
+}
+
+// Builds the marker pins (guarded by _built). Each pin = the map-pin icon
+// plus its label floating above it.
 function buildDevzonesMarkers() {
   const host = document.getElementById('devzones-markers');
   if (!host || host._built) return;
   host._built = true;
+  host.innerHTML = '';
 
   DEVZONES_DATA.forEach(function (zone) {
     const pin = document.createElement('button');
@@ -437,14 +457,40 @@ function buildDevzonesMarkers() {
     pin.setAttribute('aria-label', zone.label);
     pin.title = zone.label;
     pin.innerHTML =
+      '<span class="devzones-marker-label"></span>' +
       '<svg viewBox="0 0 24 24" fill="currentColor">' +
       '<path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>' +
       '</svg>';
+    pin.firstChild.textContent = zone.label;
     pin.addEventListener('click', function (e) {
       e.stopPropagation();
       openDevzonePOV(zone);
     });
     host.appendChild(pin);
+  });
+  devzonesLabelScale = -1;
+  applyDevzonesTransform(false);
+}
+
+// With many pins, labels can pile on top of each other when zoomed out. Pins
+// are always shown; a label is hidden only if an earlier zone's label already
+// covers its spot, and reappears as you zoom in. Overlap only changes when the
+// zoom changes (panning moves everything together), so this runs on zoom only.
+let devzonesLabelScale = -1;
+function layoutDevzonesLabels() {
+  const host = document.getElementById('devzones-markers');
+  if (!host || devzonesLabelScale === devzonesView.scale) return;
+  devzonesLabelScale = devzonesView.scale;
+  const labels = host.querySelectorAll('.devzones-marker-label');
+  labels.forEach(function (l) { l.classList.remove('is-hidden'); });
+  const taken = [];
+  labels.forEach(function (l) {
+    const r = l.getBoundingClientRect();
+    if (!r.width) return;
+    const hit = taken.some(function (t) {
+      return !(r.right + 3 < t.left || r.left - 3 > t.right || r.bottom + 2 < t.top || r.top - 2 > t.bottom);
+    });
+    if (hit) l.classList.add('is-hidden'); else taken.push(r);
   });
 }
 
@@ -745,7 +791,7 @@ function initDevzonesViewer() {
   const img = document.getElementById('devzones-map-img');
   if (!wrap || !img) return;
 
-  buildDevzonesMarkers();
+  loadDevzonesData().then(buildDevzonesMarkers);
 
   if (img.complete && img.naturalWidth) {
     fitDevzonesMap();

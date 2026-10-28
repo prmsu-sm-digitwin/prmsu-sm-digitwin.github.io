@@ -1,0 +1,85 @@
+{
+  "_comment": "Development Zones pins. x/y are pixel positions in the satellite map image (map.image). Edit with devzones-editor.html, then replace this file.",
+  "map": {
+    "image": "images/devzones/DEV_ZONES_SATMAP.jpg"
+  },
+  "zones": [
+    {
+      "id": "main_gate",
+      "label": "Main Gate",
+      "photo": "images/devzones/main_gate_dz.jpg",
+      "x": 103.9,
+      "y": 491.2
+    },
+    {
+      "id": "pathway",
+      "label": "Campus Pathway",
+      "photo": "images/devzones/pathway_dz.jpg",
+      "x": 388.7,
+      "y": 479.5
+    },
+    {
+      "id": "chm1",
+      "label": "CHM 1",
+      "photo": "images/devzones/hm1_dz.jpg",
+      "x": 552.0,
+      "y": 434.5
+    },
+    {
+      "id": "chm2",
+      "label": "CHM 2",
+      "photo": "images/devzones/hm2_dz.jpg",
+      "x": 630.4,
+      "y": 403.5
+    },
+    {
+      "id": "gabaldon",
+      "label": "Gabaldon Court",
+      "photo": "images/devzones/gabaldon_dz.jpg",
+      "x": 714.9,
+      "y": 464.9
+    },
+    {
+      "id": "bsed",
+      "label": "CTE (BSED)",
+      "photo": "images/devzones/bsed_dz.jpg",
+      "x": 670.9,
+      "y": 325.6
+    },
+    {
+      "id": "lhs",
+      "label": "LHS",
+      "photo": "images/devzones/lhs_dz.jpg",
+      "x": 756.3,
+      "y": 336.3
+    },
+    {
+      "id": "mango_greenhouse",
+      "label": "Mango Greenhouse Farm",
+      "photo": "images/devzones/mangogreenhouse_dz.jpg",
+      "x": 711.5,
+      "y": 272.2
+    },
+    {
+      "id": "stadium",
+      "label": "Stadium",
+      "photo": "images/devzones/oval_dz.jpg",
+      "x": 1042.5,
+      "y": 248.1
+    },
+    {
+      "id": "bangar",
+      "label": "Bangar",
+      "photo": "images/devzones/bangar_dz.jpg",
+      "x": 702.5,
+      "y": 423.1
+    },
+    {
+      "id": "dragon_fruit",
+      "label": "Dragon Fruit Farm",
+      "photo": "images/devzones/dragon_fruit_dz.jpg",
+      "x": 880.0,
+      "y": 450.0
+    }
+  ]
+}

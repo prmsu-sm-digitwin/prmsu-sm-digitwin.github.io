@@ -1,6 +1,6 @@
 // Update version in CACHE_NAME whenever files change
 
-const CACHE_NAME = 'prmsu-digitwin-v3.16'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v3.18'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -19,6 +19,8 @@ const STATIC_ASSETS = [
   './data/tour360.json',
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
+  './data/devzones.json',
+  './images/devzones/DEV_ZONES_SATMAP.jpg',
   // Note: walkthroughPathHeightmap.json is small (precomputed grid), but
   // GATE2LHSdt.glb is ~17MB -- the raw pathway scan. Caching it offline is
   // consistent with the rest of this app; worth decimating/compressing
@@ -47,6 +49,16 @@ self.addEventListener('install', event => {
       // guarantee a fresh network fetch for every asset, every time.
       return Promise.allSettled(
         STATIC_ASSETS.map(url => cache.add(new Request(url, { cache: 'reload' })))
+      ).then(() =>
+        // Development Zones photos: the list comes from data/devzones.json, so
+        // zones added in devzones-editor.html are cached for offline use too,
+        // with no change needed here.
+        fetch('./data/devzones.json', { cache: 'reload' })
+          .then(r => r.json())
+          .then(d => Promise.allSettled(
+            ((d && d.zones) || []).filter(z => z.photo).map(z => cache.add(new Request('./' + z.photo, { cache: 'reload' })))
+          ))
+          .catch(() => {})
       );
     })
   );
@@ -78,7 +90,7 @@ self.addEventListener('fetch', event => {
 
   // The campus editor is a developer tool, not part of the app: never serve it
   // (or the data it edits) from this cache, or edits show up stale.
-  if (url.pathname.endsWith('/campus-editor.html')) return;
+  if (url.pathname.endsWith('/campus-editor.html') || url.pathname.endsWith('/devzones-editor.html')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {

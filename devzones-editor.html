@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Development Zones Editor — PRMSU SM Digital Twin</title>
+<style>
+  :root { --navy:#0b1f3a; --navy2:#16315a; --gold:#f2b632; --ink:#1d2733; --muted:#6b7785; --line:#dde2e8; --bg:#f3f5f8; --danger:#b3261e; --pin:#ff5a3c; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; font-family:'Segoe UI', system-ui, -apple-system, sans-serif; color:var(--ink); background:var(--bg); }
+  body { display:flex; flex-direction:column; }
+  header { background:var(--navy); color:#fff; padding:10px 14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0 6px 0 0; font-weight:700; }
+  header .sub { font-size:12px; opacity:.7; }
+  header .spacer { flex:1; }
+  button, .btn { font:inherit; font-size:13px; border:0; border-radius:7px; padding:7px 12px; cursor:pointer; background:#e8ebf0; color:var(--ink); }
+  button:hover { filter:brightness(.96); }
+  button:disabled { opacity:.45; cursor:default; }
+  .btn-primary { background:var(--gold); color:#2b2100; font-weight:700; }
+  .btn-dark { background:var(--navy2); color:#fff; }
+  .btn-danger { background:#fbe9e7; color:var(--danger); }
+  .btn-on { background:var(--gold); color:#2b2100; font-weight:700; }
+  .toolbar { background:#fff; border-bottom:1px solid var(--line); padding:8px 14px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px; }
+  .toolbar .hint { color:var(--muted); font-size:12px; }
+  #status { margin-left:auto; font-size:12px; color:var(--muted); }
+  #status.warn { color:var(--danger); }
+  main { flex:1; display:grid; grid-template-columns: 1fr 340px; min-height:0; }
+  #mapWrap { position:relative; overflow:hidden; background:#16251b; touch-action:none; cursor:grab; }
+  #mapWrap.adding { cursor:crosshair; }
+  #mapWrap.dragging { cursor:grabbing; }
+  #mapImg { position:absolute; top:0; left:0; transform-origin:0 0; user-select:none; -webkit-user-drag:none; max-width:none; }
+  #pins { position:absolute; top:0; left:0; transform-origin:0 0; pointer-events:none; }
+  .pin { position:absolute; width:34px; height:34px; padding:0; background:none; color:var(--pin); transform-origin:50% 100%; pointer-events:auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.6)); border-radius:0; cursor:grab; }
+  .pin svg { width:100%; height:100%; display:block; }
+  .pin.nophoto { color:#9aa4b0; }
+  .pin.selected { color:var(--gold); filter:drop-shadow(0 0 6px rgba(242,182,50,.95)) drop-shadow(0 2px 3px rgba(0,0,0,.6)); z-index:5; }
+  .pin .lbl { position:absolute; left:50%; bottom:calc(100% + 1px); transform:translateX(-50%); white-space:nowrap; padding:3px 8px; border-radius:999px; background:rgba(11,31,58,.9); color:#fff; font:600 11px/1.2 'Segoe UI', system-ui, sans-serif; box-shadow:0 1px 4px rgba(0,0,0,.4); }
+  .pin.selected .lbl { background:var(--gold); color:#2b2100; }
+  #mapCtl { position:absolute; right:12px; top:12px; display:flex; flex-direction:column; gap:6px; }
+  #mapCtl button { width:34px; height:34px; padding:0; font-size:18px; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.35); }
+  #coord { position:absolute; left:10px; bottom:8px; background:rgba(0,0,0,.55); color:#fff; font-size:11px; padding:3px 8px; border-radius:6px; pointer-events:none; }
+  aside { background:#fff; border-left:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
+  #listBox { border-bottom:1px solid var(--line); max-height:34%; display:flex; flex-direction:column; min-height:120px; }
+  #listBox input { margin:8px; width:calc(100% - 16px); padding:7px 9px; border:1px solid var(--line); border-radius:7px; font:inherit; font-size:13px; }
+  #zoneList { overflow:auto; flex:1; }
+  .zrow { display:flex; align-items:center; gap:8px; padding:7px 12px; cursor:pointer; font-size:13px; border-top:1px solid #f0f2f5; }
+  .zrow:hover { background:#f6f8fb; }
+  .zrow.sel { background:#fff6dc; }
+  .zrow .dot { width:9px; height:9px; border-radius:50%; background:var(--pin); flex:none; }
+  .zrow .dot.no { background:#9aa4b0; }
+  .zrow .name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .zrow .meta { font-size:11px; color:var(--muted); }
+  #panel { overflow:auto; padding:12px 14px 20px; flex:1; font-size:13px; }
+  #panel h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:14px 0 6px; }
+  #panel h2:first-child { margin-top:0; }
+  label.f { display:block; margin:8px 0 3px; font-size:12px; color:var(--muted); }
+  input[type=text], input[type=number] { width:100%; padding:7px 9px; border:1px solid var(--line); border-radius:7px; font:inherit; font-size:13px; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  #thumbBox { margin-top:8px; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#eef1f5; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; text-align:center; }
+  #thumbBox img { width:100%; height:100%; object-fit:cover; display:block; }
+  .btnrow { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .note { font-size:11.5px; color:var(--muted); margin:6px 0 0; line-height:1.4; }
+  .empty { color:var(--muted); padding:6px 0; }
+  /* photo preview overlay (pan / zoom / tilt, like the app) */
+  #pov { position:fixed; inset:0; z-index:50; background:#000; display:none; }
+  #pov.open { display:block; }
+  #povStage { position:absolute; inset:0; perspective:850px; overflow:hidden; touch-action:none; cursor:grab; }
+  #povTilt { position:absolute; inset:0; transform-style:preserve-3d; transition:transform .12s ease-out; }
+  #povImg { position:absolute; top:0; left:0; transform-origin:0 0; max-width:none; user-select:none; -webkit-user-drag:none; }
+  #povClose { position:absolute; top:14px; right:14px; z-index:2; background:rgba(255,255,255,.9); }
+  #povLabel { position:absolute; top:14px; left:14px; z-index:2; background:rgba(11,31,58,.85); color:#fff; padding:6px 12px; border-radius:999px; font-weight:600; }
+  @media (max-width: 860px) { main { grid-template-columns:1fr; grid-template-rows: 55vh 1fr; } aside { border-left:0; border-top:1px solid var(--line); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Development Zones Editor</h1>
+  <span class="sub">Drop pins on the satellite map, name them, attach a photo.</span>
+  <span class="spacer"></span>
+  <button id="btnConnect" class="btn-dark" title="Pick your project folder so Save writes data/devzones.json and photos straight into it (Chrome / Edge)">Connect project folder</button>
+  <button id="btnOpen" title="Load a devzones.json file">Open JSON…</button>
+  <button id="btnUndo" disabled>Undo</button>
+  <button id="btnSave" class="btn-primary">Save</button>
+</header>
+<div class="toolbar">
+  <button id="btnAdd">+ Add zone</button>
+  <span class="hint" id="modeHint">Drag the map to pan · scroll / pinch to zoom · click a pin to edit it · drag a pin to move it</span>
+  <span id="status"></span>
+</div>
+<main>
+  <div id="mapWrap">
+    <img id="mapImg" alt="Satellite map" draggable="false">
+    <div id="pins"></div>
+    <div id="mapCtl"><button id="zin" title="Zoom in">+</button><button id="zout" title="Zoom out">−</button><button id="zfit" title="Fit" style="font-size:13px">⤢</button></div>
+    <div id="coord"></div>
+  </div>
+  <aside>
+    <div id="listBox"><input id="q" type="text" placeholder="Search zones…"><div id="zoneList"></div></div>
+    <div id="panel"></div>
+  </aside>
+</main>
+
+<div id="pov">
+  <div id="povLabel"></div>
+  <button id="povClose">✕ Close</button>
+  <div id="povStage"><div id="povTilt"><img id="povImg" alt=""></div></div>
+</div>
+<input type="file" id="fileJson" accept=".json,application/json" hidden>
+<input type="file" id="filePhoto" accept="image/*" hidden>
+
+<script>
+(function () {
+  'use strict';
+  var DATA_URL = 'data/devzones.json';
+  var PHOTO_DIR = 'images/devzones/';
+  var MAX_W = 1800;            // photos are resized to at most this width (JPEG) when added
+  var doc = { _comment: '', map: { image: 'images/devzones/DEV_ZONES_SATMAP.jpg' }, zones: [] };
+  var selId = null, addMode = false, dirHandle = null, dirty = false;
+  var pendingBlobs = {};       // zone id -> { blob, name }  (photo chosen but not yet written to the project)
+  var blobUrls = {};           // cached object URLs for images read from the connected folder
+  var undoStack = [];
+  var view = { scale: 1, minScale: .2, maxScale: 8, tx: 0, ty: 0, w: 0, h: 0 };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var wrap = $('mapWrap'), mapImg = $('mapImg'), pinsEl = $('pins');
+
+  // ---------- helpers ----------
+  function setStatus(msg, warn) { var s = $('status'); s.textContent = msg || ''; s.className = warn ? 'warn' : ''; }
+  function slug(s) { return String(s || 'zone').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'zone'; }
+  function uniqueId(base) { var id = slug(base), n = 2; while (zoneById(id)) id = slug(base) + '_' + n++; return id; }
+  function zoneById(id) { for (var i = 0; i < doc.zones.length; i++) if (doc.zones[i].id === id) return doc.zones[i]; return null; }
+  function snapshot() { undoStack.push(JSON.stringify(doc.zones)); if (undoStack.length > 60) undoStack.shift(); $('btnUndo').disabled = false; }
+  function touch() { dirty = true; try { localStorage.setItem('devzones-draft', JSON.stringify(doc)); } catch (e) {} setStatus('Unsaved changes'); }
+  function round1(v) { return Math.round(v * 10) / 10; }
+
+  // Reads an image path either from the connected project folder or relative to this page.
+  async function getFileFromDir(path) {
+    var parts = path.split('/').filter(Boolean), h = dirHandle;
+    for (var i = 0; i < parts.length - 1; i++) h = await h.getDirectoryHandle(parts[i]);
+    var fh = await h.getFileHandle(parts[parts.length - 1]);
+    return fh.getFile();
+  }
+  async function urlFor(path) {
+    if (!path) return '';
+    if (pendingBlobs[path]) return pendingBlobs[path].url;
+    if (dirHandle) {
+      if (blobUrls[path]) return blobUrls[path];
+      try { var f = await getFileFromDir(path); return (blobUrls[path] = URL.createObjectURL(f)); } catch (e) { /* fall through to a normal URL */ }
+    }
+    return path;
+  }
+
+  // ---------- map view ----------
+  function applyView() {
+    var t = 'translate(' + view.tx + 'px,' + view.ty + 'px) scale(' + view.scale + ')';
+    mapImg.style.transform = t; pinsEl.style.transform = t;
+    var inv = 1 / view.scale;
+    Array.prototype.forEach.call(pinsEl.children, function (p) { p.style.transform = 'translate(-50%,-100%) scale(' + inv + ')'; });
+  }
+  function fitView() {
+    var r = wrap.getBoundingClientRect();
+    if (!view.w || !r.width) return;
+    var s = Math.min(r.width / view.w, r.height / view.h);
+    view.minScale = s * .5; view.scale = s;
+    view.tx = (r.width - view.w * s) / 2; view.ty = (r.height - view.h * s) / 2;
+    applyView();
+  }
+  function zoomAt(px, py, ns) {
+    ns = Math.max(view.minScale, Math.min(view.maxScale, ns));
+    var ix = (px - view.tx) / view.scale, iy = (py - view.ty) / view.scale;
+    view.scale = ns; view.tx = px - ix * ns; view.ty = py - iy * ns; applyView();
+  }
+  function toImg(clientX, clientY) {
+    var r = wrap.getBoundingClientRect();
+    return { x: (clientX - r.left - view.tx) / view.scale, y: (clientY - r.top - view.ty) / view.scale };
+  }
+  function centerOn(z) {
+    var r = wrap.getBoundingClientRect();
+    view.tx = r.width / 2 - z.x * view.scale; view.ty = r.height / 2 - z.y * view.scale; applyView();
+  }
+
+  var PIN_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>';
+  function renderPins() {
+    pinsEl.innerHTML = '';
+    doc.zones.forEach(function (z) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'pin' + (z.photo ? '' : ' nophoto') + (z.id === selId ? ' selected' : '');
+      b.style.left = z.x + 'px'; b.style.top = z.y + 'px';
+      b.innerHTML = '<span class="lbl"></span>' + PIN_SVG;
+      b.firstChild.textContent = z.label || z.id;
+      b.dataset.id = z.id;
+      pinsEl.appendChild(b);
+    });
+    applyView();
+  }
+
+  // pointer handling on the map: pan, pin drag, add
+  var pointers = {}, pinch = null, drag = null, panLast = null, downInfo = null;
+  wrap.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('#mapCtl')) return;
+    var pinEl = e.target.closest('.pin');
+    wrap.setPointerCapture(e.pointerId);
+    pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(pointers);
+    if (ids.length === 2) {
+      var a = pointers[ids[0]], b = pointers[ids[1]];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: view.scale };
+      drag = null; panLast = null; return;
+    }
+    downInfo = { x: e.clientX, y: e.clientY, moved: false, pin: pinEl ? pinEl.dataset.id : null };
+    if (pinEl && !addMode) { drag = { id: pinEl.dataset.id, snap: false }; select(pinEl.dataset.id, true); }
+    else { panLast = { x: e.clientX, y: e.clientY }; wrap.classList.add('dragging'); }
+    e.preventDefault();
+  });
+  wrap.addEventListener('pointermove', function (e) {
+    var p = toImg(e.clientX, e.clientY);
+    $('coord').textContent = 'x ' + round1(p.x) + '  y ' + round1(p.y);
+    if (!pointers[e.pointerId]) return;
+    pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(pointers);
+    if (ids.length === 2 && pinch) {
+      var a = pointers[ids[0]], b = pointers[ids[1]], r = wrap.getBoundingClientRect();
+      zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, pinch.s * (Math.hypot(a.x - b.x, a.y - b.y) / pinch.d));
+      return;
+    }
+    if (downInfo && Math.hypot(e.clientX - downInfo.x, e.clientY - downInfo.y) > 4) downInfo.moved = true;
+    if (drag && downInfo && downInfo.moved) {
+      var z = zoneById(drag.id);
+      if (z) {
+        if (!drag.snap) { snapshot(); drag.snap = true; }
+        z.x = round1(Math.max(0, Math.min(view.w, p.x))); z.y = round1(Math.max(0, Math.min(view.h, p.y)));
+        var el = pinsEl.querySelector('[data-id="' + CSS.escape(z.id) + '"]');
+        if (el) { el.style.left = z.x + 'px'; el.style.top = z.y + 'px'; }
+        fillPos(z);
+      }
+    } else if (panLast) {
+      view.tx += e.clientX - panLast.x; view.ty += e.clientY - panLast.y; panLast = { x: e.clientX, y: e.clientY }; applyView();
+    }
+  });
+  function endPointer(e) {
+    if (!pointers[e.pointerId]) return;
+    delete pointers[e.pointerId]; pinch = null;
+    wrap.classList.remove('dragging');
+    if (downInfo && !downInfo.moved && Object.keys(pointers).length === 0) {
+      if (addMode && !downInfo.pin) { var p = toImg(e.clientX, e.clientY); addZoneAt(p.x, p.y); }
+      else if (!downInfo.pin) select(null);
+    }
+    if (drag && drag.snap) touch();
+    drag = null; panLast = null; downInfo = null;
+  }
+  wrap.addEventListener('pointerup', endPointer);
+  wrap.addEventListener('pointercancel', endPointer);
+  wrap.addEventListener('wheel', function (e) {
+    e.preventDefault(); var r = wrap.getBoundingClientRect();
+    zoomAt(e.clientX - r.left, e.clientY - r.top, view.scale * Math.exp(-e.deltaY * 0.0015));
+  }, { passive: false });
+  $('zin').onclick = function () { var r = wrap.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, view.scale * 1.4); };
+  $('zout').onclick = function () { var r = wrap.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, view.scale / 1.4); };
+  $('zfit').onclick = fitView;
+  window.addEventListener('resize', fitView);
+
+  // ---------- zones ----------
+  function addZoneAt(x, y) {
+    snapshot();
+    var n = doc.zones.length + 1;
+    var z = { id: uniqueId('zone_' + n), label: 'New zone ' + n, photo: '', x: round1(x), y: round1(y) };
+    doc.zones.push(z);
+    setAddMode(false); touch(); selId = z.id; renderAll();
+    var l = $('f_label'); if (l) { l.focus(); l.select(); }
+  }
+  function setAddMode(on) {
+    addMode = on; wrap.classList.toggle('adding', on); $('btnAdd').classList.toggle('btn-on', on);
+    $('modeHint').textContent = on ? 'Click on the map where the new pin should go (Esc to cancel)' : 'Drag the map to pan · scroll / pinch to zoom · click a pin to edit it · drag a pin to move it';
+  }
+  $('btnAdd').onclick = function () { setAddMode(!addMode); };
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { if (addMode) setAddMode(false); else if ($('pov').classList.contains('open')) closePov(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !/INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || '')) { e.preventDefault(); undo(); }
+  });
+  function undo() {
+    if (!undoStack.length) return;
+    doc.zones = JSON.parse(undoStack.pop()); if (!zoneById(selId)) selId = null;
+    $('btnUndo').disabled = !undoStack.length; touch(); renderAll();
+  }
+  $('btnUndo').onclick = undo;
+
+  function select(id, noPanel) {
+    selId = id;
+    Array.prototype.forEach.call(pinsEl.children, function (p) { p.classList.toggle('selected', p.dataset.id === id); });
+    Array.prototype.forEach.call($('zoneList').children, function (r) { r.classList.toggle('sel', r.dataset.id === id); });
+    renderPanel();
+  }
+  function renderList() {
+    var q = $('q').value.trim().toLowerCase(), list = $('zoneList'); list.innerHTML = '';
+    doc.zones.forEach(function (z) {
+      if (q && (z.label + ' ' + z.id).toLowerCase().indexOf(q) < 0) return;
+      var r = document.createElement('div'); r.className = 'zrow' + (z.id === selId ? ' sel' : ''); r.dataset.id = z.id;
+      r.innerHTML = '<span class="dot' + (z.photo ? '' : ' no') + '"></span><span class="name"></span><span class="meta">' + (z.photo ? '' : 'no photo') + '</span>';
+      r.querySelector('.name').textContent = z.label || z.id;
+      r.onclick = function () { select(z.id); centerOn(z); };
+      list.appendChild(r);
+    });
+    if (!list.children.length) { var e = document.createElement('div'); e.className = 'empty'; e.style.padding = '8px 12px'; e.textContent = doc.zones.length ? 'No match.' : 'No zones yet — click “+ Add zone”, then click the map.'; list.appendChild(e); }
+  }
+  $('q').addEventListener('input', renderList);
+
+  function fillPos(z) { var a = $('f_x'), b = $('f_y'); if (a && b) { a.value = z.x; b.value = z.y; } }
+
+  function renderPanel() {
+    var p = $('panel'), z = zoneById(selId);
+    if (!z) { p.innerHTML = '<div class="empty">Select a pin (or a zone in the list) to edit its label, position and photo.<br><br>To add a new one press <b>+ Add zone</b> and click the map.</div>'; return; }
+    p.innerHTML =
+      '<h2>Label</h2><input type="text" id="f_label">' +
+      '<label class="f">ID (used internally — letters, numbers, _ )</label><input type="text" id="f_id">' +
+      '<h2>Position on the satellite map</h2><div class="row2"><div><label class="f">X (px)</label><input type="number" step="0.5" id="f_x"></div><div><label class="f">Y (px)</label><input type="number" step="0.5" id="f_y"></div></div>' +
+      '<p class="note">Tip: you can also just drag the pin on the map.</p>' +
+      '<h2>Photo</h2><div id="thumbBox">No photo yet</div>' +
+      '<label class="f">Photo path</label><input type="text" id="f_photo" placeholder="images/devzones/example_dz.jpg">' +
+      '<div class="btnrow"><button id="btnChoose" class="btn-dark">Choose / change photo…</button><button id="btnPreview">Preview (pan · zoom · tilt)</button></div>' +
+      '<div class="btnrow" id="dlRow" style="display:none"><button id="btnDl">Download optimized photo</button></div>' +
+      '<p class="note" id="photoNote"></p>' +
+      '<div class="btnrow" style="margin-top:18px"><button id="btnDel" class="btn-danger">Delete this zone</button></div>';
+    $('f_label').value = z.label || ''; $('f_id').value = z.id; $('f_photo').value = z.photo || ''; fillPos(z);
+    $('f_label').oninput = function () { z.label = this.value; var el = pinsEl.querySelector('[data-id="' + CSS.escape(z.id) + '"] .lbl'); if (el) el.textContent = z.label || z.id; var rr = $('zoneList').querySelector('[data-id="' + CSS.escape(z.id) + '"] .name'); if (rr) rr.textContent = z.label || z.id; };
+    $('f_label').onchange = function () { snapshot(); touch(); renderList(); };
+    $('f_id').onchange = function () {
+      var nid = slug(this.value);
+      if (nid !== z.id && zoneById(nid)) { setStatus('That ID is already used.', true); this.value = z.id; return; }
+      snapshot(); if (pendingBlobs[z.id]) { pendingBlobs[nid] = pendingBlobs[z.id]; delete pendingBlobs[z.id]; }
+      z.id = nid; selId = nid; this.value = nid; touch(); renderAll();
+    };
+    ['f_x', 'f_y'].forEach(function (fid) {
+      $(fid).onchange = function () { snapshot(); var v = parseFloat(this.value); if (isNaN(v)) v = 0; z[fid === 'f_x' ? 'x' : 'y'] = round1(v); touch(); renderPins(); fillPos(z); };
+    });
+    $('f_photo').onchange = function () { snapshot(); z.photo = this.value.trim(); touch(); renderAll(); };
+    $('btnChoose').onclick = function () { $('filePhoto').click(); };
+    $('btnPreview').onclick = function () { openPov(z); };
+    $('btnDel').onclick = function () {
+      if (!confirm('Delete the zone “' + (z.label || z.id) + '”? (The photo file is not deleted.)')) return;
+      snapshot(); doc.zones = doc.zones.filter(function (q) { return q !== z; }); selId = null; touch(); renderAll();
+    };
+    $('btnDl').onclick = function () { var pb = pendingBlobs[z.photo]; if (!pb) return; var a = document.createElement('a'); a.href = pb.url; a.download = pb.name; a.click(); };
+    refreshPhotoBox(z);
+  }
+  async function refreshPhotoBox(z) {
+    var box = $('thumbBox'), note = $('photoNote'); if (!box) return;
+    $('dlRow').style.display = pendingBlobs[z.photo] ? '' : 'none';
+    if (!z.photo) { box.textContent = 'No photo yet — choose one below.'; note.textContent = ''; return; }
+    var url = await urlFor(z.photo);
+    if (selId !== z.id) return;
+    var img = new Image();
+    img.onload = function () { box.innerHTML = ''; box.appendChild(img); note.textContent = pendingBlobs[z.photo]
+      ? (dirHandle ? 'Will be written to the project when you press Save.' : 'Not in your project yet: press “Download optimized photo”, put the file in ' + PHOTO_DIR + ' and keep the path above.')
+      : 'Photo found.'; };
+    img.onerror = function () { box.textContent = 'Photo not found at that path.'; note.textContent = 'Check the file is in ' + PHOTO_DIR + ' (or connect the project folder / choose it again).'; };
+    img.src = url;
+  }
+
+  // ---------- choose a photo (resized to a phone-friendly JPEG) ----------
+  $('filePhoto').addEventListener('change', async function () {
+    var f = this.files[0]; this.value = ''; var z = zoneById(selId);
+    if (!f || !z) return;
+    setStatus('Optimizing photo…');
+    try {
+      var bmp = await createImageBitmap(f);
+      var w = Math.min(MAX_W, bmp.width), h = Math.round(bmp.height * w / bmp.width);
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(bmp, 0, 0, w, h);
+      var blob = await new Promise(function (res) { c.toBlob(res, 'image/jpeg', 0.85); });
+      var name = slug(z.id) + '_dz.jpg', path = PHOTO_DIR + name;
+      snapshot();
+      if (pendingBlobs[path] && pendingBlobs[path].url) URL.revokeObjectURL(pendingBlobs[path].url);
+      delete blobUrls[path];
+      pendingBlobs[path] = { blob: blob, name: name, url: URL.createObjectURL(blob) };
+      z.photo = path; touch(); renderAll();
+      setStatus('Photo ready (' + Math.round(blob.size / 1000) + ' KB). ' + (dirHandle ? 'Press Save to write it.' : 'Press Download optimized photo, or connect the project folder.'));
+    } catch (err) { setStatus('Could not read that image: ' + err.message, true); }
+  });
+
+  // ---------- preview viewer: pan / zoom / tilt (same idea as the app) ----------
+  var pv = { s: 1, base: 1, tx: 0, ty: 0, w: 0, h: 0 }, pvPts = {}, pvLast = null, pvPinch = null;
+  var povImg = $('povImg'), povStage = $('povStage');
+  async function openPov(z) {
+    if (!z.photo) { setStatus('This zone has no photo yet.', true); return; }
+    $('povLabel').textContent = z.label || z.id; $('pov').classList.add('open');
+    povImg.onload = function () { pv.w = povImg.naturalWidth; pv.h = povImg.naturalHeight; povFit(); };
+    povImg.src = await urlFor(z.photo);
+  }
+  function closePov() { $('pov').classList.remove('open'); }
+  $('povClose').onclick = closePov;
+  function povApply() {
+    var r = povStage.getBoundingClientRect(), sw = pv.w * pv.s, sh = pv.h * pv.s;
+    pv.tx = sw <= r.width ? (r.width - sw) / 2 : Math.min(0, Math.max(r.width - sw, pv.tx));
+    pv.ty = sh <= r.height ? (r.height - sh) / 2 : Math.min(0, Math.max(r.height - sh, pv.ty));
+    povImg.style.width = pv.w + 'px'; povImg.style.height = pv.h + 'px';
+    povImg.style.transform = 'translate(' + pv.tx + 'px,' + pv.ty + 'px) scale(' + pv.s + ')';
+    // lean the photo towards where you've panned, like the app
+    var offX = sw > r.width ? ((r.width - sw) / 2 - pv.tx) / ((sw - r.width) / 2) : 0;
+    var offY = sh > r.height ? ((r.height - sh) / 2 - pv.ty) / ((sh - r.height) / 2) : 0;
+    var rotY = Math.max(-1, Math.min(1, offX)) * 5, rotX = -Math.max(-1, Math.min(1, offY)) * 3;
+    $('povTilt').style.transform = 'scale(1.06) rotateY(' + rotY + 'deg) rotateX(' + rotX + 'deg)';
+  }
+  function povFit() {
+    var r = povStage.getBoundingClientRect(); pv.base = Math.max(r.width / pv.w, r.height / pv.h); pv.s = pv.base;
+    pv.tx = (r.width - pv.w * pv.s) / 2; pv.ty = (r.height - pv.h * pv.s) / 2; povApply();
+  }
+  function povZoom(px, py, ns) {
+    ns = Math.max(pv.base, Math.min(pv.base * 6, ns));
+    var ix = (px - pv.tx) / pv.s, iy = (py - pv.ty) / pv.s; pv.s = ns; pv.tx = px - ix * ns; pv.ty = py - iy * ns; povApply();
+  }
+  povStage.addEventListener('pointerdown', function (e) {
+    povStage.setPointerCapture(e.pointerId); pvPts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(pvPts);
+    if (ids.length === 1) { pvLast = { x: e.clientX, y: e.clientY }; pvPinch = null; }
+    else if (ids.length === 2) { var a = pvPts[ids[0]], b = pvPts[ids[1]]; pvPinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: pv.s }; pvLast = null; }
+    e.preventDefault();
+  });
+  povStage.addEventListener('pointermove', function (e) {
+    if (!pvPts[e.pointerId]) return; pvPts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(pvPts), r = povStage.getBoundingClientRect();
+    if (ids.length === 2 && pvPinch) { var a = pvPts[ids[0]], b = pvPts[ids[1]]; povZoom((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, pvPinch.s * Math.hypot(a.x - b.x, a.y - b.y) / pvPinch.d); }
+    else if (pvLast) { pv.tx += e.clientX - pvLast.x; pv.ty += e.clientY - pvLast.y; pvLast = { x: e.clientX, y: e.clientY }; povApply(); }
+  });
+  function povUp(e) { delete pvPts[e.pointerId]; pvLast = null; pvPinch = null; }
+  povStage.addEventListener('pointerup', povUp); povStage.addEventListener('pointercancel', povUp);
+  povStage.addEventListener('wheel', function (e) { e.preventDefault(); var r = povStage.getBoundingClientRect(); povZoom(e.clientX - r.left, e.clientY - r.top, pv.s * Math.exp(-e.deltaY * 0.0015)); }, { passive: false });
+  povStage.addEventListener('dblclick', function (e) { var r = povStage.getBoundingClientRect(); povZoom(e.clientX - r.left, e.clientY - r.top, pv.s > pv.base * 1.5 ? pv.base : pv.base * 2.5); });
+
+  // ---------- load / save ----------
+  function loadDoc(d, how) {
+    if (!d || !Array.isArray(d.zones)) { setStatus('That file has no "zones" list.', true); return; }
+    doc = d; doc.map = doc.map || { image: 'images/devzones/DEV_ZONES_SATMAP.jpg' };
+    doc.zones.forEach(function (z) { z.x = +z.x || 0; z.y = +z.y || 0; z.photo = z.photo || ''; z.label = z.label || z.id; });
+    selId = null; undoStack = []; $('btnUndo').disabled = true; dirty = false; blobUrls = {};
+    loadMap().then(function () { renderAll(); setStatus((how || 'Loaded') + ' — ' + doc.zones.length + ' zone' + (doc.zones.length === 1 ? '' : 's')); });
+  }
+  async function loadMap() {
+    return new Promise(async function (resolve) {
+      mapImg.onload = function () { view.w = mapImg.naturalWidth; view.h = mapImg.naturalHeight; mapImg.style.width = view.w + 'px'; mapImg.style.height = view.h + 'px'; fitView(); resolve(); };
+      mapImg.onerror = function () { setStatus('Could not load the map image (' + doc.map.image + ').', true); resolve(); };
+      mapImg.src = await urlFor(doc.map.image);
+    });
+  }
+  function renderAll() { renderPins(); renderList(); renderPanel(); }
+
+  async function initialLoad() {
+    var draft = null;
+    try { draft = JSON.parse(localStorage.getItem('devzones-draft') || 'null'); } catch (e) {}
+    try {
+      var r = await fetch(DATA_URL + '?t=' + Date.now()); if (!r.ok) throw new Error('HTTP ' + r.status);
+      loadDoc(await r.json(), 'Loaded data/devzones.json');
+      if (draft && draft.zones && JSON.stringify(draft.zones) !== JSON.stringify(doc.zones) && confirm('There is an unsaved draft from your last session. Restore it?')) { loadDoc(draft, 'Restored draft'); dirty = true; }
+    } catch (e) {
+      loadDoc(draft || { map: doc.map, zones: [] }, draft ? 'Restored draft' : 'Started empty');
+      setStatus('Could not read data/devzones.json here (open this page from a local server, or press “Connect project folder” / “Open JSON…”).', true);
+    }
+  }
+
+  $('btnOpen').onclick = function () { $('fileJson').click(); };
+  $('fileJson').addEventListener('change', function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    f.text().then(function (t) { try { loadDoc(JSON.parse(t), 'Opened ' + f.name); } catch (e) { setStatus('That is not valid JSON.', true); } });
+  });
+
+  $('btnConnect').onclick = async function () {
+    if (!window.showDirectoryPicker) { setStatus('Connecting a folder needs Chrome or Edge on a computer. Use “Open JSON…” and “Save” (downloads) instead.', true); return; }
+    try {
+      dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+      blobUrls = {};
+      $('btnConnect').textContent = 'Folder connected ✓'; $('btnConnect').classList.add('btn-on');
+      try {
+        var f = await getFileFromDir('data/devzones.json');
+        loadDoc(JSON.parse(await f.text()), 'Loaded from your project folder');
+      } catch (e) { await loadMap(); renderAll(); setStatus('Folder connected (no data/devzones.json there yet — Save will create it).'); }
+    } catch (e) { if (e.name !== 'AbortError') setStatus('Could not open that folder: ' + e.message, true); }
+  };
+
+  function serialize() {
+    var out = { _comment: doc._comment || 'Development Zones pins. x/y are pixel positions in the satellite map image (map.image). Edit with devzones-editor.html, then replace this file.', map: doc.map, zones: doc.zones };
+    return JSON.stringify(out, null, 2) + '\n';
+  }
+  async function writeFile(path, data) {
+    var parts = path.split('/'), h = dirHandle;
+    for (var i = 0; i < parts.length - 1; i++) h = await h.getDirectoryHandle(parts[i], { create: true });
+    var fh = await h.getFileHandle(parts[parts.length - 1], { create: true });
+    var w = await fh.createWritable(); await w.write(data); await w.close();
+  }
+  async function save() {
+    var json = serialize();
+    if (dirHandle) {
+      try {
+        var wrote = 0;
+        for (var path in pendingBlobs) {
+          if (!doc.zones.some(function (z) { return z.photo === path; })) continue;
+          await writeFile(path, pendingBlobs[path].blob); wrote++;
+          delete blobUrls[path];
+        }
+        await writeFile('data/devzones.json', json);
+        pendingBlobs = {}; dirty = false;
+        try { localStorage.removeItem('devzones-draft'); } catch (e) {}
+        setStatus('Saved data/devzones.json' + (wrote ? ' + ' + wrote + ' photo' + (wrote > 1 ? 's' : '') : '') + '. Push to GitHub to publish.');
+        renderPanel();
+      } catch (e) { setStatus('Save failed: ' + e.message, true); }
+      return;
+    }
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' })); a.download = 'devzones.json'; a.click();
+    setStatus('Downloaded devzones.json — replace data/devzones.json with it (and put any new photos in ' + PHOTO_DIR + ').');
+    dirty = false;
+  }
+  $('btnSave').onclick = save;
+  window.addEventListener('beforeunload', function (e) { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+  // pins are rendered inside #pins; clicking them is handled by the map pointer handler
+  setAddMode(false); renderPanel(); renderList();
+  initialLoad();
+  window.__dz = { get doc() { return doc; } };   // handy for debugging in the console
+})();
+</script>
+</body>
+</html>

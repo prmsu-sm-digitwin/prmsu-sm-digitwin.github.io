@@ -151,35 +151,80 @@
   }
 
   // ── Texture cache (keep a handful in memory) ──
-  function loadTex(file) {
-    return new Promise(function (resolve, reject) {
-      if (texCache[file]) { touch(file); return resolve(texCache[file]); }
-      new THREE.TextureLoader().load(file, function (t) {
-        t.encoding = THREE.sRGBEncoding;
-        t.generateMipmaps = false;
-        t.minFilter = THREE.LinearFilter;
-        t.magFilter = THREE.LinearFilter;
-        texCache[file] = t; touch(file);
-        trim();
-        resolve(t);
-      }, undefined, function () { reject(new Error('load ' + file)); });
+  // Why steps used to feel slow: every photo is 4096x2048, so each step meant
+  // decoding a ~1.5 MB JPEG on the main thread AND uploading a 32 MB texture to
+  // the GPU at the moment you arrived. Now (a) phones get a 3072-wide copy that is
+  // decoded off the main thread (createImageBitmap), (b) the next few stops are
+  // fetched ahead, and (c) each is uploaded to the GPU as soon as it arrives, so
+  // showing a stop is just a swap.
+  var SMALL_DEVICE = (function () {
+    try { return matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory && navigator.deviceMemory <= 4); }
+    catch (e) { return false; }
+  })();
+  var TEX_W = SMALL_DEVICE ? 3072 : 4096;
+  var MAX_KEEP = 6;
+  var pending = {};             // file -> in-flight Promise (so a photo is never fetched twice)
+
+  function finishTex(t, file) {
+    t.encoding = THREE.sRGBEncoding;
+    t.generateMipmaps = false;
+    t.minFilter = THREE.LinearFilter;
+    t.magFilter = THREE.LinearFilter;
+    t.needsUpdate = true;
+    return t;
+  }
+  function bitmapTex(file) {
+    if (!window.createImageBitmap || !window.fetch) return Promise.reject(new Error('no bitmap'));
+    var w = TEX_W;
+    try { if (renderer) w = Math.min(w, renderer.capabilities.maxTextureSize || w); } catch (e) {}
+    return fetch(file).then(function (r) {
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.blob();
+    }).then(function (blob) {
+      return createImageBitmap(blob, { imageOrientation: 'flipY', resizeWidth: w, resizeHeight: Math.round(w / 2), resizeQuality: 'medium' });
+    }).then(function (bmp) {
+      var t = new THREE.Texture(bmp);
+      t.flipY = false;                       // the bitmap is already flipped
+      return t;
     });
+  }
+  function loaderTex(file) {                 // fallback for browsers without the bitmap path
+    return new Promise(function (resolve, reject) {
+      new THREE.TextureLoader().load(file, resolve, undefined, function () { reject(new Error('load ' + file)); });
+    });
+  }
+  function loadTex(file) {
+    if (texCache[file]) { touch(file); return Promise.resolve(texCache[file]); }
+    if (pending[file]) return pending[file];
+    var p = bitmapTex(file).catch(function () { return loaderTex(file); }).then(function (t) {
+      finishTex(t, file);
+      texCache[file] = t; touch(file);
+      delete pending[file];
+      trim();
+      return t;
+    }, function (err) { delete pending[file]; throw err; });
+    pending[file] = p;
+    return p;
   }
   function touch(file) {
     var i = texOrder.indexOf(file); if (i >= 0) texOrder.splice(i, 1);
     texOrder.push(file);
   }
   function trim() {
-    while (texOrder.length > 7) {
+    var guard = texOrder.length;
+    while (texOrder.length > MAX_KEEP && guard-- > 0) {
       var f = texOrder.shift();
-      if (texCache[f] && mat.map !== texCache[f]) { texCache[f].dispose(); delete texCache[f]; }
-      else if (texCache[f]) texOrder.push(f);   // in use — keep
-      if (texOrder.length > 12) break;
+      var t = texCache[f];
+      if (t && mat && mat.map === t) texOrder.push(f);          // on screen — keep
+      else if (t) { t.dispose(); delete texCache[f]; }
     }
   }
   function preload(i) {
     if (i < 0 || i >= stops.length) return;
-    loadTex(stops[i].file).catch(function () {});
+    loadTex(stops[i].file).then(function (t) {
+      // Upload to the GPU now (while idle), not at the moment you step onto it.
+      try { if (renderer && renderer.initTexture) renderer.initTexture(t); } catch (e) {}
+    }).catch(function () {});
   }
 
   // ── Navigation ──
@@ -200,7 +245,7 @@
       updateHud(); updateArrows();
       fadeEl.classList.remove('on');
       dirty = true;
-      preload(i + 1); preload(i + 2); preload(i - 1);
+      preload(i + 1); preload(i + 2); preload(i - 1); preload(i + 3);
     }).catch(function () {
       if (token !== loadToken) return;
       fadeEl.classList.remove('on');
