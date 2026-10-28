@@ -40,6 +40,7 @@
   var loadToken = 0;
   var running = false, rafId = null, dirty = true;
   var inited = false, autoTimer = null, toastTimer = null;
+  var stepBusy = false, holdTimer = null, holdIv = null, holdFired = false;
   var pointers = {}, lastPinch = 0, dragMoved = 0, downX = 0, downY = 0, downTime = 0;
 
   // ── Public hooks (wrapped around CampusWalkthrough below) ──
@@ -66,7 +67,7 @@
       '<canvas id="tour-canvas"></canvas>' +
       '<div class="tour-loading" id="tour-loading">Loading 360° tour…</div>' +
       '<div class="tour-fade" id="tour-fade"></div>' +
-      '<div class="tour-hint" id="tour-hint">Drag to look around · tap the arrows to walk</div>' +
+      '<div class="tour-hint" id="tour-hint">Drag to look around · tap or hold the arrows to walk</div>' +
       '<div class="tour-toast" id="tour-toast"></div>' +
       '<button class="tour-back" id="tour-back" type="button" aria-label="Back to home" title="Back">' +
       '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>';
@@ -288,6 +289,7 @@
     if (!stops.length) return;
     i = Math.max(0, Math.min(stops.length - 1, i));
     var token = ++loadToken;
+    stepBusy = true;
     fadeEl.classList.add('on');
     loadTex(stops[i].file).then(function (tex) {
       if (token !== loadToken) return;
@@ -301,6 +303,7 @@
       updateHud(); updateArrows();
       if (how === 'fwd' && stops[i].end) toast('This is as far as the path has been photographed.');
       fadeEl.classList.remove('on');
+      stepBusy = false;
       dirty = true;
       preload(i + 1); preload(i + 2); preload(i - 1); preload(i + 3);
       linksOf(i).forEach(function (l) { preload(l.to); });
@@ -309,6 +312,7 @@
     }).catch(function () {
       if (token !== loadToken) return;
       fadeEl.classList.remove('on');
+      stepBusy = false; stopHold();
       toast('Could not load this photo (offline and not cached yet?)');
       stopAuto();
     });
@@ -358,7 +362,8 @@
     try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
     pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
     var n = Object.keys(pointers).length;
-    if (n === 1) { downX = e.clientX; downY = e.clientY; downTime = Date.now(); dragMoved = 0; velYaw = velPitch = 0; }
+    if (n === 1) { downX = e.clientX; downY = e.clientY; downTime = Date.now(); dragMoved = 0; velYaw = velPitch = 0; startHoldIfArrow(e.clientX, e.clientY); }
+    else stopHold();
     if (n === 2) lastPinch = pinchDist();
     hideHint();
   }
@@ -374,6 +379,7 @@
       return;
     }
     dragMoved += Math.abs(dx) + Math.abs(dy);
+    if (dragMoved > 14) stopHold();
     var sens = (fov * Math.PI / 180) / Math.max(200, stage.clientHeight);
     yaw   -= dx * sens;
     pitch += dy * sens;
@@ -384,6 +390,8 @@
   function onUp(e) {
     var wasOne = Object.keys(pointers).length === 1;
     delete pointers[e.pointerId];
+    var wasHold = holdFired; stopHold();
+    if (wasHold) { dragMoved = 99; }
     if (Object.keys(pointers).length < 2) lastPinch = 0;
     if (wasOne && dragMoved < 8 && Date.now() - downTime < 500) onTap(e.clientX, e.clientY);
   }
@@ -395,6 +403,44 @@
   function setFov(v) { fov = Math.max(35, Math.min(95, v)); camera.fov = fov; camera.updateProjectionMatrix(); dirty = true; }
   function clampPitch() { pitch = Math.max(-1.25, Math.min(1.3, pitch)); }
   function hideHint() { var h = document.getElementById('tour-hint'); if (h) h.classList.add('tour-hidden'); }
+
+  // Hold an arrow to keep walking in that direction (tap still moves one step).
+  function stopHold() {
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    if (holdIv) { clearInterval(holdIv); holdIv = null; }
+    holdFired = false;
+  }
+  function startHoldIfArrow(cx, cy) {
+    stopHold();
+    var hit = arrowHit(cx, cy); if (!hit) return;
+    var dir = (hit.object === arrowBack.mesh) ? 'back' : 'fwd';
+    holdTimer = setTimeout(function () {
+      holdTimer = null; holdFired = true; stopAuto();
+      var first = true;
+      holdIv = setInterval(function () {
+        if (stepBusy) return;
+        if (dir === 'back') { if (prevIdx(idx) < 0) return stopHold(); prev(); }
+        else {
+          if (first && hit.object !== arrowFwd.mesh) {
+            first = false;
+            for (var k = 0; k < linkArrows.length; k++) if (linkArrows[k].mesh === hit.object) { showStop(linkArrows[k].target, 'fwd'); return; }
+          }
+          first = false;
+          if (nextIdx(idx) < 0) return stopHold(); next();
+        }
+      }, 60);
+    }, 320);
+  }
+  function arrowHit(cx, cy) {
+    var r = canvas.getBoundingClientRect();
+    var m = new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
+    raycaster.setFromCamera(m, camera);
+    var targets = [];
+    if (arrowFwd.group.visible) targets.push(arrowFwd.mesh);
+    if (arrowBack.group.visible) targets.push(arrowBack.mesh);
+    linkArrows.forEach(function (a) { if (a.group.visible) targets.push(a.mesh); });
+    return raycaster.intersectObjects(targets, false)[0] || null;
+  }
 
   function onTap(cx, cy) {
     var r = canvas.getBoundingClientRect();
