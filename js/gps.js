@@ -16,6 +16,10 @@
 let _origin = null;   // { lat, lng }  — campus (0,0) point
 let _bounds = null;   // { minX, maxX, minZ, maxZ }
 let _watchId = null;  // navigator.geolocation watch handle
+let _kf = null;       // smoothing filter state { x, z, p, t }
+const GPS_MAX_ACC = 60;      // ignore fixes worse than this (meters), once we have a decent one
+const GPS_MIN_ACC = 5;       // never trust a fix more than this precise (phones over-report)
+const GPS_WALK_Q  = 4;       // process noise (m^2 per second) = how fast you may really move
 
 
 // ── Init (called by main.js after campus.json loads) ─────────
@@ -34,6 +38,7 @@ function setGPSEnabled(enabled) {
     startWatching();
   } else {
     stopWatching();
+    _kf = null;
     // Hide the marker by moving it off-screen
     if (typeof updateGPSMarker === 'function') {
       updateGPSMarker(null, null);
@@ -51,7 +56,7 @@ function startWatching() {
   _watchId = navigator.geolocation.watchPosition(
     onPosition,
     onError,
-    { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+    { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
   );
 
   console.log('[gps] Started watching. watchId:', _watchId);
@@ -72,7 +77,26 @@ function onPosition(pos) {
   const lat = pos.coords.latitude;
   const lng = pos.coords.longitude;
 
-  const { x, z } = latLngToXZ(lat, lng);
+  const acc = Math.max(GPS_MIN_ACC, pos.coords.accuracy || 20);
+  const raw = latLngToXZ(lat, lng);
+
+  // Drop very poor fixes once we already have a position (they cause the big jumps).
+  if (_kf && acc > GPS_MAX_ACC) return;
+
+  // Simple 1D Kalman filter per axis: trust accurate fixes more, wobble less when standing still.
+  const now = pos.timestamp || Date.now();
+  if (!_kf) {
+    _kf = { x: raw.x, z: raw.z, p: acc * acc, t: now };
+  } else {
+    const dt = Math.max(0, Math.min(10, (now - _kf.t) / 1000));
+    _kf.p += GPS_WALK_Q * dt;
+    const k = _kf.p / (_kf.p + acc * acc);
+    _kf.x += k * (raw.x - _kf.x);
+    _kf.z += k * (raw.z - _kf.z);
+    _kf.p *= (1 - k);
+    _kf.t = now;
+  }
+  const x = _kf.x, z = _kf.z;
 
   console.log(`[gps] lat=${lat.toFixed(6)} lng=${lng.toFixed(6)} → x=${x.toFixed(1)} z=${z.toFixed(1)}`);
 
@@ -139,6 +163,7 @@ function onError(err) {
     3: 'Location request timed out.'
   };
   console.warn('[gps] Error', err.code, '—', messages[err.code] || err.message);
+  if (err.code === 1) showGPSToast(messages[1]);          // timeouts are routine; only tell the user about permission
 }
 
 

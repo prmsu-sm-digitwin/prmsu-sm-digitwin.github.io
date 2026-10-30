@@ -4,6 +4,7 @@ let buildingMeshes = [];       // { mesh, data }
 let pathLine = null;
 let waypointMap = {};          // id → waypoint object (for pathfinding + gps)
 let gpsMarker = null;
+let gpsTarget = null;            // smoothed GPS position the dot glides toward (see animate)
 let currentGPSPosition = null;   // { x, z } in Three.js scene coords — updated by gps.js
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -652,6 +653,7 @@ function updateGPSMarker(x, z, isOnCampus) {
   if (x === null || z === null) {
     if (gpsMarker) gpsMarker.visible = false;
     currentGPSPosition = null;
+    gpsTarget = null;
     return;
   }
   // Only use as nav origin when actually inside campus bounds (not clamped)
@@ -673,7 +675,10 @@ function updateGPSMarker(x, z, isOnCampus) {
     return;
   }
   gpsMarker.visible = !(window.NavFP && NavFP.active);
-  gpsMarker.position.set(x, 4, z);
+  // Glide toward the new (already smoothed) fix in animate() instead of teleporting.
+  var first = !gpsTarget;
+  gpsTarget = { x: x, z: z };
+  if (first) gpsMarker.position.set(x, 4, z);
 }
 
 const TAP_THRESHOLD = 12;
@@ -901,6 +906,12 @@ function animate() {
   const mapPage = document.getElementById('page-map');
   if (mapPage && mapPage.classList.contains('active')) {
     if (window.NavFP) NavFP.frame();   // first-person movement + name-tag layout (js/navfp.js)
+    if (gpsMarker && gpsTarget && gpsMarker.visible) {
+      var gdx = gpsTarget.x - gpsMarker.position.x, gdz = gpsTarget.z - gpsMarker.position.z;
+      var gd = Math.hypot(gdx, gdz);
+      if (gd > 80) gpsMarker.position.set(gpsTarget.x, 4, gpsTarget.z);       // big jump: snap
+      else if (gd > 0.05) gpsMarker.position.set(gpsMarker.position.x + gdx * 0.08, 4, gpsMarker.position.z + gdz * 0.08);
+    }
     renderer.render(scene, camera);
   }
 }
