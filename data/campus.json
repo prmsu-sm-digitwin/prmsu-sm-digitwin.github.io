@@ -368,7 +368,7 @@
         "Z2_Int4",
         "Z1_Int5",
         "Z2_Int5.1",
-        "Z2_Int11"
+        "Z2_Int6"
       ]
     },
     {
@@ -385,7 +385,8 @@
       "neighbors": [
         "entryWaypoint_LHSFacultyCCIT",
         "Z1_Int9",
-        "Z2_Int11"
+        "Z2_Int5",
+        "startWaypoint_entryLHSBuilding"
       ]
     },
     {
@@ -643,7 +644,6 @@
       },
       "neighbors": [
         "startWaypoint_entryLHSBuilding",
-        "LHS_BackEntry",
         "LHS_StartEntry2"
       ]
     },
@@ -731,8 +731,7 @@
         "Z3_Int6",
         "Z3_Int5",
         "startWaypoint_entry3LabRooms",
-        "Z3_Int12",
-        "LHS_BackEntry"
+        "Z3_Int12"
       ]
     },
     {
@@ -1661,7 +1660,8 @@
       },
       "neighbors": [
         "LHS_BackEntry2",
-        "LHS_StartEntry2"
+        "LHS_StartEntry2",
+        "Z2_Int6"
       ]
     },
     {
@@ -1696,23 +1696,6 @@
       ]
     },
     {
-      "id": "LHS_BackEntry",
-      "label": "LHS BackEntry",
-      "latLng": {
-        "lat": 14.97012271604565,
-        "lng": 120.19781110535975
-      },
-      "position": {
-        "x": 728.8,
-        "z": -180.1
-      },
-      "neighbors": [
-        "LHS_BackEntry2",
-        "Z3_Int4",
-        "Z2_Int11"
-      ]
-    },
-    {
       "id": "LHS_Entry",
       "label": "LHS Entry",
       "latLng": {
@@ -1742,23 +1725,6 @@
         "LHS_Entry",
         "LHS_BackEntry2",
         "startWaypoint_entryLHSBuilding"
-      ]
-    },
-    {
-      "id": "Z2_Int11",
-      "label": "Z2_Int11",
-      "latLng": {
-        "lat": 14.969544640804948,
-        "lng": 120.19786460748345
-      },
-      "position": {
-        "x": 733.0,
-        "z": -115.0
-      },
-      "neighbors": [
-        "Z2_Int5",
-        "Z2_Int6",
-        "LHS_BackEntry"
       ]
     }
   ],
