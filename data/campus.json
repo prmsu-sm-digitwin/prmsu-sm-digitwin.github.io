@@ -385,7 +385,8 @@
       "neighbors": [
         "Z2_Int5",
         "entryWaypoint_LHSFacultyCCIT",
-        "Z1_Int9"
+        "Z1_Int9",
+        "startWaypoint_entryLHSBuilding"
       ]
     },
     {
@@ -631,18 +632,20 @@
       ]
     },
     {
-      "id": "entryWaypoint_LHSBuilding",
-      "label": "LHS Building Entry",
+      "id": "LHS_BackEntry2",
+      "label": "LHS BackEntry2",
       "latLng": {
-        "lat": 14.970163831889154,
-        "lng": 120.19806475017376
+        "lat": 14.970162041514298,
+        "lng": 120.19806382123454
       },
       "position": {
-        "x": 756.1,
-        "z": -184.7
+        "x": 756,
+        "z": -184.5
       },
       "neighbors": [
-        "startWaypoint_entryLHSBuilding"
+        "startWaypoint_entryLHSBuilding",
+        "LHS_BackEntry",
+        "LHS_StartEntry2"
       ]
     },
     {
@@ -729,7 +732,8 @@
         "Z3_Int6",
         "Z3_Int5",
         "startWaypoint_entry3LabRooms",
-        "Z3_Int12"
+        "Z3_Int12",
+        "LHS_BackEntry"
       ]
     },
     {
@@ -893,7 +897,8 @@
       },
       "neighbors": [
         "entryWaypoint_3LabRooms",
-        "Z3_Int4"
+        "Z3_Int4",
+        "startWaypoint_entryMitosMagsaysayBuilding"
       ]
     },
     {
@@ -1084,7 +1089,8 @@
         "z": -240.1
       },
       "neighbors": [
-        "entryWaypoint_MitosMagsaysayBuilding"
+        "entryWaypoint_MitosMagsaysayBuilding",
+        "startWaypoint_entry3LabRooms"
       ]
     },
     {
@@ -1655,7 +1661,9 @@
         "z": -131.3
       },
       "neighbors": [
-        "entryWaypoint_LHSBuilding"
+        "LHS_BackEntry2",
+        "LHS_StartEntry2",
+        "Z2_Int6"
       ]
     },
     {
@@ -1687,6 +1695,54 @@
       "neighbors": [
         "entryWaypoint_AdminCourt",
         "Z1_Int16"
+      ]
+    },
+    {
+      "id": "LHS_BackEntry",
+      "label": "LHS BackEntry",
+      "latLng": {
+        "lat": 14.97012271604565,
+        "lng": 120.19781110535975
+      },
+      "position": {
+        "x": 728.8,
+        "z": -180.1
+      },
+      "neighbors": [
+        "LHS_BackEntry2",
+        "Z3_Int4"
+      ]
+    },
+    {
+      "id": "LHS_Entry",
+      "label": "LHS Entry",
+      "latLng": {
+        "lat": 14.969912677137632,
+        "lng": 120.1980517674625
+      },
+      "position": {
+        "x": 754.7,
+        "z": -156.6
+      },
+      "neighbors": [
+        "LHS_StartEntry2"
+      ]
+    },
+    {
+      "id": "LHS_StartEntry2",
+      "label": "LHS StartEntry2",
+      "latLng": {
+        "lat": 14.969940035032247,
+        "lng": 120.19816043091296
+      },
+      "position": {
+        "x": 766.4,
+        "z": -159.7
+      },
+      "neighbors": [
+        "LHS_Entry",
+        "LHS_BackEntry2",
+        "startWaypoint_entryLHSBuilding"
       ]
     }
   ],
@@ -2013,7 +2069,7 @@
       "glbModel": "models/LHSNav.glb",
       "texturedModel": null,
       "rotation": 114.2,
-      "entryWaypoint": "entryWaypoint_LHSBuilding",
+      "entryWaypoint": "LHS_BackEntry2",
       "modelScale": 1.5,
       "glbTint": true,
       "labelOffset": {

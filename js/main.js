@@ -496,6 +496,20 @@ function deselectBuilding() {
   //  Do NOT clearPath() here — path must persist while user pans the map
 }
 
+// Waypoint ids reachable from main_gate through 'neighbors' (cached; the graph never changes at runtime).
+let _linkedSet = null;
+function connectedToMainNetwork() {
+  if (_linkedSet) return _linkedSet;
+  const seen = new Set(['main_gate']), stack = ['main_gate'];
+  while (stack.length) {
+    const wp = waypointMap[stack.pop()];
+    if (!wp) continue;
+    (wp.neighbors || []).forEach(n => { if (!seen.has(n) && waypointMap[n]) { seen.add(n); stack.push(n); } });
+  }
+  _linkedSet = seen;
+  return seen;
+}
+
 function navigateTo(targetBuildingId) {
   if (!campusData) return;
 
@@ -503,7 +517,11 @@ function navigateTo(targetBuildingId) {
   let originWpId = 'main_gate';
   if (currentGPSPosition) {
     let bestId = null, bestDist = Infinity;
+    // Only waypoints that are actually linked to the main path network can start a route
+    // (a cut-off waypoint pair, e.g. a building entry nobody connected, would give "no path").
+    const linked = connectedToMainNetwork();
     Object.values(waypointMap).forEach(wp => {
+      if (!linked.has(wp.id)) return;
       const dx = wp.position.x - currentGPSPosition.x;
       const dz = wp.position.z - currentGPSPosition.z;
       const d = dx * dx + dz * dz;
@@ -518,7 +536,7 @@ function navigateTo(targetBuildingId) {
   if (typeof findPath !== 'function') return;
 
   const pathIds = findPath(waypointMap, originWpId, targetWpId);
-  if (!pathIds || pathIds.length === 0) return;
+  if (!pathIds || pathIds.length === 0) { if (typeof showGPSToast === 'function') showGPSToast('No route to this place yet.'); return; }
 
   drawPath(pathIds, currentGPSPosition);
   youHereOn = false;               // route started -> drop the 'You are here' label
