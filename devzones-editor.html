@@ -80,6 +80,7 @@
   <button id="btnConnect" class="btn-dark" title="Pick your project folder so Save writes data/devzones.json and photos straight into it (Chrome / Edge)">Connect project folder</button>
   <button id="btnOpen" title="Load a devzones.json file">Open JSON…</button>
   <button id="btnUndo" disabled>Undo</button>
+  <button id="btnRedo" disabled title="Ctrl+Y or Ctrl+Shift+Z">Redo</button>
   <button id="btnSave" class="btn-primary">Save</button>
 </header>
 <div class="toolbar">
@@ -118,7 +119,7 @@
   var selId = null, addMode = false, dirHandle = null, dirty = false;
   var pendingBlobs = {};       // zone id -> { blob, name }  (photo chosen but not yet written to the project)
   var blobUrls = {};           // cached object URLs for images read from the connected folder
-  var undoStack = [];
+  var undoStack = [], redoStack = [];
   var view = { scale: 1, minScale: .2, maxScale: 8, tx: 0, ty: 0, w: 0, h: 0 };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -129,7 +130,7 @@
   function slug(s) { return String(s || 'zone').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'zone'; }
   function uniqueId(base) { var id = slug(base), n = 2; while (zoneById(id)) id = slug(base) + '_' + n++; return id; }
   function zoneById(id) { for (var i = 0; i < doc.zones.length; i++) if (doc.zones[i].id === id) return doc.zones[i]; return null; }
-  function snapshot() { undoStack.push(JSON.stringify(doc.zones)); if (undoStack.length > 60) undoStack.shift(); $('btnUndo').disabled = false; }
+  function snapshot() { undoStack.push(JSON.stringify(doc.zones)); if (undoStack.length > 60) undoStack.shift(); redoStack = []; $('btnUndo').disabled = false; $('btnRedo').disabled = true; }
   function touch() { dirty = true; try { localStorage.setItem('devzones-draft', JSON.stringify(doc)); } catch (e) {} setStatus('Unsaved changes'); }
   function round1(v) { return Math.round(v * 10) / 10; }
 
@@ -276,14 +277,24 @@
   window.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') { if (addMode) setAddMode(false); else if ($('pov').classList.contains('open')) closePov(); }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); }
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !/INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || '')) { e.preventDefault(); undo(); }
+    var typing = /INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || '');
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y' && !typing) { e.preventDefault(); redo(); }
   });
   function undo() {
     if (!undoStack.length) return;
+    redoStack.push(JSON.stringify(doc.zones));
     doc.zones = JSON.parse(undoStack.pop()); if (!zoneById(selId)) selId = null;
-    $('btnUndo').disabled = !undoStack.length; touch(); renderAll();
+    $('btnUndo').disabled = !undoStack.length; $('btnRedo').disabled = false; touch(); renderAll();
+  }
+  function redo() {
+    if (!redoStack.length) return;
+    undoStack.push(JSON.stringify(doc.zones));
+    doc.zones = JSON.parse(redoStack.pop()); if (!zoneById(selId)) selId = null;
+    $('btnUndo').disabled = false; $('btnRedo').disabled = !redoStack.length; touch(); renderAll();
   }
   $('btnUndo').onclick = undo;
+  $('btnRedo').onclick = redo;
 
   function select(id, noPanel) {
     selId = id;
@@ -432,7 +443,7 @@
     if (!d || !Array.isArray(d.zones)) { setStatus('That file has no "zones" list.', true); return; }
     doc = d; doc.map = doc.map || { image: 'images/devzones/DEV_ZONES_SATMAP.jpg' };
     doc.zones.forEach(function (z) { z.x = +z.x || 0; z.y = +z.y || 0; z.photo = z.photo || ''; z.label = z.label || z.id; });
-    selId = null; undoStack = []; $('btnUndo').disabled = true; dirty = false; blobUrls = {};
+    selId = null; undoStack = []; redoStack = []; $('btnUndo').disabled = true; $('btnRedo').disabled = true; dirty = false; blobUrls = {};
     loadMap().then(function () { renderAll(); setStatus((how || 'Loaded') + ' — ' + doc.zones.length + ' zone' + (doc.zones.length === 1 ? '' : 's')); });
   }
   async function loadMap() {

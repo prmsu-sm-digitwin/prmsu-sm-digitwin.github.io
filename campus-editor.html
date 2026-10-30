@@ -189,6 +189,7 @@
     <div class="spacer"></div>
     <label class="file-btn btn-ghost">Open JSON…<input type="file" id="fileInput" accept=".json" style="display:none;"></label>
     <button class="btn-ghost" id="undoBtn" title="Ctrl+Z">Undo</button>
+    <button class="btn-ghost" id="redoBtn" title="Ctrl+Y or Ctrl+Shift+Z">Redo</button>
     <button class="btn-ghost" id="validateBtn">Validate</button>
     <button class="btn-ghost" id="fitBoundsBtn">Fit ground/bounds</button>
     <button class="btn-gold" id="exportBtn">Download campus.json</button>
@@ -295,6 +296,7 @@
     dragging: null,        // { kind: 'pan'|'moveNode', startScreen, ... }
     dirty: false,
     history: [],
+    redoStack: [],
     idSeq: 1,
     showLabels: true,      // draw the draggable building name tags
   };
@@ -320,6 +322,7 @@
     state.data = data;
     state.selected = null;
     state.history = [];
+    state.redoStack = [];
     state.dirty = false;
     rebuildIndex();
     fitView();
@@ -368,11 +371,24 @@
   function snapshot() {
     state.history.push(JSON.stringify(state.data));
     if (state.history.length > 60) state.history.shift();
+    state.redoStack = [];          // a new edit invalidates anything that was undone
   }
   function undo() {
     if (!state.history.length) { toast('Nothing to undo'); return; }
+    state.redoStack.push(JSON.stringify(state.data));
     const prev = state.history.pop();
-    state.data = JSON.parse(prev);
+    restoreSnapshot(prev);
+    toast('Undid last change');
+  }
+  function redo() {
+    if (!state.redoStack.length) { toast('Nothing to redo'); return; }
+    state.history.push(JSON.stringify(state.data));
+    const next = state.redoStack.pop();
+    restoreSnapshot(next);
+    toast('Redid change');
+  }
+  function restoreSnapshot(json) {
+    state.data = JSON.parse(json);
     rebuildIndex();
     // selection may no longer exist
     if (state.selected) {
@@ -386,11 +402,12 @@
     renderPanel();
     redraw();
     if (preview3D.isOpen) preview3D.fullRebuild();
-    toast('Undid last change');
   }
   document.getElementById('undoBtn').addEventListener('click', undo);
+  document.getElementById('redoBtn').addEventListener('click', redo);
   window.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
     if (e.key === 'Delete' || e.key === 'Backspace') {
       const tag = (document.activeElement && document.activeElement.tagName) || '';
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
