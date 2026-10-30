@@ -729,7 +729,6 @@
         "Z3_Int6",
         "Z3_Int5",
         "startWaypoint_entry3LabRooms",
-        "startWaypoint_entryMitosMagsaysayBuilding",
         "Z3_Int12"
       ]
     },
@@ -1085,8 +1084,7 @@
         "z": -240.1
       },
       "neighbors": [
-        "entryWaypoint_MitosMagsaysayBuilding",
-        "Z3_Int4"
+        "entryWaypoint_MitosMagsaysayBuilding"
       ]
     },
     {
