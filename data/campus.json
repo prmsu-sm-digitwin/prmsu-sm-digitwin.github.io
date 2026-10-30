@@ -1106,12 +1106,12 @@
       "id": "entryWaypoint_GabaldonCourt",
       "label": "Gabaldon Court Entry",
       "latLng": {
-        "lat": 14.969092292538281,
-        "lng": 120.19751110240132
+        "lat": 14.969102139599984,
+        "lng": 120.19750924452289
       },
       "position": {
-        "x": 696.5,
-        "z": -65
+        "x": 696.3,
+        "z": -66.1
       },
       "neighbors": [
         "Z1_Int5",
@@ -3051,12 +3051,12 @@
       "description": "",
       "color": "#8a6d4b",
       "latLng": {
-        "lat": 14.96868498225871,
-        "lng": 120.19683018995634
+        "lat": 14.968633061387907,
+        "lng": 120.19685062661908
       },
       "position": {
-        "x": 623.2,
-        "z": -19.5
+        "x": 625.4,
+        "z": -13.7
       },
       "size": {
         "width": 29.25,
@@ -3642,6 +3642,36 @@
         "y": 0,
         "z": 0.8
       }
+    },
+    {
+      "id": "place_chairs_infront_of_sc_2",
+      "name": "Cluster_RestingArea_SC_2",
+      "category": "place",
+      "description": "",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.968690353383275,
+        "lng": 120.19732066986214
+      },
+      "position": {
+        "x": 676,
+        "z": -20.1
+      },
+      "size": {
+        "width": 17.1,
+        "depth": 9.3,
+        "height": 8
+      },
+      "glbModel": null,
+      "texturedModel": null,
+      "rotation": 23.7,
+      "entryWaypoint": null,
+      "labelOffset": {
+        "x": -1.2,
+        "y": 0,
+        "z": 0.6
+      },
+      "labelHidden": true
     }
   ],
   "pavedEdges": [],
