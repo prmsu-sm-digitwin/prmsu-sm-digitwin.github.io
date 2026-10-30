@@ -4,6 +4,7 @@ let buildingMeshes = [];       // { mesh, data }
 let pathLine = null;
 let waypointMap = {};          // id → waypoint object (for pathfinding + gps)
 let gpsMarker = null;
+let youHereOn = true;            // 'You are here' label: shown until a route is started (Navigate Here)
 let gpsTarget = null;            // smoothed GPS position the dot glides toward (see animate)
 let currentGPSPosition = null;   // { x, z } in Three.js scene coords — updated by gps.js
 
@@ -520,6 +521,7 @@ function navigateTo(targetBuildingId) {
   if (!pathIds || pathIds.length === 0) return;
 
   drawPath(pathIds, currentGPSPosition);
+  youHereOn = false;               // route started -> drop the 'You are here' label
 
   if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg);
 }
@@ -913,7 +915,26 @@ function animate() {
       else if (gd > 0.05) gpsMarker.position.set(gpsMarker.position.x + gdx * 0.08, 4, gpsMarker.position.z + gdz * 0.08);
     }
     renderer.render(scene, camera);
+    layoutYouHere();
+  } else {
+    var yh0 = document.getElementById('you-are-here'); if (yh0) yh0.style.display = 'none';
   }
+}
+
+// "You are here" label: over the GPS dot when we have one, else over the Main Gate (the default route start).
+let _yhEl = null, _yhV = null;
+function layoutYouHere() {
+  if (!_yhEl) _yhEl = document.getElementById('you-are-here');
+  if (!_yhEl) return;
+  const spot = currentGPSPosition || (waypointMap.main_gate && waypointMap.main_gate.position);
+  if (!youHereOn || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
+  if (!_yhV) _yhV = new THREE.Vector3();
+  _yhV.set(spot.x, currentGPSPosition ? 10 : 4, spot.z).project(camera);
+  const el = renderer.domElement, W = el.clientWidth, H = el.clientHeight;
+  const sx = (_yhV.x + 1) / 2 * W, sy = (1 - _yhV.y) / 2 * H;
+  if (_yhV.z > 1 || sx < -40 || sx > W + 40 || sy < -40 || sy > H + 40) { _yhEl.style.display = 'none'; return; }
+  _yhEl.style.display = 'block';
+  _yhEl.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) translate(-50%,-100%)';
 }
 
 function zoomIn()  { zoomCamera(camera ? camera.position.y - 40 : 220); }

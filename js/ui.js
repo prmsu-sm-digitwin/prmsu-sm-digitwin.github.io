@@ -110,6 +110,7 @@ function hidePathInfo() {
 
 // Called by the ✕ Clear button on the path bar
 function clearNavigation() {
+  if (typeof youHereOn !== 'undefined') youHereOn = true;   // label comes back once the route is cleared
   hidePathInfo();
   hideBuildingInfo();
   if (typeof clearPath === 'function') clearPath();
