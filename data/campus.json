@@ -3230,7 +3230,7 @@
       },
       "glbModel": "models/places/tractorFIN.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 181.5,
       "labelHidden": true,
       "labelOffset": {
         "x": -0.1,
