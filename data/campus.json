@@ -48,7 +48,7 @@
       },
       "neighbors": [
         "inner_gate",
-        "womendorm_entryroad"
+        "startWaypoint_entryWomensDormitory"
       ]
     },
     {
@@ -64,15 +64,15 @@
       },
       "neighbors": [
         "main_gate",
-        "z1_int1",
-        "womendorm_entryroad",
-        "guard_house_roadentry",
-        "z5_start"
+        "Z1_Int1",
+        "startWaypoint_entryWomensDormitory",
+        "startWaypoint_entryGuardHouse",
+        "Z5_Int4"
       ]
     },
     {
-      "id": "z1_int1",
-      "label": "Z1 Int 1",
+      "id": "Z1_Int1",
+      "label": "Z1_Int1",
       "latLng": {
         "lat": 14.968331383224797,
         "lng": 120.19541355765269
@@ -83,17 +83,17 @@
       },
       "neighbors": [
         "inner_gate",
-        "z1_int2",
-        "z3_start",
-        "canteen_pathway",
-        "womendorm_entryroad",
-        "guard_house_roadentry",
-        "wp_new_3"
+        "Z1_Int2",
+        "Z3_Start",
+        "startWaypoint_entryCanteen",
+        "startWaypoint_entryWomensDormitory",
+        "startWaypoint_entryGuardHouse",
+        "Z1_EntancePath_2"
       ]
     },
     {
-      "id": "z1_int2",
-      "label": "Z1 Int 2",
+      "id": "Z1_Int2",
+      "label": "Z1_Int2",
       "latLng": {
         "lat": 14.968588376409816,
         "lng": 120.19587357713708
@@ -103,16 +103,15 @@
         "z": -5.5
       },
       "neighbors": [
-        "z1_int1",
-        "z2_start",
-        "z1_int2b",
-        "prachouse_raodentry",
-        "guard_house_roadentry"
+        "Z1_Int1",
+        "Z2_Int1",
+        "startWaypoint_entryPracticeHouse",
+        "startWaypoint_entryGuardHouse"
       ]
     },
     {
-      "id": "z1_int3",
-      "label": "Z1 Int 3",
+      "id": "Z1_Int3",
+      "label": "Z1_Int3",
       "latLng": {
         "lat": 14.968804057187914,
         "lng": 120.19673759101715
@@ -122,31 +121,31 @@
         "z": -28.4
       },
       "neighbors": [
-        "z1_int4",
-        "z2_wp1",
-        "z1_int2b"
+        "startWaypoint_entryStudentCenter",
+        "Z2_Int2",
+        "startWaypoint_entryPracticeHouse"
       ]
     },
     {
-      "id": "z1_int4",
-      "label": "Z1 Int 4",
+      "id": "startWaypoint_entryStudentCenter",
+      "label": "Student Center StartEntry",
       "latLng": {
-        "lat": 14.968937364952716,
-        "lng": 120.1970464202239
+        "lat": 14.96889266574192,
+        "lng": 120.19705313536807
       },
       "position": {
-        "x": 645.8,
-        "z": -47.5
+        "x": 647.2,
+        "z": -42.7
       },
       "neighbors": [
-        "z1_int3",
-        "z1_int5",
-        "sc_entry"
+        "Z1_Int3",
+        "Z1_Int4",
+        "entryWaypoint_StudentCenter"
       ]
     },
     {
-      "id": "z1_int5",
-      "label": "Z1 Int 5",
+      "id": "Z1_Int4",
+      "label": "Z1_Int4",
       "latLng": {
         "lat": 14.968981289297256,
         "lng": 120.1972649335092
@@ -156,14 +155,14 @@
         "z": -52.6
       },
       "neighbors": [
-        "z1_int4",
-        "z1_int6",
-        "z2_wp3"
+        "startWaypoint_entryStudentCenter",
+        "Z1_Int5",
+        "Z2_Int4"
       ]
     },
     {
-      "id": "z1_int6",
-      "label": "Z1 Int 6",
+      "id": "Z1_Int5",
+      "label": "Z1_Int5",
       "latLng": {
         "lat": 14.969152270095933,
         "lng": 120.19760678314051
@@ -173,15 +172,15 @@
         "z": -71.7
       },
       "neighbors": [
-        "z1_int5",
-        "z1_int7",
-        "z2_wp4",
-        "gabaldon_beed_entry"
+        "Z1_Int4",
+        "Z1_Int6",
+        "Z2_Int5",
+        "entryWaypoint_GabaldonCourt"
       ]
     },
     {
-      "id": "z1_int7",
-      "label": "Z1 Int 7",
+      "id": "Z1_Int6",
+      "label": "Z1_Int6",
       "latLng": {
         "lat": 14.969199428482773,
         "lng": 120.19777659071787
@@ -191,14 +190,14 @@
         "z": -76.7
       },
       "neighbors": [
-        "z1_int6",
-        "z1_int8",
-        "lib_side"
+        "Z1_Int5",
+        "Z1_Int7",
+        "startWaypoint_sideentryLibrary"
       ]
     },
     {
-      "id": "z1_int8",
-      "label": "Z1 Int 8",
+      "id": "Z1_Int7",
+      "label": "Z1_Int7",
       "latLng": {
         "lat": 14.969333097956314,
         "lng": 120.19817808075805
@@ -208,14 +207,14 @@
         "z": -91.9
       },
       "neighbors": [
-        "z1_int7",
-        "z1_int9",
-        "lib_entry"
+        "Z1_Int6",
+        "Z1_Int9",
+        "entryWaypoint_Library"
       ]
     },
     {
-      "id": "z1_int9",
-      "label": "Z1 Int 9",
+      "id": "Z1_Int9",
+      "label": "Z1_Int9",
       "latLng": {
         "lat": 14.969416304240923,
         "lng": 120.19832669345246
@@ -225,14 +224,14 @@
         "z": -100.8
       },
       "neighbors": [
-        "z1_int8",
-        "z1_int10",
-        "z2_wp5"
+        "Z1_Int7",
+        "Z1_Int10",
+        "Z2_Int6"
       ]
     },
     {
-      "id": "z1_int10",
-      "label": "Z1 Int 10",
+      "id": "Z1_Int10",
+      "label": "Z1_Int11",
       "latLng": {
         "lat": 14.969659363148098,
         "lng": 120.19900678826515
@@ -242,14 +241,14 @@
         "z": -126.2
       },
       "neighbors": [
-        "z1_int9",
-        "z1_int11",
-        "z2_wp6"
+        "Z1_Int9",
+        "Z1_Int11",
+        "entryWaypoint_LHSFacultyCCIT"
       ]
     },
     {
-      "id": "z1_int11",
-      "label": "Z1 Int 11",
+      "id": "Z1_Int11",
+      "label": "Z1_Int12",
       "latLng": {
         "lat": 14.969834068364882,
         "lng": 120.19938282209148
@@ -259,15 +258,15 @@
         "z": -147.3
       },
       "neighbors": [
-        "z1_int10",
-        "z1_int12",
-        "z2_wp7",
-        "asb_path_start"
+        "Z1_Int10",
+        "Z1_Int12",
+        "Z2_Int7",
+        "startWaypoint_entryASBBuilding"
       ]
     },
     {
-      "id": "z1_int12",
-      "label": "Z1 Int 12",
+      "id": "Z1_Int12",
+      "label": "Z1_Int13",
       "latLng": {
         "lat": 14.970001802964752,
         "lng": 120.19994306526753
@@ -277,16 +276,16 @@
         "z": -166.6
       },
       "neighbors": [
-        "z1_int11",
-        "z2_end",
-        "admin_entry",
-        "connector_adco_to_z1int12",
-        "connector2_z3_z1"
+        "Z1_Int11",
+        "Z2_Int8",
+        "entryWaypoint_AdminBuilding",
+        "Z1_Int14",
+        "Z1_Int15"
       ]
     },
     {
-      "id": "z2_start",
-      "label": "Z2 Start",
+      "id": "Z2_Int1",
+      "label": "Z2_Int1",
       "latLng": {
         "lat": 14.968774861186308,
         "lng": 120.1958923489216
@@ -296,15 +295,15 @@
         "z": -37.4
       },
       "neighbors": [
-        "z1_int2",
-        "z2_wp1",
-        "canteen_entry",
-        "chm1_branch"
+        "Z1_Int2",
+        "Z2_Int2",
+        "backWaypoint_entryCanteen",
+        "Z2_Int9"
       ]
     },
     {
-      "id": "z2_wp1",
-      "label": "Z2 WP1",
+      "id": "Z2_Int2",
+      "label": "Z2_Int2",
       "latLng": {
         "lat": 14.968878464723684,
         "lng": 120.19622624387499
@@ -314,14 +313,14 @@
         "z": -54.8
       },
       "neighbors": [
-        "z2_start",
-        "z2_wp2",
-        "z1_int3"
+        "Z2_Int1",
+        "Z2_Int3",
+        "Z1_Int3"
       ]
     },
     {
-      "id": "z2_wp2",
-      "label": "Z2 WP2",
+      "id": "Z2_Int3",
+      "label": "Z2_Int3",
       "latLng": {
         "lat": 14.969111091474261,
         "lng": 120.19682461632105
@@ -331,14 +330,14 @@
         "z": -67.1
       },
       "neighbors": [
-        "z2_wp1",
-        "z2_wp3",
-        "chm2_entry"
+        "Z2_Int2",
+        "Z2_Int4",
+        "entryWaypoint_CHM2"
       ]
     },
     {
-      "id": "z2_wp3",
-      "label": "Z2 WP3",
+      "id": "Z2_Int4",
+      "label": "Z2_Int4",
       "latLng": {
         "lat": 14.969281177085511,
         "lng": 120.19715346080335
@@ -348,15 +347,15 @@
         "z": -86.1
       },
       "neighbors": [
-        "z2_wp2",
-        "z2_wp4",
-        "z1_int5",
-        "cte_bsed_entry"
+        "Z2_Int3",
+        "Z2_Int5",
+        "Z1_Int4",
+        "entryWaypoint_CTEBSED"
       ]
     },
     {
-      "id": "z2_wp4",
-      "label": "Z2 WP4",
+      "id": "Z2_Int5",
+      "label": "Z2_Int5",
       "latLng": {
         "lat": 14.969419035949366,
         "lng": 120.19749438149543
@@ -366,15 +365,15 @@
         "z": -101.5
       },
       "neighbors": [
-        "z2_wp3",
-        "z2_wp5",
-        "z1_int6",
-        "cte_walk_entry"
+        "Z2_Int4",
+        "Z2_Int6",
+        "Z1_Int5",
+        "Z2_Int5.1"
       ]
     },
     {
-      "id": "z2_wp5",
-      "label": "Z2 WP5",
+      "id": "Z2_Int6",
+      "label": "Z2_Int7",
       "latLng": {
         "lat": 14.969637461681709,
         "lng": 120.1981334916757
@@ -384,14 +383,14 @@
         "z": -125.9
       },
       "neighbors": [
-        "z2_wp4",
-        "z2_wp6",
-        "z1_int9"
+        "Z2_Int5",
+        "entryWaypoint_LHSFacultyCCIT",
+        "Z1_Int9"
       ]
     },
     {
-      "id": "z2_wp6",
-      "label": "Z2 WP6",
+      "id": "entryWaypoint_LHSFacultyCCIT",
+      "label": "LHS Faculty / CCIT StartEntry",
       "latLng": {
         "lat": 14.969878624150281,
         "lng": 120.19890407974147
@@ -401,15 +400,15 @@
         "z": -152.3
       },
       "neighbors": [
-        "z2_wp5",
-        "z2_wp7",
-        "z1_int10",
-        "LHS_Faculty_and_CCIT_2-4_Entry"
+        "Z2_Int6",
+        "Z2_Int7",
+        "Z1_Int10",
+        "startWaypoint_entryLHSFacultyCCIT"
       ]
     },
     {
-      "id": "z2_wp7",
-      "label": "Z2 WP7",
+      "id": "Z2_Int7",
+      "label": "Z2_Int8",
       "latLng": {
         "lat": 14.970048579340462,
         "lng": 120.19932359529682
@@ -419,16 +418,16 @@
         "z": -171.2
       },
       "neighbors": [
-        "z2_wp6",
-        "z2_end",
-        "z1_int11",
-        "z3_wp4",
-        "CCIT_Entry"
+        "entryWaypoint_LHSFacultyCCIT",
+        "Z2_Int8",
+        "Z1_Int11",
+        "Z3_Int6",
+        "startWaypoint_entryCCITMain"
       ]
     },
     {
-      "id": "z2_end",
-      "label": "Z2 End",
+      "id": "Z2_Int8",
+      "label": "Z2_Int9",
       "latLng": {
         "lat": 14.970244398757641,
         "lng": 120.19984273983225
@@ -438,16 +437,15 @@
         "z": -193.7
       },
       "neighbors": [
-        "z2_wp7",
-        "z1_int12",
-        "admin_entry",
-        "z3_wp1",
-        "z3_wp5"
+        "Z2_Int7",
+        "Z1_Int12",
+        "entryWaypoint_AdminBuilding",
+        "Z3_Z4_Z2Intersection_4Forks"
       ]
     },
     {
-      "id": "canteen_entry",
-      "label": "Canteen Entry",
+      "id": "backWaypoint_entryCanteen",
+      "label": "Canteen BackEntry",
       "latLng": {
         "lat": 14.968821945935137,
         "lng": 120.19553339081149
@@ -457,12 +455,12 @@
         "z": -34.8
       },
       "neighbors": [
-        "z2_start",
-        "canteen_pathway"
+        "Z2_Int1",
+        "startWaypoint_entryCanteen"
       ]
     },
     {
-      "id": "sc_entry",
+      "id": "entryWaypoint_StudentCenter",
       "label": "Student Center Entry",
       "latLng": {
         "lat": 14.968437015341257,
@@ -473,12 +471,12 @@
         "z": 8.2
       },
       "neighbors": [
-        "z1_int4"
+        "startWaypoint_entryStudentCenter"
       ]
     },
     {
-      "id": "lib_side",
-      "label": "Library Side Path",
+      "id": "startWaypoint_sideentryLibrary",
+      "label": "Library StartSideEntry",
       "latLng": {
         "lat": 14.968857753432243,
         "lng": 120.19786688612086
@@ -488,12 +486,12 @@
         "z": -38.8
       },
       "neighbors": [
-        "z1_int7",
-        "lib_entry"
+        "Z1_Int6",
+        "entryWaypoint_Library"
       ]
     },
     {
-      "id": "lib_entry",
+      "id": "entryWaypoint_Library",
       "label": "Library Entry",
       "latLng": {
         "lat": 14.96903947648005,
@@ -504,13 +502,13 @@
         "z": -59.1
       },
       "neighbors": [
-        "lib_side",
-        "z1_int8"
+        "startWaypoint_sideentryLibrary",
+        "Z1_Int7"
       ]
     },
     {
-      "id": "asb_path_start",
-      "label": "ASB Path Start",
+      "id": "startWaypoint_entryASBBuilding",
+      "label": "ASB Building StartEntry",
       "latLng": {
         "lat": 14.969793673802615,
         "lng": 120.19938703363772
@@ -520,13 +518,13 @@
         "z": -142.9
       },
       "neighbors": [
-        "z1_int11",
-        "asb_entry"
+        "Z1_Int11",
+        "entryWaypoint_ASBBuilding"
       ]
     },
     {
-      "id": "asb_entry",
-      "label": "ASB Entry",
+      "id": "entryWaypoint_ASBBuilding",
+      "label": "ASB Building Entry",
       "latLng": {
         "lat": 14.969212247653584,
         "lng": 120.19963094169111
@@ -536,13 +534,13 @@
         "z": -78.4
       },
       "neighbors": [
-        "asb_path_start",
-        "z5_int2"
+        "startWaypoint_entryASBBuilding",
+        "Z5_Int2"
       ]
     },
     {
-      "id": "chm1_branch",
-      "label": "CHM1 Branch",
+      "id": "Z2_Int9",
+      "label": "Z2_Int9",
       "latLng": {
         "lat": 14.968904303178478,
         "lng": 120.19611676463883
@@ -552,13 +550,13 @@
         "z": -44
       },
       "neighbors": [
-        "chm1_entry",
-        "quad_entry",
-        "z2_start"
+        "entryWaypoint_CHM1",
+        "entryWaypoint_MultiPurposeQuad",
+        "Z2_Int1"
       ]
     },
     {
-      "id": "chm1_entry",
+      "id": "entryWaypoint_CHM1",
       "label": "CHM 1 Entry",
       "latLng": {
         "lat": 14.968980394109828,
@@ -569,12 +567,12 @@
         "z": -52.5
       },
       "neighbors": [
-        "chm1_branch"
+        "Z2_Int9"
       ]
     },
     {
-      "id": "quad_entry",
-      "label": "Multipurpose Entry",
+      "id": "entryWaypoint_MultiPurposeQuad",
+      "label": "Multi-purpose Quad Entry",
       "latLng": {
         "lat": 14.968828447402387,
         "lng": 120.19623837818877
@@ -584,11 +582,11 @@
         "z": -35.4
       },
       "neighbors": [
-        "chm1_branch"
+        "Z2_Int9"
       ]
     },
     {
-      "id": "chm2_entry",
+      "id": "entryWaypoint_CHM2",
       "label": "CHM 2 Entry",
       "latLng": {
         "lat": 14.969314299020333,
@@ -599,12 +597,12 @@
         "z": -89.8
       },
       "neighbors": [
-        "z2_wp2"
+        "Z2_Int3"
       ]
     },
     {
-      "id": "cte_bsed_entry",
-      "label": "CTE BSED Entry",
+      "id": "entryWaypoint_CTEBSED",
+      "label": "CTE (BSED) Entry",
       "latLng": {
         "lat": 14.969543467001806,
         "lng": 120.19707357203082
@@ -614,12 +612,12 @@
         "z": -115.4
       },
       "neighbors": [
-        "z2_wp3"
+        "Z2_Int4"
       ]
     },
     {
-      "id": "cte_walk_entry",
-      "label": "CTE BSED Walk",
+      "id": "Z2_Int5.1",
+      "label": "Z2_Int5.1",
       "latLng": {
         "lat": 14.969423511886504,
         "lng": 120.19749066573857
@@ -629,12 +627,12 @@
         "z": -102
       },
       "neighbors": [
-        "z2_wp4"
+        "Z2_Int5"
       ]
     },
     {
-      "id": "lhs_entry",
-      "label": "LHS Entry",
+      "id": "entryWaypoint_LHSBuilding",
+      "label": "LHS Building Entry",
       "latLng": {
         "lat": 14.970163831889154,
         "lng": 120.19806475017376
@@ -644,12 +642,12 @@
         "z": -184.7
       },
       "neighbors": [
-        "wp_new_2"
+        "startWaypoint_entryLHSBuilding"
       ]
     },
     {
-      "id": "admin_entry",
-      "label": "Admin Entry",
+      "id": "entryWaypoint_AdminBuilding",
+      "label": "Admin Building Entry",
       "latLng": {
         "lat": 14.970272149567897,
         "lng": 120.20012420841455
@@ -659,13 +657,13 @@
         "z": -196.8
       },
       "neighbors": [
-        "z2_end",
-        "z1_int12"
+        "Z2_Int8",
+        "Z1_Int12"
       ]
     },
     {
-      "id": "z3_start",
-      "label": "Zone 3 Start",
+      "id": "Z3_Start",
+      "label": "Z3_Start",
       "latLng": {
         "lat": 14.969390418463242,
         "lng": 120.1950518382871
@@ -675,15 +673,15 @@
         "z": -98.3
       },
       "neighbors": [
-        "z3_wp2",
-        "z4_start",
-        "z1_int1",
-        "z34_a"
+        "Z3_Int2",
+        "Z4_Start",
+        "Z1_Int1",
+        "Z3_Int11"
       ]
     },
     {
-      "id": "z3_wp2",
-      "label": "Z3 Path 2",
+      "id": "Z3_Int2",
+      "label": "Z3_Int2",
       "latLng": {
         "lat": 14.969812918417523,
         "lng": 120.19635828883486
@@ -693,16 +691,16 @@
         "z": -145.5
       },
       "neighbors": [
-        "z3_start",
-        "z3_wp3",
-        "z3_spur1",
-        "z34_b",
-        "z34_a"
+        "Z3_Start",
+        "Z3_Int4",
+        "Z3_Int3",
+        "Z3_Int12",
+        "Z3_Int11"
       ]
     },
     {
-      "id": "z3_spur1",
-      "label": "Z3-Zone 2 Link A (unpaved)",
+      "id": "Z3_Int3",
+      "label": "Z3_Int3",
       "latLng": {
         "lat": 14.969058009630313,
         "lng": 120.19668304699135
@@ -712,12 +710,12 @@
         "z": -61.2
       },
       "neighbors": [
-        "z3_wp2"
+        "Z3_Int2"
       ]
     },
     {
-      "id": "z3_wp3",
-      "label": "Z3 Path 3",
+      "id": "Z3_Int4",
+      "label": "Z3_Int4",
       "latLng": {
         "lat": 14.97036166831066,
         "lng": 120.19768481403462
@@ -727,32 +725,32 @@
         "z": -206.8
       },
       "neighbors": [
-        "z3_wp2",
-        "z3_wp4",
-        "z3_spur2",
-        "agritech_1_entry",
-        "mitos_magsaysay_building_entry",
-        "z34_b"
+        "Z3_Int2",
+        "Z3_Int6",
+        "Z3_Int5",
+        "startWaypoint_entry3LabRooms",
+        "startWaypoint_entryMitosMagsaysayBuilding",
+        "Z3_Int12"
       ]
     },
     {
-      "id": "z3_spur2",
-      "label": "Z3-Zone 2 Link B (unpaved)",
+      "id": "Z3_Int5",
+      "label": "Z2_Int6",
       "latLng": {
-        "lat": 14.969610606058879,
-        "lng": 120.19805917653846
+        "lat": 14.969617767558299,
+        "lng": 120.19807218168748
       },
       "position": {
-        "x": 755.5,
-        "z": -122.9
+        "x": 756.9,
+        "z": -123.7
       },
       "neighbors": [
-        "z3_wp3"
+        "Z3_Int4"
       ]
     },
     {
-      "id": "z3_wp4",
-      "label": "Z3 Path 4",
+      "id": "Z3_Int6",
+      "label": "Z3_Int6",
       "latLng": {
         "lat": 14.970763103222394,
         "lng": 120.19886968021302
@@ -762,54 +760,33 @@
         "z": -251.6
       },
       "neighbors": [
-        "z3_wp3",
-        "z3_wp1",
-        "z2_wp7",
-        "agritech_2_entry",
-        "motorpool_garage_entry",
-        "organic_mango_center_entry",
-        "z3_wp5",
-        "rmtu_rd_center_entry"
+        "Z3_Int4",
+        "Z2_Int7",
+        "entryWaypoint_Processing",
+        "startWaypoint_entryMotorpoolGarage",
+        "startWaypoint_entryOrganicMangoCenter",
+        "Z3_Z4_Z2Intersection_4Forks",
+        "startWaypoint_entryResearchAndDevelopmentCenter"
       ]
     },
     {
-      "id": "z3_wp1",
-      "label": "Z3 Path 1",
-      "latLng": {
-        "lat": 14.970926531577495,
-        "lng": 120.19965602304994
-      },
-      "position": {
-        "x": 927.4,
-        "z": -269.9
-      },
-      "neighbors": [
-        "z3_wp4",
-        "z2_end",
-        "z3_wp5",
-        "rmtu_rd_center_entry",
-        "motorpool_garage_entry",
-        "organic_mango_center_entry"
-      ]
-    },
-    {
-      "id": "LHS_Faculty_and_CCIT_2-4_Entry",
+      "id": "startWaypoint_entryLHSFacultyCCIT",
       "label": "LHS Faculty / CCIT Entry",
       "latLng": {
         "lat": 14.96989348528601,
-        "lng": 120.19888593244028
+        "lng": 120.19889150607557
       },
       "position": {
-        "x": 844.5,
+        "x": 845.1,
         "z": -154.5
       },
       "neighbors": [
-        "z2_wp6"
+        "entryWaypoint_LHSFacultyCCIT"
       ]
     },
     {
-      "id": "CCIT_Entry",
-      "label": "CCIT Main Entry",
+      "id": "startWaypoint_entryCCITMain",
+      "label": "CCIT Main StartEntry",
       "latLng": {
         "lat": 14.97009758801951,
         "lng": 120.19946373263232
@@ -819,13 +796,13 @@
         "z": -177.3
       },
       "neighbors": [
-        "z2_wp7",
-        "ccit entrance"
+        "Z2_Int7",
+        "entryWaypoint_CCITMain"
       ]
     },
     {
-      "id": "z4_start",
-      "label": "Zone 4 Start",
+      "id": "Z4_Start",
+      "label": "Z4_Start",
       "latLng": {
         "lat": 14.970529370945412,
         "lng": 120.1947119820379
@@ -835,16 +812,16 @@
         "z": -225.5
       },
       "neighbors": [
-        "z4_wp1",
-        "z3_start",
-        "z4_end",
-        "mensdorm_roadentry",
-        "zone 4_int1"
+        "Z4_Int4",
+        "Z3_Start",
+        "Z4_End",
+        "startWaypoint_entryMensDormitory",
+        "Z4_Int1"
       ]
     },
     {
-      "id": "z4_wp1",
-      "label": "Z4 Path 1",
+      "id": "Z4_Int4",
+      "label": "Z4_Int3",
       "latLng": {
         "lat": 14.97241612345707,
         "lng": 120.19916461420493
@@ -854,17 +831,17 @@
         "z": -436.3
       },
       "neighbors": [
-        "z4_start",
-        "z4_end",
-        "mensdorm_roadentry",
-        "regional_mango_center_entry",
-        "z3_wp5",
-        "Z4_int2"
+        "Z4_Start",
+        "Z4_End",
+        "startWaypoint_entryMensDormitory",
+        "startWaypoint_entryRegionalMangoCenter",
+        "Z3_Z4_Z2Intersection_4Forks",
+        "Z4_Int2"
       ]
     },
     {
-      "id": "z4_end",
-      "label": "Back Exit",
+      "id": "Z4_End",
+      "label": "Z4_End",
       "latLng": {
         "lat": 14.973400673176783,
         "lng": 120.20148949962523
@@ -874,39 +851,39 @@
         "z": -546.3
       },
       "neighbors": [
-        "z4_wp1",
-        "z3_oval_end",
-        "mensdorm_roadentry",
-        "z4_start",
-        "Z4_int2",
-        "ltda_entry"
+        "Z4_Int4",
+        "Z3_Int9",
+        "startWaypoint_entryMensDormitory",
+        "Z4_Start",
+        "Z4_Int2",
+        "entryWaypoint_LTDA"
       ]
     },
     {
-      "id": "z3_wp5",
-      "label": "Z3 Path 5",
+      "id": "Z3_Z4_Z2Intersection_4Forks",
+      "label": "Z3_Z4_Z2Intersection_4Forks",
       "latLng": {
-        "lat": 14.970925636390067,
-        "lng": 120.19966159668523
+        "lat": 14.970921160452928,
+        "lng": 120.19967274395582
       },
       "position": {
-        "x": 928,
-        "z": -269.8
+        "x": 929.2,
+        "z": -269.3
       },
       "neighbors": [
-        "z3_wp1",
-        "z3_oval_end",
-        "regional_mango_center_entry",
-        "z3_wp4",
-        "motorpool_garage_entry",
-        "organic_mango_center_entry",
-        "z4_wp1",
-        "z2_end"
+        "Z3_Int9",
+        "startWaypoint_entryRegionalMangoCenter",
+        "Z3_Int6",
+        "startWaypoint_entryMotorpoolGarage",
+        "startWaypoint_entryOrganicMangoCenter",
+        "Z4_Int4",
+        "Z2_Int8",
+        "startWaypoint_entryResearchAndDevelopmentCenter"
       ]
     },
     {
-      "id": "agritech_1_entry",
-      "label": "Agriculture Technology (Agri-Tech) Entry",
+      "id": "startWaypoint_entry3LabRooms",
+      "label": "3 Lab Rooms StartEntry",
       "latLng": {
         "lat": 14.970639176413226,
         "lng": 120.19849949372662
@@ -916,13 +893,13 @@
         "z": -237.8
       },
       "neighbors": [
-        "agritech_1_door",
-        "z3_wp3"
+        "entryWaypoint_3LabRooms",
+        "Z3_Int4"
       ]
     },
     {
-      "id": "agritech_2_entry",
-      "label": "Agriculture Technology (Agri-Tech) 2 Entry",
+      "id": "entryWaypoint_Processing",
+      "label": "Processing Entry",
       "latLng": {
         "lat": 14.97061858710239,
         "lng": 120.19880604366774
@@ -932,12 +909,12 @@
         "z": -235.5
       },
       "neighbors": [
-        "z3_wp4"
+        "Z3_Int6"
       ]
     },
     {
-      "id": "motorpool_garage_entry",
-      "label": "Motorpool Garage Entry",
+      "id": "startWaypoint_entryMotorpoolGarage",
+      "label": "Motorpool Garage StartEntry",
       "latLng": {
         "lat": 14.970820004273607,
         "lng": 120.19915996950886
@@ -947,15 +924,14 @@
         "z": -258
       },
       "neighbors": [
-        "motorpool_garage_door",
-        "z3_wp4",
-        "z3_wp5",
-        "z3_wp1"
+        "entryWaypoint_MotorpoolGarage",
+        "Z3_Int6",
+        "Z3_Z4_Z2Intersection_4Forks"
       ]
     },
     {
-      "id": "organic_mango_center_entry",
-      "label": "RMTU Organic Mango Center Entry",
+      "id": "startWaypoint_entryOrganicMangoCenter",
+      "label": "Organic Mango Center StartEntry",
       "latLng": {
         "lat": 14.970797624587917,
         "lng": 120.19902898907947
@@ -965,15 +941,14 @@
         "z": -255.5
       },
       "neighbors": [
-        "organic_mango_center_door",
-        "z3_wp4",
-        "z3_wp1",
-        "z3_wp5"
+        "entryWaypoint_OrganicMangoCenter",
+        "Z3_Int6",
+        "Z3_Z4_Z2Intersection_4Forks"
       ]
     },
     {
-      "id": "rmtu_rd_center_entry",
-      "label": "RMTU Research and Development Center Entry",
+      "id": "startWaypoint_entryResearchAndDevelopmentCenter",
+      "label": "Research and Development Center StartEntry",
       "latLng": {
         "lat": 14.970862078082705,
         "lng": 120.1993661940147
@@ -983,14 +958,14 @@
         "z": -262.7
       },
       "neighbors": [
-        "rmtu_rd_center_door",
-        "z3_wp1",
-        "z3_wp4"
+        "entryWaypoint_ResearchAndDevelopmentCenter",
+        "Z3_Int6",
+        "Z3_Z4_Z2Intersection_4Forks"
       ]
     },
     {
-      "id": "regional_mango_center_entry",
-      "label": "Regional Mango Center Entry",
+      "id": "startWaypoint_entryRegionalMangoCenter",
+      "label": "Regional Mango Center StartEntry",
       "latLng": {
         "lat": 14.971768007759467,
         "lng": 120.19938198598136
@@ -1000,14 +975,14 @@
         "z": -363.9
       },
       "neighbors": [
-        "regional_mango_center_door",
-        "z3_wp5",
-        "z4_wp1"
+        "entryWaypoint_RegionalMangoCenter",
+        "Z3_Z4_Z2Intersection_4Forks",
+        "Z4_Int4"
       ]
     },
     {
-      "id": "z3_oval_end",
-      "label": "Zone 3 End (near Oval)",
+      "id": "Z3_Int9",
+      "label": "Z3_Int9",
       "latLng": {
         "lat": 14.971631071923444,
         "lng": 120.20205257611966
@@ -1017,15 +992,15 @@
         "z": -348.6
       },
       "neighbors": [
-        "z3_wp5",
-        "z4_end",
-        "connector_z3_to_z1",
-        "ltda_entry"
+        "Z3_Z4_Z2Intersection_4Forks",
+        "Z4_End",
+        "Z3_Int10",
+        "entryWaypoint_LTDA"
       ]
     },
     {
-      "id": "agritech_1_door",
-      "label": "Agriculture Technology (Agri-Tech) Door",
+      "id": "entryWaypoint_3LabRooms",
+      "label": "3 Lab Rooms Entry",
       "latLng": {
         "lat": 14.970544286545897,
         "lng": 120.19852085932858
@@ -1035,12 +1010,12 @@
         "z": -227.2
       },
       "neighbors": [
-        "agritech_1_entry"
+        "startWaypoint_entry3LabRooms"
       ]
     },
     {
-      "id": "motorpool_garage_door",
-      "label": "Motorpool Garage Door",
+      "id": "entryWaypoint_MotorpoolGarage",
+      "label": "Motorpool Garage Entry",
       "latLng": {
         "lat": 14.970695573221166,
         "lng": 120.19918040617159
@@ -1050,12 +1025,12 @@
         "z": -244.1
       },
       "neighbors": [
-        "motorpool_garage_entry"
+        "startWaypoint_entryMotorpoolGarage"
       ]
     },
     {
-      "id": "organic_mango_center_door",
-      "label": "RMTU Organic Mango Center Door",
+      "id": "entryWaypoint_OrganicMangoCenter",
+      "label": "Organic Mango Center Entry",
       "latLng": {
         "lat": 14.970922950827784,
         "lng": 120.19897325272653
@@ -1065,12 +1040,12 @@
         "z": -269.5
       },
       "neighbors": [
-        "organic_mango_center_entry"
+        "startWaypoint_entryOrganicMangoCenter"
       ]
     },
     {
-      "id": "rmtu_rd_center_door",
-      "label": "RMTU Research and Development Center Door",
+      "id": "entryWaypoint_ResearchAndDevelopmentCenter",
+      "label": "Research and Development Center Entry",
       "latLng": {
         "lat": 14.970995461009421,
         "lng": 120.19932160493235
@@ -1080,12 +1055,12 @@
         "z": -277.6
       },
       "neighbors": [
-        "rmtu_rd_center_entry"
+        "startWaypoint_entryResearchAndDevelopmentCenter"
       ]
     },
     {
-      "id": "regional_mango_center_door",
-      "label": "Regional Mango Center Door",
+      "id": "entryWaypoint_RegionalMangoCenter",
+      "label": "Regional Mango Center Entry",
       "latLng": {
         "lat": 14.971735781012072,
         "lng": 120.19928723418138
@@ -1095,12 +1070,12 @@
         "z": -360.3
       },
       "neighbors": [
-        "regional_mango_center_entry"
+        "startWaypoint_entryRegionalMangoCenter"
       ]
     },
     {
-      "id": "mitos_magsaysay_building_entry",
-      "label": "College of Agriculture Entry",
+      "id": "startWaypoint_entryMitosMagsaysayBuilding",
+      "label": "Mitos Magsaysay Building StartEntry",
       "latLng": {
         "lat": 14.970659765724061,
         "lng": 120.19855058538347
@@ -1110,13 +1085,13 @@
         "z": -240.1
       },
       "neighbors": [
-        "mitos_magsaysay_building_door",
-        "z3_wp3"
+        "entryWaypoint_MitosMagsaysayBuilding",
+        "Z3_Int4"
       ]
     },
     {
-      "id": "mitos_magsaysay_building_door",
-      "label": "College of Agriculture Door",
+      "id": "entryWaypoint_MitosMagsaysayBuilding",
+      "label": "Mitos Magsaysay Building Entry",
       "latLng": {
         "lat": 14.970779720839364,
         "lng": 120.19849577796975
@@ -1126,29 +1101,12 @@
         "z": -253.5
       },
       "neighbors": [
-        "mitos_magsaysay_building_entry"
+        "startWaypoint_entryMitosMagsaysayBuilding"
       ]
     },
     {
-      "id": "z1_int2b",
-      "label": "z1_int2b",
-      "latLng": {
-        "lat": 14.968603520202794,
-        "lng": 120.19629047627214
-      },
-      "position": {
-        "x": 565.1,
-        "z": -10.4
-      },
-      "neighbors": [
-        "z1_int2",
-        "z1_int3",
-        "prachouse_raodentry"
-      ]
-    },
-    {
-      "id": "gabaldon_beed_entry",
-      "label": "Gabaldon and CTE BEED Entry",
+      "id": "entryWaypoint_GabaldonCourt",
+      "label": "Gabaldon Court Entry",
       "latLng": {
         "lat": 14.969092292538281,
         "lng": 120.19751110240132
@@ -1158,13 +1116,13 @@
         "z": -65
       },
       "neighbors": [
-        "z1_int6",
-        "beed_entry_door"
+        "Z1_Int5",
+        "entryWaypoint_CTEBEED"
       ]
     },
     {
-      "id": "canteen_pathway",
-      "label": "Canteen Entrance",
+      "id": "startWaypoint_entryCanteen",
+      "label": "Canteen StartEntry",
       "latLng": {
         "lat": 14.96878345287575,
         "lng": 120.19526121162134
@@ -1174,13 +1132,13 @@
         "z": -30.5
       },
       "neighbors": [
-        "canteen_entry",
-        "z1_int1"
+        "backWaypoint_entryCanteen",
+        "Z1_Int1"
       ]
     },
     {
-      "id": "beed_entry_door",
-      "label": "BEEED DOOR",
+      "id": "entryWaypoint_CTEBEED",
+      "label": "CTE (BEED) Entry",
       "latLng": {
         "lat": 14.968694829320414,
         "lng": 120.1976300066209
@@ -1190,12 +1148,12 @@
         "z": -20.6
       },
       "neighbors": [
-        "gabaldon_beed_entry"
+        "entryWaypoint_GabaldonCourt"
       ]
     },
     {
-      "id": "connector_z3_to_z1",
-      "label": "Connector z3 to z1",
+      "id": "Z3_Int10",
+      "label": "Z3_Int10",
       "latLng": {
         "lat": 14.970330336750694,
         "lng": 120.2017256996221
@@ -1205,13 +1163,13 @@
         "z": -203.3
       },
       "neighbors": [
-        "connector2_z3_z1",
-        "z3_oval_end"
+        "Z1_Int15",
+        "Z3_Int9"
       ]
     },
     {
-      "id": "mendorm_entrance",
-      "label": "Men's Dorm Entrance",
+      "id": "entryWaypoint_MensDormitory",
+      "label": "Men's Dormitory Entry",
       "latLng": {
         "lat": 14.972636339564268,
         "lng": 120.20025518884394
@@ -1221,12 +1179,12 @@
         "z": -460.9
       },
       "neighbors": [
-        "mensdorm_roadentry"
+        "startWaypoint_entryMensDormitory"
       ]
     },
     {
-      "id": "mensdorm_roadentry",
-      "label": "Men's Dorm Road Entry",
+      "id": "startWaypoint_entryMensDormitory",
+      "label": "Men's Dormitory StartEntry",
       "latLng": {
         "lat": 14.972849394172043,
         "lng": 120.20017901582827
@@ -1236,16 +1194,16 @@
         "z": -484.7
       },
       "neighbors": [
-        "mendorm_entrance",
-        "z4_wp1",
-        "z4_end",
-        "z4_start",
-        "Z4_int2"
+        "entryWaypoint_MensDormitory",
+        "Z4_Int4",
+        "Z4_End",
+        "Z4_Start",
+        "Z4_Int2"
       ]
     },
     {
-      "id": "womendorm_entrance",
-      "label": "Women's Dorm Entrance",
+      "id": "entryWaypoint_WomensDormitory",
+      "label": "Women's Dormitory Entry",
       "latLng": {
         "lat": 14.967678394970859,
         "lng": 120.19522626282249
@@ -1255,12 +1213,12 @@
         "z": 92.9
       },
       "neighbors": [
-        "womendorm_entryroad"
+        "startWaypoint_entryWomensDormitory"
       ]
     },
     {
-      "id": "womendorm_entryroad",
-      "label": "Women's Dorm Road Entry",
+      "id": "startWaypoint_entryWomensDormitory",
+      "label": "Women's Dormitory StartEntry",
       "latLng": {
         "lat": 14.968340335099072,
         "lng": 120.19516181512529
@@ -1270,31 +1228,31 @@
         "z": 19
       },
       "neighbors": [
-        "womendorm_entrance",
-        "z1_int1",
+        "entryWaypoint_WomensDormitory",
+        "Z1_Int1",
         "inner_gate",
         "main_gate",
-        "wp_new_4"
+        "Z1_EntancePath_1"
       ]
     },
     {
-      "id": "ccit entrance",
-      "label": "CCIT Main Entrance",
+      "id": "entryWaypoint_CCITMain",
+      "label": "CCIT Main Entry",
       "latLng": {
-        "lat": 14.970158460764589,
-        "lng": 120.19942193036762
+        "lat": 14.970154880014878,
+        "lng": 120.19942378824605
       },
       "position": {
-        "x": 902.2,
-        "z": -184.1
+        "x": 902.4,
+        "z": -183.7
       },
       "neighbors": [
-        "CCIT_Entry"
+        "startWaypoint_entryCCITMain"
       ]
     },
     {
-      "id": "connector_adco_to_z1int12",
-      "label": "connector adco to 21 int12",
+      "id": "Z1_Int14",
+      "label": "Z1_Int14",
       "latLng": {
         "lat": 14.969904783801944,
         "lng": 120.20012728017927
@@ -1304,14 +1262,14 @@
         "z": -155.8
       },
       "neighbors": [
-        "z1_int12",
-        "z5_int3",
-        "wp_new_1"
+        "Z1_Int12",
+        "Z5_Int3",
+        "Z1_Int16"
       ]
     },
     {
-      "id": "connector2_z3_z1",
-      "label": "coonectro 2 from z3 to z1",
+      "id": "Z1_Int15",
+      "label": "Z1_Int15",
       "latLng": {
         "lat": 14.969988375153338,
         "lng": 120.20016508174004
@@ -1321,13 +1279,13 @@
         "z": -165.1
       },
       "neighbors": [
-        "z1_int12",
-        "connector_z3_to_z1"
+        "Z1_Int12",
+        "Z3_Int10"
       ]
     },
     {
-      "id": "prachouse_entrance",
-      "label": "Practice/Guest House Entrance",
+      "id": "entryWaypoint_PracticeHouse",
+      "label": "Practice House Entry",
       "latLng": {
         "lat": 14.96833920201973,
         "lng": 120.1962228112496
@@ -1337,29 +1295,29 @@
         "z": 19.1
       },
       "neighbors": [
-        "prachouse_raodentry"
+        "startWaypoint_entryPracticeHouse"
       ]
     },
     {
-      "id": "prachouse_raodentry",
-      "label": "prachouse Road Entry",
+      "id": "startWaypoint_entryPracticeHouse",
+      "label": "Practice House StartEntry",
       "latLng": {
-        "lat": 14.96858651164167,
-        "lng": 120.19618643508
+        "lat": 14.968583826079387,
+        "lng": 120.19618364826235
       },
       "position": {
-        "x": 553.9,
-        "z": -8.5
+        "x": 553.6,
+        "z": -8.2
       },
       "neighbors": [
-        "prachouse_entrance",
-        "z1_int2b",
-        "z1_int2"
+        "entryWaypoint_PracticeHouse",
+        "Z1_Int2",
+        "Z1_Int3"
       ]
     },
     {
-      "id": "guard_house_roadentry",
-      "label": "Guard house road entry",
+      "id": "startWaypoint_entryGuardHouse",
+      "label": "Guard House StartEntry",
       "latLng": {
         "lat": 14.968427168279552,
         "lng": 120.19562907155068
@@ -1369,15 +1327,15 @@
         "z": 9.3
       },
       "neighbors": [
-        "entrance_guard_house",
-        "z1_int1",
+        "entryWaypoint_GuardHouse",
+        "Z1_Int1",
         "inner_gate",
-        "z1_int2"
+        "Z1_Int2"
       ]
     },
     {
-      "id": "entrance_guard_house",
-      "label": "Entrance Guard's House",
+      "id": "entryWaypoint_GuardHouse",
+      "label": "Guard House Entry",
       "latLng": {
         "lat": 14.968306317976822,
         "lng": 120.19566715805853
@@ -1387,12 +1345,12 @@
         "z": 22.8
       },
       "neighbors": [
-        "guard_house_roadentry"
+        "startWaypoint_entryGuardHouse"
       ]
     },
     {
-      "id": "z5_start",
-      "label": "Zone 5 Start",
+      "id": "Z5_Int4",
+      "label": "Z5_Int1",
       "latLng": {
         "lat": 14.968268354727105,
         "lng": 120.1954657911478
@@ -1403,12 +1361,12 @@
       },
       "neighbors": [
         "inner_gate",
-        "z5_corner"
+        "Z5_corner"
       ]
     },
     {
-      "id": "z5_corner",
-      "label": "Zone 5 Corner",
+      "id": "Z5_corner",
+      "label": "Z5_corner",
       "latLng": {
         "lat": 14.966601171939201,
         "lng": 120.19603616023882
@@ -1418,13 +1376,13 @@
         "z": 212.3
       },
       "neighbors": [
-        "z5_start",
-        "z5_int1"
+        "Z5_Int4",
+        "Z5_Int1"
       ]
     },
     {
-      "id": "z5_int1",
-      "label": "Zone 5 Int 1",
+      "id": "Z5_Int1",
+      "label": "Z5_Int2",
       "latLng": {
         "lat": 14.967793632816782,
         "lng": 120.19939402545005
@@ -1434,14 +1392,14 @@
         "z": 79.7
       },
       "neighbors": [
-        "z5_corner",
-        "z5_int2",
-        "granary_entry"
+        "Z5_corner",
+        "Z5_Int2",
+        "entryWaypoint_Granary"
       ]
     },
     {
-      "id": "z5_int2",
-      "label": "Zone 5 Int 2",
+      "id": "Z5_Int2",
+      "label": "Z5_Int3",
       "latLng": {
         "lat": 14.967986764543449,
         "lng": 120.1999606930654
@@ -1451,14 +1409,14 @@
         "z": 58.2
       },
       "neighbors": [
-        "z5_int1",
-        "z5_int3",
-        "asb_entry"
+        "Z5_Int1",
+        "Z5_Int3",
+        "entryWaypoint_ASBBuilding"
       ]
     },
     {
-      "id": "z5_int3",
-      "label": "Zone 5 Int 3",
+      "id": "Z5_Int3",
+      "label": "Z5_Int4",
       "latLng": {
         "lat": 14.96828538700671,
         "lng": 120.20060033026441
@@ -1468,14 +1426,14 @@
         "z": 25
       },
       "neighbors": [
-        "z5_int2",
-        "z5_end",
-        "connector_adco_to_z1int12"
+        "Z5_Int2",
+        "Z5_End",
+        "Z1_Int14"
       ]
     },
     {
-      "id": "z5_end",
-      "label": "Zone 5 End (Bridge)",
+      "id": "Z5_End",
+      "label": "Z5_End",
       "latLng": {
         "lat": 14.968596358703374,
         "lng": 120.20190034019461
@@ -1485,11 +1443,11 @@
         "z": -9.6
       },
       "neighbors": [
-        "z5_int3"
+        "Z5_Int3"
       ]
     },
     {
-      "id": "granary_entry",
+      "id": "entryWaypoint_Granary",
       "label": "Granary Entry",
       "latLng": {
         "lat": 14.968126050090397,
@@ -1500,13 +1458,13 @@
         "z": 42.7
       },
       "neighbors": [
-        "z5_int1",
-        "mrf_entry",
-        "MRF_Granary"
+        "Z5_Int1",
+        "entryWaypoint_MRF",
+        "Z1_Int17"
       ]
     },
     {
-      "id": "mrf_entry",
+      "id": "entryWaypoint_MRF",
       "label": "MRF Entry",
       "latLng": {
         "lat": 14.968350182160776,
@@ -1517,12 +1475,12 @@
         "z": 17.9
       },
       "neighbors": [
-        "granary_entry",
-        "MRF_Granary"
+        "entryWaypoint_Granary",
+        "Z1_Int17"
       ]
     },
     {
-      "id": "ltda_entry",
+      "id": "entryWaypoint_LTDA",
       "label": "LTDA Entry",
       "latLng": {
         "lat": 14.972732124619023,
@@ -1533,29 +1491,30 @@
         "z": -471.6
       },
       "neighbors": [
-        "z3_oval_end",
-        "z4_end",
-        "LTDA"
+        "Z3_Int9",
+        "Z4_End",
+        "startWaypoint_entryLTDA"
       ]
     },
     {
-      "id": "wp_new_1",
-      "label": "Admin Court",
+      "id": "Z1_Int16",
+      "label": "Z1_Int16",
       "latLng": {
-        "lat": 14.969862999713088,
-        "lng": 120.20075783221378
+        "lat": 14.969888114161444,
+        "lng": 120.20057009923799
       },
       "position": {
-        "x": 1046,
-        "z": -151.1
+        "x": 1025.8,
+        "z": -153.9
       },
       "neighbors": [
-        "connector_adco_to_z1int12"
+        "Z1_Int14",
+        "startWaypoint_entryAdminCourt"
       ]
     },
     {
-      "id": "LTDA",
-      "label": "LTDA_Entrance",
+      "id": "startWaypoint_entryLTDA",
+      "label": "LTDA StartEntry",
       "latLng": {
         "lat": 14.972777330464053,
         "lng": 120.20188100573746
@@ -1565,28 +1524,28 @@
         "z": -476.6
       },
       "neighbors": [
-        "ltda_entry"
+        "entryWaypoint_LTDA"
       ]
     },
     {
-      "id": "MRF_Granary",
-      "label": "MRF to Granary",
+      "id": "Z1_Int17",
+      "label": "Z1_Int10",
       "latLng": {
-        "lat": 14.969570710356672,
-        "lng": 120.1987481862988
+        "lat": 14.96956047556293,
+        "lng": 120.19875216519324
       },
       "position": {
-        "x": 829.7,
-        "z": -118.4
+        "x": 830.1,
+        "z": -117.3
       },
       "neighbors": [
-        "mrf_entry",
-        "granary_entry"
+        "entryWaypoint_MRF",
+        "entryWaypoint_Granary"
       ]
     },
     {
-      "id": "z34_a",
-      "label": "Zone 3-4 Path (behind Central Nursery)",
+      "id": "Z3_Int11",
+      "label": "Z3_Int11",
       "latLng": {
         "lat": 14.969547047751517,
         "lng": 120.19553803550757
@@ -1596,14 +1555,14 @@
         "z": -115.8
       },
       "neighbors": [
-        "zone 4_int1",
-        "z3_start",
-        "z3_wp2"
+        "Z4_Int1",
+        "Z3_Start",
+        "Z3_Int2"
       ]
     },
     {
-      "id": "z34_b",
-      "label": "Zone 3-4 Path (inside Mango Greenhouse Farm)",
+      "id": "Z3_Int12",
+      "label": "Z3_Int5",
       "latLng": {
         "lat": 14.970370620184937,
         "lng": 120.19770432175814
@@ -1613,14 +1572,14 @@
         "z": -207.8
       },
       "neighbors": [
-        "z3_wp3",
-        "Z4_int2",
-        "z3_wp2"
+        "Z3_Int4",
+        "Z4_Int2",
+        "Z3_Int2"
       ]
     },
     {
-      "id": "zone 4_int1",
-      "label": "Zone 4 Intersction 1",
+      "id": "Z4_Int1",
+      "label": "Z4_Int1",
       "latLng": {
         "lat": 14.970719743281713,
         "lng": 120.19515531255078
@@ -1630,14 +1589,14 @@
         "z": -246.8
       },
       "neighbors": [
-        "z34_a",
-        "z4_start",
-        "Z4_int2"
+        "Z3_Int11",
+        "Z4_Start",
+        "Z4_Int2"
       ]
     },
     {
-      "id": "Z4_int2",
-      "label": "zone 4 intersection 2",
+      "id": "Z4_Int2",
+      "label": "Z4_Int2",
       "latLng": {
         "lat": 14.971549582027125,
         "lng": 120.1971209479308
@@ -1647,16 +1606,16 @@
         "z": -339.5
       },
       "neighbors": [
-        "z34_b",
-        "z4_wp1",
-        "mensdorm_roadentry",
-        "z4_end",
-        "zone 4_int1"
+        "Z3_Int12",
+        "Z4_Int4",
+        "startWaypoint_entryMensDormitory",
+        "Z4_End",
+        "Z4_Int1"
       ]
     },
     {
-      "id": "wp_new_3",
-      "label": "New Waypoint",
+      "id": "Z1_EntancePath_2",
+      "label": "Z1_EntancePath_2",
       "latLng": {
         "lat": 14.968244550044316,
         "lng": 120.19539312098995
@@ -1666,14 +1625,13 @@
         "z": 29.7
       },
       "neighbors": [
-        "z1_int1",
-        "wp_new_4",
-        "wp_new_6"
+        "Z1_Int1",
+        "Z1_EntancePath_1"
       ]
     },
     {
-      "id": "wp_new_4",
-      "label": "New Waypoint",
+      "id": "Z1_EntancePath_1",
+      "label": "Z1_EntancePath_1",
       "latLng": {
         "lat": 14.96825081635631,
         "lng": 120.19521940935665
@@ -1683,44 +1641,13 @@
         "z": 29
       },
       "neighbors": [
-        "womendorm_entryroad",
-        "wp_new_3",
-        "wp_new_5"
+        "startWaypoint_entryWomensDormitory",
+        "Z1_EntancePath_2"
       ]
     },
     {
-      "id": "wp_new_5",
-      "label": "New Waypoint",
-      "latLng": {
-        "lat": 14.968228436670618,
-        "lng": 120.19521476466056
-      },
-      "position": {
-        "x": 449.3,
-        "z": 31.5
-      },
-      "neighbors": [
-        "wp_new_4"
-      ]
-    },
-    {
-      "id": "wp_new_6",
-      "label": "New Waypoint",
-      "latLng": {
-        "lat": 14.968228436670618,
-        "lng": 120.19539776568602
-      },
-      "position": {
-        "x": 469,
-        "z": 31.5
-      },
-      "neighbors": [
-        "wp_new_3"
-      ]
-    },
-    {
-      "id": "wp_new_2",
-      "label": "New Waypoint",
+      "id": "startWaypoint_entryLHSBuilding",
+      "label": "LHS Building StartEntry",
       "latLng": {
         "lat": 14.9696858018028,
         "lng": 120.19827190361882
@@ -1730,7 +1657,38 @@
         "z": -131.3
       },
       "neighbors": [
-        "lhs_entry"
+        "entryWaypoint_LHSBuilding"
+      ]
+    },
+    {
+      "id": "entryWaypoint_AdminCourt",
+      "label": "Admin Court Main Entry",
+      "latLng": {
+        "lat": 14.96986304891347,
+        "lng": 120.20074473981052
+      },
+      "position": {
+        "x": 1044.6,
+        "z": -151.1
+      },
+      "neighbors": [
+        "startWaypoint_entryAdminCourt"
+      ]
+    },
+    {
+      "id": "startWaypoint_entryAdminCourt",
+      "label": "Admin Court StartEntry",
+      "latLng": {
+        "lat": 14.969891679451173,
+        "lng": 120.20060929951862
+      },
+      "position": {
+        "x": 1030,
+        "z": -154.3
+      },
+      "neighbors": [
+        "entryWaypoint_AdminCourt",
+        "Z1_Int16"
       ]
     }
   ],
@@ -1757,7 +1715,7 @@
       "glbModel": "models/QuadrangleNav.glb",
       "texturedModel": null,
       "rotation": 106.2,
-      "entryWaypoint": "quad_entry",
+      "entryWaypoint": "entryWaypoint_MultiPurposeQuad",
       "glbTint": true,
       "modelScale": 1
     },
@@ -1783,7 +1741,7 @@
       "glbModel": "models/SCNav.glb",
       "texturedModel": null,
       "rotation": 105,
-      "entryWaypoint": "sc_entry",
+      "entryWaypoint": "entryWaypoint_StudentCenter",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -1809,7 +1767,7 @@
       "glbModel": "models/GabaldonNav.glb",
       "texturedModel": null,
       "rotation": 113.2,
-      "entryWaypoint": "gabaldon_beed_entry",
+      "entryWaypoint": "entryWaypoint_GabaldonCourt",
       "glbTint": true,
       "modelScale": 1.8,
       "labelOffset": {
@@ -1840,7 +1798,7 @@
       "glbModel": "models/BEEDNav.glb",
       "texturedModel": null,
       "rotation": 113,
-      "entryWaypoint": "beed_entry_door",
+      "entryWaypoint": "entryWaypoint_CTEBEED",
       "modelScale": 1.2,
       "glbTint": true
     },
@@ -1851,12 +1809,12 @@
       "description": "",
       "color": "#948370",
       "latLng": {
-        "lat": 14.968894456116775,
-        "lng": 120.19828769558549
+        "lat": 14.968846115995683,
+        "lng": 120.19834714769527
       },
       "position": {
-        "x": 780.1,
-        "z": -42.9
+        "x": 786.5,
+        "z": -37.5
       },
       "size": {
         "width": 19,
@@ -1866,7 +1824,7 @@
       "glbModel": "models/LIBNav.glb",
       "texturedModel": null,
       "rotation": 110.5,
-      "entryWaypoint": "lib_entry",
+      "entryWaypoint": "entryWaypoint_Library",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -1892,7 +1850,7 @@
       "glbModel": "models/ASBNav.glb",
       "texturedModel": null,
       "rotation": 112.5,
-      "entryWaypoint": "asb_entry",
+      "entryWaypoint": "entryWaypoint_ASBBuilding",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -1918,7 +1876,7 @@
       "glbModel": "models/AdminNav.glb",
       "texturedModel": null,
       "rotation": 200.8,
-      "entryWaypoint": "admin_entry",
+      "entryWaypoint": "entryWaypoint_AdminBuilding",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -1944,7 +1902,7 @@
       "glbModel": "models/CANTEENNav.glb",
       "texturedModel": null,
       "rotation": 286.5,
-      "entryWaypoint": "canteen_entry",
+      "entryWaypoint": "backWaypoint_entryCanteen",
       "modelScale": 1.2,
       "glbTint": true,
       "labelOffset": {
@@ -1975,7 +1933,7 @@
       "glbModel": "models/HM1Nav.glb",
       "texturedModel": null,
       "rotation": 195,
-      "entryWaypoint": "chm1_entry",
+      "entryWaypoint": "entryWaypoint_CHM1",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -2001,7 +1959,7 @@
       "glbModel": "models/HM2Nav.glb",
       "texturedModel": null,
       "rotation": 293.8,
-      "entryWaypoint": "chm2_entry",
+      "entryWaypoint": "entryWaypoint_CHM2",
       "glbTint": true
     },
     {
@@ -2026,7 +1984,7 @@
       "glbModel": "models/BSEDNav.glb",
       "texturedModel": null,
       "rotation": 24.6,
-      "entryWaypoint": "cte_bsed_entry",
+      "entryWaypoint": "entryWaypoint_CTEBSED",
       "modelScale": 1.5,
       "labelOffset": {
         "x": -6.1,
@@ -2057,7 +2015,7 @@
       "glbModel": "models/LHSNav.glb",
       "texturedModel": null,
       "rotation": 114.2,
-      "entryWaypoint": "lhs_entry",
+      "entryWaypoint": "entryWaypoint_LHSBuilding",
       "modelScale": 1.5,
       "glbTint": true,
       "labelOffset": {
@@ -2088,7 +2046,7 @@
       "glbModel": "models/CCIT2_LHSFacultyNav.glb",
       "texturedModel": null,
       "rotation": 289.4,
-      "entryWaypoint": "z2_wp6",
+      "entryWaypoint": "entryWaypoint_LHSFacultyCCIT",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -2114,7 +2072,7 @@
       "glbModel": "models/CCIT1Nav.glb",
       "texturedModel": null,
       "rotation": 115.1,
-      "entryWaypoint": "ccit entrance",
+      "entryWaypoint": "entryWaypoint_CCITMain",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -2171,7 +2129,7 @@
       "glbModel": "models/Agritech1Nav.glb",
       "texturedModel": null,
       "rotation": 17.7,
-      "entryWaypoint": "agritech_1_door",
+      "entryWaypoint": "entryWaypoint_3LabRooms",
       "glbTint": true
     },
     {
@@ -2196,7 +2154,7 @@
       "glbModel": "models/Agritech2Nav.glb",
       "texturedModel": null,
       "rotation": 20.5,
-      "entryWaypoint": "agritech_2_entry",
+      "entryWaypoint": "entryWaypoint_Processing",
       "glbTint": true
     },
     {
@@ -2221,7 +2179,7 @@
       "glbModel": "models/MotorpoolNav.glb",
       "texturedModel": null,
       "rotation": 108.2,
-      "entryWaypoint": "motorpool_garage_door",
+      "entryWaypoint": "entryWaypoint_MotorpoolGarage",
       "modelScale": 1.5,
       "labelOffset": {
         "x": 3,
@@ -2252,7 +2210,7 @@
       "glbModel": "models/ROMCNav.glb",
       "texturedModel": null,
       "rotation": 291.9,
-      "entryWaypoint": "organic_mango_center_door",
+      "entryWaypoint": "entryWaypoint_OrganicMangoCenter",
       "modelScale": 1.5,
       "labelOffset": {
         "x": 0,
@@ -2283,7 +2241,7 @@
       "glbModel": "models/R&DCenterNav.glb",
       "texturedModel": null,
       "rotation": 289.7,
-      "entryWaypoint": "rmtu_rd_center_door",
+      "entryWaypoint": "entryWaypoint_ResearchAndDevelopmentCenter",
       "modelScale": 1,
       "glbTint": true
     },
@@ -2309,7 +2267,7 @@
       "glbModel": "models/RMCNav.glb",
       "texturedModel": null,
       "rotation": 20.1,
-      "entryWaypoint": "regional_mango_center_door",
+      "entryWaypoint": "entryWaypoint_RegionalMangoCenter",
       "modelScale": 1.5,
       "labelOffset": {
         "x": -15.4,
@@ -2340,7 +2298,7 @@
       "glbModel": "models/MMNav.glb",
       "texturedModel": null,
       "rotation": 201.5,
-      "entryWaypoint": "mitos_magsaysay_building_door",
+      "entryWaypoint": "entryWaypoint_MitosMagsaysayBuilding",
       "modelScale": 1.5,
       "glbTint": true
     },
@@ -2710,7 +2668,7 @@
       "glbModel": "models/MenDormNav.glb",
       "texturedModel": null,
       "rotation": 113.5,
-      "entryWaypoint": "mendorm_entrance",
+      "entryWaypoint": "entryWaypoint_MensDormitory",
       "glbTint": true,
       "modelScale": 1.5
     },
@@ -2736,7 +2694,7 @@
       "glbModel": "models/WomenDormNav.glb",
       "texturedModel": null,
       "rotation": 88.2,
-      "entryWaypoint": "womendorm_entrance",
+      "entryWaypoint": "entryWaypoint_WomensDormitory",
       "modelScale": 1.5,
       "labelOffset": {
         "x": 0,
@@ -2767,7 +2725,7 @@
       "glbModel": "models/Prac_GuestNav.glb",
       "texturedModel": null,
       "rotation": 181.8,
-      "entryWaypoint": "prachouse_entrance",
+      "entryWaypoint": "entryWaypoint_PracticeHouse",
       "modelScale": 1,
       "glbTint": true
     },
@@ -2793,7 +2751,7 @@
       "glbModel": "models/GuardHouseNav.glb",
       "texturedModel": null,
       "rotation": 106.7,
-      "entryWaypoint": "entrance_guard_house",
+      "entryWaypoint": "entryWaypoint_GuardHouse",
       "modelScale": 1,
       "glbTint": true
     },
@@ -2819,7 +2777,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "granary_entry",
+      "entryWaypoint": "entryWaypoint_Granary",
       "glbTint": true
     },
     {
@@ -2844,7 +2802,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "mrf_entry",
+      "entryWaypoint": "entryWaypoint_MRF",
       "glbTint": true
     },
     {
@@ -2869,7 +2827,7 @@
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
-      "entryWaypoint": "ltda_entry",
+      "entryWaypoint": "entryWaypoint_LTDA",
       "glbTint": true
     },
     {
