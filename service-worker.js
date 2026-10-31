@@ -6,7 +6,7 @@
 // the same file name (new photos / new file names are picked up automatically).
 const PHOTO_CACHE = 'prmsu-photos-v3';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v3.44  '; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v3.45  '; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -26,7 +26,7 @@ const STATIC_ASSETS = [
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
   './data/devzones.json',
-  './images/devzones/DEV_ZONES_SATMAP.jpg',
+  './images/devzones/DEV_ZONES_SATMAP.jpg',   // (heavy -> background, see HEAVY below)
   // Note: walkthroughPathHeightmap.json is small (precomputed grid), but
   // GATE2LHSdt.glb is ~17MB -- the raw pathway scan. Caching it offline is
   // consistent with the rest of this app; worth decimating/compressing
@@ -47,7 +47,18 @@ const STATIC_ASSETS = [
   './js/vendor/three.min.js',
 ];
 
-// Install the cache all static assets
+// Heavy files (models, big images) are NOT downloaded during install. Install used to fetch ~20 MB
+// every version bump, so a new version took 30+ seconds to go live and pull-to-refresh kept showing
+// the old app. Now install only fetches the small app files (a few seconds), the new version goes live
+// right away, and the heavy files are cached in the background right after (see 'WARM_CACHE' below).
+// Until they're cached the normal fetch handler loads them from the network and caches them.
+// heavy = 3D models + anything big; the small hero/legend images stay in the quick install
+const HEAVY_NAMES = ['GATE2LHSdt.glb', 'QuadrangleNav.glb', 'admin-building.png', 'DEV_ZONES_SATMAP.jpg'];
+const isHeavy = u => HEAVY_NAMES.some(n => u.endsWith('/' + n));
+const CORE_ASSETS  = STATIC_ASSETS.filter(u => !isHeavy(u));
+const HEAVY_ASSETS = STATIC_ASSETS.filter(isHeavy);
+
+// Install the cache: only the small core files, so the update is quick
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -60,24 +71,34 @@ self.addEventListener('install', event => {
       // content until a hard refresh. This makes a version bump actually
       // guarantee a fresh network fetch for every asset, every time.
       return Promise.allSettled(
-        STATIC_ASSETS.map(url => cache.add(new Request(url, { cache: 'reload' })))
-      ).then(() =>
-        // Development Zones photos: the list comes from data/devzones.json, so
-        // zones added in devzones-editor.html are cached for offline use too,
-        // with no change needed here.
-        fetch('./data/devzones.json', { cache: 'reload' })
-          .then(r => r.json())
-          .then(d => caches.open(PHOTO_CACHE).then(pc => Promise.allSettled(
-            ((d && d.zones) || []).filter(z => z.photo).map(z => {
-              const req = new Request('./' + z.photo);
-              return pc.match(req).then(hit => hit || pc.add(req));
-            })
-          )))
-          .catch(() => {})
+        CORE_ASSETS.map(url => cache.add(new Request(url, { cache: 'reload' })))
       );
     })
   );
   self.skipWaiting();
+});
+
+// Background caching of the heavy files + Development Zones photos. The page asks for it once it has
+// loaded (message from index.html), so it never delays an update or a first paint.
+function warmHeavy() {
+  return caches.open(CACHE_NAME).then(cache => Promise.allSettled(
+    HEAVY_ASSETS.map(url => cache.match(url).then(hit => hit || cache.add(new Request(url, { cache: 'reload' }))))
+  )).then(() =>
+    // Development Zones photos: the list comes from data/devzones.json, so zones added in
+    // devzones-editor.html are cached for offline use too, with no change needed here.
+    fetch('./data/devzones.json', { cache: 'reload' })
+      .then(r => r.json())
+      .then(d => caches.open(PHOTO_CACHE).then(pc => Promise.allSettled(
+        ((d && d.zones) || []).filter(z => z.photo).map(z => {
+          const req = new Request('./' + z.photo);
+          return pc.match(req).then(hit => hit || pc.add(req));
+        })
+      )))
+      .catch(() => {})
+  );
+}
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'WARM_CACHE') event.waitUntil(warmHeavy());
 });
 
 // Activate the service worker and clean up old caches then tell every open tab to reload

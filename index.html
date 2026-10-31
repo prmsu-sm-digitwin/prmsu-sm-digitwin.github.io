@@ -660,7 +660,34 @@
     window.addEventListener('load', () => {
       sessionStorage.removeItem('sw_reloading');
     });
+
+    // Once the app is up (and again whenever a new service worker takes over), ask it to cache the
+    // heavy files in the background. Idle-delayed so it never competes with the first paint.
+    function warmCache() {
+      const go = () => navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({ type: 'WARM_CACHE' });
+      (window.requestIdleCallback || ((f) => setTimeout(f, 2500)))(go);
+    }
+    window.addEventListener('load', () => { setTimeout(warmCache, 1500); });
+    navigator.serviceWorker.addEventListener('controllerchange', () => { setTimeout(warmCache, 1500); });
   }
+
+  // Pull-to-refresh calls this: check for a new version, wait for it to take over, then reload ONCE.
+  // (A plain reload just showed the old cached app again until the new version finished installing,
+  // so it took many pulls.)
+  window.refreshApp = function () {
+    if (!('serviceWorker' in navigator)) { location.reload(); return; }
+    let done = false;
+    const go = () => { if (done) return; done = true; sessionStorage.setItem('sw_reloading', '1'); location.reload(); };
+    setTimeout(go, 25000);                       // never hang: reload anyway after 25 s
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (!reg) return go();
+      return reg.update().then(() => {
+        const w = reg.installing || reg.waiting;
+        if (!w || w.state === 'activated') return go();   // already the latest -> reload right away
+        w.addEventListener('statechange', () => { if (w.state === 'activated' || w.state === 'redundant') go(); });
+      });
+    }).catch(go);                                 // offline / update check failed -> just reload
+  };
 </script>
 
 <!-- PULL-TO-REFRESH (Homepage only) -->
@@ -726,7 +753,9 @@
         // Hold the indicator visible while the reload kicks in.
         indicator.style.transition = 'transform 0.2s ease';
         indicator.style.transform = 'translateY(10px)';
-        window.location.reload();
+        arrow.style.transition = 'transform 0.8s linear';
+        arrow.style.transform = 'rotate(720deg)';
+        if (window.refreshApp) window.refreshApp(); else window.location.reload();
       } else {
         reset();
       }
