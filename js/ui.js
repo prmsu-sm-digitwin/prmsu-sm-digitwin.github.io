@@ -21,10 +21,9 @@ let campusBuildings  = [];     // filled by onSceneReady() from main.js
 // signal because it was hidden (zero-size) while inactive
 // script.js already wraps goTo once we chain onto it here.
 (function () {
-  var _goTo = window.goTo;
-  window.goTo = function (pageId, fromPopState) {
-    _goTo(pageId, fromPopState);
-  
+  // Runs every time a page becomes visible, whether it was reached through goTo()
+  // (home buttons, back button) or through the sidebar drawer (script.js sidebarGoTo).
+  window.onPageEntered = function (pageId) {
     var canvas = document.getElementById('three-canvas');
     if (canvas) canvas.style.display = pageId === 'map' ? 'block' : 'none';
     if (pageId === 'map') {
@@ -40,6 +39,12 @@ let campusBuildings  = [];     // filled by onSceneReady() from main.js
         if (typeof fitDevzonesMap === 'function') fitDevzonesMap();
       }, 80);
     }
+  };
+
+  var _goTo = window.goTo;
+  window.goTo = function (pageId, fromPopState) {
+    _goTo(pageId, fromPopState);
+    window.onPageEntered(pageId);
   };
 })();
 
@@ -99,16 +104,8 @@ function navigateToSelected() {
 
 // Called by main.js after A* draws the path
 function showPathInfo(pathIds, targetBldg) {
-  // destination name + rough walking distance (waypoint units are metres)
-  var dist = 0;
-  try {
-    for (var i = 1; i < pathIds.length; i++) {
-      var a = waypointMap[pathIds[i - 1]].position, b = waypointMap[pathIds[i]].position;
-      dist += Math.hypot(a.x - b.x, a.z - b.z);
-    }
-  } catch (e) { dist = 0; }
   setText('path-destination', (targetBldg && targetBldg.name) ? targetBldg.name : 'Destination');
-  setText('path-steps', dist > 0 ? '~' + (Math.round(dist / 10) * 10) + ' m' : '');
+  setText('path-steps', '');
   show('path-bar');
 }
 

@@ -101,6 +101,12 @@ function sidebarGoTo(pageId) {
       if (pageId === 'walkthrough') window.CampusWalkthrough.onEnter();
       else if (leavingWalkthrough) window.CampusWalkthrough.onLeave();
     }
+
+    // Same "page just became visible" work that the goTo() wrapper in ui.js does (show the
+    // 3D canvas again, resize it, fit the Dev Zones map). Without this, opening Nav Map from
+    // the drawer after visiting another page left the canvas hidden = blank map.
+    if (typeof window.onPageEntered === 'function') window.onPageEntered(pageId);
+    if (pageId === 'map' && typeof window.__reinitSheet === 'function') window.__reinitSheet();
   }
 
   if (openedFromInner) {
@@ -249,16 +255,19 @@ function sidebarGoTo(pageId) {
     window.addEventListener('mouseup',    onEnd);
   }
 
+  function reinitSheet() {
+    setTimeout(function() {
+      var el = document.getElementById('sheet-panel');
+      if (el) { el._ready = false; }
+      initSheet();
+    }, 60);
+  }
+  window.__reinitSheet = reinitSheet;   // sidebarGoTo() needs this too (it swaps pages without goTo)
+
   var _goTo = window.goTo;
   window.goTo = function(p, fromPopState) {
     _goTo(p, fromPopState);
-    if (p === 'map') {
-      setTimeout(function() {
-        var el = document.getElementById('sheet-panel');
-        if (el) { el._ready = false; }
-        initSheet();
-      }, 60);
-    }
+    if (p === 'map') reinitSheet();
   };
 
   window.addEventListener('load', function() {
