@@ -389,7 +389,7 @@ window.addEventListener('popstate', function (e) {
   }
 });
 
-// Hand the Campus Walkthrough first-person prototype (js/walkthrough.js) its
+// Hand the Campus Walkthrough 360° tour (js/tour360.js) its
 // own enter/leave hooks, same idiom as the map-page sheet wrapper above:
 // start/resume its render loop only while that page is actually visible,
 // pause it (not destroy it -- the loaded model + heightmap stay in memory)

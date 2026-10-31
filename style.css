@@ -873,131 +873,6 @@
     color: var(--text-light);
   }
 
-  /* ---- Campus Walkthrough — first-person prototype (js/walkthrough.js) ----
-     Full-bleed 3D stage (same footprint pattern as .devzones-map-wrap below)
-     with a draggable joystick overlay. See the HTML comment above
-     #page-walkthrough for how movement/collision/the fenced-off gap work. */
-  .wt-fp-stage {
-    position: relative;
-    flex: 1;
-    overflow: hidden;
-    background: #B9C6D6;
-    touch-action: none;
-  }
-
-  .wt-fp-stage canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  .wt-fp-loading {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 24px;
-    text-align: center;
-    background: rgba(10,15,20,0.55);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: #fff;
-    transition: opacity 0.3s ease;
-  }
-  .wt-fp-loading.wt-hidden { opacity: 0; pointer-events: none; }
-
-  .wt-fp-badge {
-    position: absolute;
-    z-index: 2;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    padding: 7px 12px;
-    border-radius: 999px;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(6px);
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 10.5px;
-    letter-spacing: 0.02em;
-    text-align: center;
-    pointer-events: none;
-  }
-
-  .wt-fp-hint {
-    position: absolute;
-    z-index: 2;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    padding: 10px 16px;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.55);
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    text-align: center;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-  }
-  .wt-fp-hint.wt-hidden { opacity: 0; }
-
-  .wt-fp-toast {
-    position: absolute;
-    z-index: 2;
-    left: 50%;
-    bottom: 100px;
-    transform: translate(-50%, 8px);
-    padding: 8px 14px;
-    border-radius: 8px;
-    max-width: 80%;
-    background: rgba(0,0,0,0.65);
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11.5px;
-    text-align: center;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-  .wt-fp-toast.wt-show { opacity: 1; transform: translate(-50%, 0); }
-
-  /* Base is repositioned to the touch-down point by js/walkthrough.js, so
-     stays put at the bottom-middle -- its touch catchment is more generous
-     than its graphic (see JOY_ZONE_FRAC in js/walkthrough.js), so you don't
-     need to land a thumb exactly on it, but the visual itself never moves. */
-  .wt-fp-joystick-base {
-    position: absolute;
-    z-index: 2;
-    left: 50%;
-    bottom: 26px;
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.16);
-    border: 2px solid rgba(255,255,255,0.4);
-    opacity: 0.65;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-    transform: translateX(-50%);
-  }
-  .wt-fp-joystick-base.wt-active { opacity: 1; }
-  .wt-fp-joystick-nub {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.85);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    transform: translate(-50%, -50%);
-  }
-
   /* Development Zones — full-bleed pannable/zoomable satellite map. Same
      pan/pinch/zoom technique as the map legend viewer (see .legend-img-wrap
      in js/ui.js), but sized to fill the whole page instead of a fixed modal
@@ -2059,32 +1934,7 @@
 .legend-img.animated { transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
 
 
-/* ---- Campus Walkthrough: mode switch + interim 360° tour (js/tour360.js) ---- */
-.wt-stage-off { display: none !important; }
-.wt-mode-bar {
-  display: flex;
-  gap: 6px;
-  padding: 8px 12px;
-  background: rgba(14,20,28,0.96);
-  flex: 0 0 auto;
-}
-.wt-mode-btn {
-  flex: 1;
-  padding: 8px 10px;
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 999px;
-  background: transparent;
-  color: rgba(255,255,255,0.7);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.wt-mode-btn.active {
-  background: #fff;
-  color: #1b2430;
-  border-color: #fff;
-}
+/* ---- Campus Walkthrough: 360° tour (js/tour360.js) ---- */
 .tour-stage {
   position: relative;
   flex: 1;
@@ -2144,11 +1994,17 @@
   -webkit-tap-highlight-color: transparent;
 }
 .tour-back:active { background: rgba(0,0,0,0.6); }
+.tour-hud {
+  position: absolute; z-index: 4; top: calc(10px + env(safe-area-inset-top, 0px)); left: 10px;
+  max-width: calc(100% - 70px);
+  padding: 8px 12px; border-radius: 12px;
+  background: rgba(0,0,0,0.42); backdrop-filter: blur(6px);
+  color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600; line-height: 1.3;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.tour-hud small { display: block; margin-top: 4px; font-size: 10.5px; font-weight: 400; opacity: 0.85; word-break: break-all; }
 /* The walkthrough is full-screen now: no top bar (logo text + menu), just the back button. */
 #page-walkthrough > .inner-top-bar { display: none; }
-
-/* HIDE-3D-TAB: the 3D Prototype tab is hidden for now (tour only). Delete this rule to bring the mode switch back. */
-.wt-mode-bar { display: none !important; }
 
 /* ---- NavMap first-person view (js/navfp.js) ---- */
 #fp-btn {

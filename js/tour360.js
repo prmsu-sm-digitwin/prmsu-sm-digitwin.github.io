@@ -1,20 +1,14 @@
 // =============================================================
 //  js/tour360.js  —  Interim 360° campus tour (Street-View style)
 //
-//  Lives inside the existing Campus Walkthrough page. A small mode bar
-//  switches between:
-//    • 360° Tour       (this file, default)  — equirectangular photos
-//                      wrapped on the inside of a sphere; tap the arrows
-//                      to step to the next / previous photo.
-//    • 3D Prototype    (js/walkthrough.js)   — the photogrammetry mesh.
+//  The Campus Walkthrough page: equirectangular photos wrapped on the
+//  inside of a sphere; tap or hold the arrows to step to the next / previous photo.
 //
 //  Data:   data/tour360.json  (stops in walking order, per-stop title and
 //          "fwd" = where in the photo the next stop lies, 0..1 across the
 //          width).  Photos: images/360/<RouteFolder>/pNN.jpg (listed in data/tour360.json).
 //
-//  Not Street View / not photogrammetry: you jump between fixed photo
-//  spots.  Kept separate from walkthrough.js so the 3D prototype can be
-//  switched back in with no changes.
+//  Not Street View / not photogrammetry: you jump between fixed photo spots.
 // =============================================================
 (function () {
   'use strict';
@@ -43,7 +37,7 @@
   var stepBusy = false, holdTimer = null, holdIv = null, holdFired = false;
   var pointers = {}, lastPinch = 0, dragMoved = 0, downX = 0, downY = 0, downTime = 0;
 
-  // ── Public hooks (wrapped around CampusWalkthrough below) ──
+  // ── Public hooks (exposed as window.CampusWalkthrough at the bottom) ──
   function tourEnter() {
     if (typeof THREE === 'undefined') return;
     if (!inited) init();
@@ -69,11 +63,13 @@
       '<div class="tour-fade" id="tour-fade"></div>' +
       '<div class="tour-hint" id="tour-hint">Drag to look around · tap or hold the arrows to walk</div>' +
       '<div class="tour-toast" id="tour-toast"></div>' +
+      '<div class="tour-hud" id="tour-hud" title="Tap for details"></div>' +
       '<button class="tour-back" id="tour-back" type="button" aria-label="Back to home" title="Back">' +
       '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>';
 
     canvas   = document.getElementById('tour-canvas');
     btnBack  = document.getElementById('tour-back');
+    document.getElementById('tour-hud').addEventListener('click', function () { hudDetail = !hudDetail; updateHud(); });
     fadeEl   = document.getElementById('tour-fade');
     toastEl  = document.getElementById('tour-toast');
     loadingEl = document.getElementById('tour-loading');
@@ -320,7 +316,20 @@
   function next() { var n = nextIdx(idx); if (n >= 0) showStop(n, 'fwd'); }
   function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, 'back'); }
 
+  // Stop counter (top-left). Tap it to show the photo file + the "fwd" value, which is handy for
+  // spotting a stop whose photo faces the wrong way: note its number, then fix its "fwd" in data/tour360.json.
+  var hudDetail = false;
   function updateHud() {
+    var el = document.getElementById('tour-hud');
+    if (!el || !stops.length) return;
+    var s = stops[idx];
+    var line = 'Stop ' + (idx + 1) + ' / ' + stops.length;
+    if (hudDetail) {
+      var f = String(s.file || '').replace(/^images\/360\//, '');
+      line += '<small>' + f + '<br>fwd ' + (s.fwd != null ? s.fwd : 0) + (s.title ? ' · ' + s.title : '') + '</small>';
+    }
+    el.innerHTML = line;
+    el.classList.toggle('tour-hud-open', hudDetail);
   }
   function updateArrows() {
     var s = stops[idx], fy = uToYaw(s.fwd || 0);
@@ -491,49 +500,9 @@
     next: next, prev: prev, go: function (i) { showStop(i, 'jump'); }
   };
 
-  // ── Mode switch inside the Campus Walkthrough page ──
-  var orig = window.CampusWalkthrough;     // photogrammetry prototype's hooks
-  var mode = 'tour';
-  var origActive = false;
-
-  function applyMode(m) {
-    mode = m;
-    var fp = document.getElementById('wt-fp-stage');
-    var ts = document.getElementById('tour-stage');
-    var bT = document.getElementById('wt-mode-tour');
-    var b3 = document.getElementById('wt-mode-3d');
-    if (bT) bT.classList.toggle('active', m === 'tour');
-    if (b3) b3.classList.toggle('active', m === '3d');
-    if (fp) fp.classList.toggle('wt-stage-off', m === 'tour');
-    if (ts) ts.classList.toggle('wt-stage-off', m !== 'tour');
-    if (m === 'tour') {
-      if (origActive && orig) { try { orig.onLeave(); } catch (e) {} origActive = false; }
-      tourEnter();
-    } else {
-      tourLeave();
-      if (orig) { try { orig.onEnter(); origActive = true; } catch (e) {} }
-    }
-  }
-
+  // ── Page hooks (script.js calls these when the Walkthrough page opens / closes) ──
   window.CampusWalkthrough = {
-    onEnter: function () {
-      wireModeButtons();
-      applyMode(mode);
-    },
-    onLeave: function () {
-      tourLeave();
-      if (origActive && orig) { try { orig.onLeave(); } catch (e) {} origActive = false; }
-    }
+    onEnter: tourEnter,
+    onLeave: tourLeave
   };
-
-  var wired = false;
-  function wireModeButtons() {
-    if (wired) return;
-    var bT = document.getElementById('wt-mode-tour');
-    var b3 = document.getElementById('wt-mode-3d');
-    if (!bT || !b3) return;
-    bT.addEventListener('click', function () { applyMode('tour'); });
-    b3.addEventListener('click', function () { applyMode('3d'); });
-    wired = true;
-  }
 })();

@@ -6,7 +6,7 @@
 // the same file name (new photos / new file names are picked up automatically).
 const PHOTO_CACHE = 'prmsu-photos-v3';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v3.50'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v3.51'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -20,20 +20,13 @@ const STATIC_ASSETS = [
   './js/main.js',
   './js/navfp.js',
   './js/directory.js',
-  './js/walkthrough.js',
   './js/tour360.js',
   './data/tour360.json',
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
   './data/devzones.json',
   './images/devzones/DEV_ZONES_SATMAP.jpg',   // (heavy -> background, see HEAVY below)
-  // Note: walkthroughPathHeightmap.json is small (precomputed grid), but
-  // GATE2LHSdt.glb is ~17MB -- the raw pathway scan. Caching it offline is
-  // consistent with the rest of this app; worth decimating/compressing
-  // later if cache size or first-load time on mobile becomes a problem.
-  './data/walkthroughPathHeightmap.json',
   './models/QuadrangleNav.glb',
-  './models/GATE2LHSdt.glb',
   './images/admin-building.png',
   './images/university-gate.jpg',
   './images/LegendMap.png',
@@ -53,7 +46,7 @@ const STATIC_ASSETS = [
 // right away, and the heavy files are cached in the background right after (see 'WARM_CACHE' below).
 // Until they're cached the normal fetch handler loads them from the network and caches them.
 // heavy = 3D models + anything big; the small hero/legend images stay in the quick install
-const HEAVY_NAMES = ['GATE2LHSdt.glb', 'QuadrangleNav.glb', 'admin-building.png', 'DEV_ZONES_SATMAP.jpg'];
+const HEAVY_NAMES = ['QuadrangleNav.glb', 'admin-building.png', 'DEV_ZONES_SATMAP.jpg'];
 const isHeavy = u => HEAVY_NAMES.some(n => u.endsWith('/' + n));
 const CORE_ASSETS  = STATIC_ASSETS.filter(u => !isHeavy(u));
 const HEAVY_ASSETS = STATIC_ASSETS.filter(isHeavy);

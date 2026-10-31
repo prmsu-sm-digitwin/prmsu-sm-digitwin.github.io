@@ -296,41 +296,13 @@
         </button>
       </div>
 
-      <!-- Early first-person prototype (js/walkthrough.js): walk over the
-           reconstructed pathway mesh (models/GATE2LHSdt.glb), steered by a
-           joystick fixed at the bottom-middle of the screen (its touch
-           catchment is more generous than its graphic, so you don't need to
-           land a thumb exactly on it); dragging anywhere else looks around
-           (look-up is capped well below level so the camera can't tilt into
-           the roughest/most broken part of the reconstruction, the tree
-           canopy overhead). Ground height and the spawn point come from
-           data/walkthroughPathHeightmap.json, a precomputed grid (built
-           offline from the raw scan, after correcting its tilted axes --
-           see that file's header comment) rather than raycasting the mesh
-           live. Spawn faces down the corridor from one end toward the
-           other, hugging the ground the whole way; collision against the
-           precomputed walkable mask keeps the camera from passing through
-           the mesh. -->
-      <!-- Mode switch: interim 360° photo tour (js/tour360.js, default) or the
-           photogrammetry 3D prototype (js/walkthrough.js). Only the active
-           one runs/loads, so the 17 MB mesh is not fetched unless chosen. -->
-      <div class="wt-mode-bar" id="wt-mode-bar">
-        <button class="wt-mode-btn active" id="wt-mode-tour" type="button">360° Tour</button>
-        <button class="wt-mode-btn" id="wt-mode-3d" type="button">3D Prototype</button>
-      </div>
+      <!-- 360° photo tour (js/tour360.js) fills the page -->
       <div class="tour-stage" id="tour-stage"></div>
 
-      <div class="wt-fp-stage" id="wt-fp-stage">
-        <canvas id="wt-fp-canvas"></canvas>
-        <div class="wt-fp-loading" id="wt-fp-loading">Loading pathway preview…</div>
-        <div class="wt-fp-badge">Early prototype — reconstructed pathway, may have rough edges</div>
-        <div class="wt-fp-hint" id="wt-fp-hint">Use the joystick to move · drag elsewhere to look around</div>
-        <div class="wt-fp-toast" id="wt-fp-toast">Reconstruction gap here — can't go further this way</div>
-        <div class="wt-fp-joystick-base" id="wt-fp-joystick-base">
-          <div class="wt-fp-joystick-nub" id="wt-fp-joystick-nub"></div>
-        </div>
-      </div>
     </div>
+
+
+    <!--ABOUT PAGE-->    </div>
 
 
     <!--ABOUT PAGE-->
@@ -868,7 +840,6 @@
 <script defer src="js/main.js"></script>
 <script defer src="js/navfp.js"></script>
 <script defer src="js/directory.js"></script>
-<script defer src="js/walkthrough.js"></script>
 <script defer src="js/tour360.js"></script>
 
 </body>
