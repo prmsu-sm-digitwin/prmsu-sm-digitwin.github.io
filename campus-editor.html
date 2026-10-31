@@ -262,7 +262,7 @@
 
 <div id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/vendor/three.min.js"></script>
 <script src="js/vendor/GLTFLoader.js"></script>
 <script>
 (function () {
@@ -1963,7 +1963,7 @@
       if (inited) return ready;
       inited = true;
       if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') {
-        showMessage('3D preview needs Three.js loaded from cdnjs — check your internet connection, then reopen this panel.');
+        showMessage('3D preview could not load Three.js (js/vendor/three.min.js) — reload the page and try again.');
         return false;
       }
       canvas3 = document.getElementById('preview3DCanvas');

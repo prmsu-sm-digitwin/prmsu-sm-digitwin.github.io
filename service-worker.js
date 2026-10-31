@@ -6,7 +6,7 @@
 // the same file name (new photos / new file names are picked up automatically).
 const PHOTO_CACHE = 'prmsu-photos-v3';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v3.41  '; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v3.43  '; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -37,8 +37,14 @@ const STATIC_ASSETS = [
   './images/admin-building.png',
   './images/university-gate.jpg',
   './images/LegendMap.png',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+  './fonts/fonts.css',
+  './fonts/dm-sans-latin-300-normal.woff2',
+  './fonts/dm-sans-latin-400-normal.woff2',
+  './fonts/dm-sans-latin-500-normal.woff2',
+  './fonts/dm-sans-latin-600-normal.woff2',
+  './fonts/playfair-display-latin-600-normal.woff2',
+  './fonts/playfair-display-latin-700-normal.woff2',
+  './js/vendor/three.min.js',
 ];
 
 // Install the cache all static assets
