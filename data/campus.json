@@ -2134,7 +2134,7 @@
       "glbModel": "models/AdminCourtNav.glb",
       "texturedModel": null,
       "rotation": 195,
-      "entryWaypoint": null,
+      "entryWaypoint": "entryWaypoint_AdminCourt",
       "glbTint": true,
       "modelScale": 1.8,
       "labelOffset": {
