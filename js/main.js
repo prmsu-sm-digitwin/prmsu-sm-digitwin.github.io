@@ -30,7 +30,7 @@ function initScene() {
   mouse = new THREE.Vector2();
 
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
   renderer.shadowMap.enabled = true;
 

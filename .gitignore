@@ -142,3 +142,7 @@ vite.config.ts.timestamp-*
 images/360/**/CAM_*
 images/360/**/test_*
 images/360/**/*.part
+
+# Dev Zones: full-size PNG originals + raw satmap stay on this PC; the app uses the compressed *_dz.jpg
+images/devzones/*_DZ.PNG
+images/devzones/PRMSU_SM_SATMAP.png
