@@ -22,6 +22,20 @@
   function uToYaw(u) { return Math.PI / 2 + u * TAU; }
 
   var data = null, stops = [];
+  // Arrow direction for a stop = its own "fwd" + optional bulk offsets from data/tour360.json:
+  //   "fwdOffset": 0.01                         -> added to EVERY stop
+  //   "folderOffsets": {"MainGate_to_InnerGate": -0.01}  -> added to every stop whose photo is in that folder
+  // (0.01 is about 3.6 degrees; a bigger number turns the arrow right, a smaller one left.)
+  function fwdOf(st) {
+    var u = st.fwd || 0;
+    if (data) {
+      u += data.fwdOffset || 0;
+      var fo = data.folderOffsets;
+      if (fo) { var m = /\/360\/([^\/]+)\//.exec(st.file || ''); if (m && fo[m[1]]) u += fo[m[1]]; }
+    }
+    return u;
+  }
+
   var idx = 0;
   var yaw = 0, pitch = -0.08, fov = 75;
   var velYaw = 0, velPitch = 0;
@@ -291,7 +305,7 @@
       if (token !== loadToken) return;
       mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true;
       idx = i;
-      var fy = uToYaw(stops[i].fwd || 0);
+      var fy = uToYaw(fwdOf(stops[i]));
       // Face the way you're travelling.
       yaw = (how === 'back') ? fy + Math.PI : fy;
       if (how === 'init') pitch = -0.05;
@@ -326,13 +340,13 @@
     var line = 'Stop ' + (idx + 1) + ' / ' + stops.length;
     if (hudDetail) {
       var f = String(s.file || '').replace(/^images\/360\//, '');
-      line += '<small>' + f + '<br>fwd ' + (s.fwd != null ? s.fwd : 0) + (s.title ? ' · ' + s.title : '') + '</small>';
+      line += '<small>' + f + '<br>fwd ' + (s.fwd != null ? s.fwd : 0) + (fwdOf(s) !== (s.fwd || 0) ? ' (+' + Math.round((fwdOf(s) - (s.fwd || 0)) * 1000) / 1000 + ' offset)' : '') + (s.title ? ' · ' + s.title : '') + '</small>';
     }
     el.innerHTML = line;
     el.classList.toggle('tour-hud-open', hudDetail);
   }
   function updateArrows() {
-    var s = stops[idx], fy = uToYaw(s.fwd || 0);
+    var s = stops[idx], fy = uToYaw(fwdOf(s));
     var hasNext = nextIdx(idx) >= 0, hasPrev = prevIdx(idx) >= 0;
     arrowFwd.group.rotation.y  = -fy;
     arrowBack.group.rotation.y = -(s.back != null ? uToYaw(s.back) : fy + Math.PI);   // optional "back": u for forks

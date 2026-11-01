@@ -1,5 +1,12 @@
 {
  "_comment": "Interim 360 tour. Order = walking order main gate -> inner gate. fwd = horizontal position (0..1) in the photo that points toward the NEXT stop; the Back arrow points the opposite way. Edit title/fwd per stop to fine-tune. Photos p01-p22 were shot walking main->inner; p23-p96 were shot walking inner->main, so they run in reverse here. Route graph: a stop may have \"end\":true (no forward arrow), \"id\", \"prev\" (Back goes to that id) and \"links\":[{\"to\":id,\"u\":0..1}] for a fork (extra forward arrow).",
+ "fwdOffset": 0,
+ "folderOffsets": {
+    "MainGate_to_InnerGate": 0, 
+    "LeftSide_InnerGate_to_Z3": 0, 
+    "Z3_to_Z4_Corner": 0, 
+    "RightSide_InnerGate_to_Z5": 0
+},
  "stops": [
   {"file": "images/360/MainGate_to_InnerGate/p01.jpg", "title": "Main Gate", "fwd": -0.042},
   {"file": "images/360/MainGate_to_InnerGate/p02.jpg", "title": "Main Gate", "fwd": -0.061},
