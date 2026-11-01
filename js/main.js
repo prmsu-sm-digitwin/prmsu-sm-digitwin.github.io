@@ -290,7 +290,7 @@ function spawnPlace(p) {
       const sy = nativeSize.y > 1e-6 ? (p.size.height / nativeSize.y) * extra : extra;
       const sz = nativeSize.z > 1e-6 ? (p.size.depth  / nativeSize.z) * extra : extra;
       obj.scale.set(sx, sy, sz);
-      obj.position.set(p.position.x, 0.45, p.position.z);   // base clear of road strips
+      obj.position.set(p.position.x, 0.45 + (p.yOffset || 0), p.position.z);   // base clear of road strips (+ optional yOffset to raise/sink)
       obj.rotation.y = THREE.MathUtils.degToRad(p.rotation || 0);
       obj.name = 'place:' + (p.name || p.id);               // no buildingId on purpose -> not tappable
       obj.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
@@ -370,7 +370,9 @@ function loadGLB(bldg) {
         z: nativeBox.max.z - nativeBox.min.z,
       };
 
-      model.position.set(bldg.position.x, 0, bldg.position.z);
+      // yOffset (optional, world units): raise (+) or sink (-) a model whose own
+      // origin isn't at ground level, without re-exporting it from Blender.
+      model.position.set(bldg.position.x, bldg.yOffset || 0, bldg.position.z);
       model.rotation.y = THREE.MathUtils.degToRad(bldg.rotation || 0);
       // Fit the model to the building's declared footprint per axis, then
       // apply modelScale as an extra uniform correction on top — for a scan

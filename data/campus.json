@@ -1452,12 +1452,12 @@
       "id": "entryWaypoint_Granary",
       "label": "Granary Entry",
       "latLng": {
-        "lat": 14.968126050090397,
-        "lng": 120.19933125515122
+        "lat": 14.968263348980296,
+        "lng": 120.19926401070099
       },
       "position": {
-        "x": 890.6,
-        "z": 42.7
+        "x": 885.2,
+        "z": 27.6
       },
       "neighbors": [
         "Z5_Int1",
@@ -2798,23 +2798,28 @@
       "description": "",
       "color": "#948370",
       "latLng": {
-        "lat": 14.96820698903493,
-        "lng": 120.19933125515122
+        "lat": 14.968327802475086,
+        "lng": 120.1993661940147
       },
       "position": {
-        "x": 890.6,
-        "z": 33.7
+        "x": 896.2,
+        "z": 20.4
       },
       "size": {
-        "width": 20,
-        "depth": 14,
-        "height": 7
+        "width": 5.7,
+        "depth": 4.6,
+        "height": 1
       },
       "glbModel": null,
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": "entryWaypoint_Granary",
-      "glbTint": true
+      "glbTint": true,
+      "labelOffset": {
+        "x": 0,
+        "y": 6.5,
+        "z": 0
+      }
     },
     {
       "id": "mrf",
@@ -2823,48 +2828,58 @@
       "description": "",
       "color": "#948370",
       "latLng": {
-        "lat": 14.968382381759522,
-        "lng": 120.19927854620816
+        "lat": 14.968452233527525,
+        "lng": 120.19931974705392
       },
       "position": {
-        "x": 884.9,
-        "z": 14.2
+        "x": 891.2,
+        "z": 6.5
       },
       "size": {
-        "width": 16,
-        "depth": 12,
-        "height": 6
+        "width": 12,
+        "depth": 39.5,
+        "height": 7.5
       },
-      "glbModel": null,
+      "glbModel": "models/places/MRF.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 198.4,
       "entryWaypoint": "entryWaypoint_MRF",
-      "glbTint": true
+      "glbTint": false,
+      "labelOffset": {
+        "x": -2.6,
+        "y": 0,
+        "z": -5.1
+      }
     },
     {
       "id": "ltda",
       "name": "LTDA",
-      "category": "facility",
+      "category": "academic",
       "description": "",
-      "color": "#948370",
+      "color": "#3d9139",
       "latLng": {
-        "lat": 14.972798710654937,
-        "lng": 120.20198947083797
+        "lat": 14.97268020374822,
+        "lng": 120.20192263473578
       },
       "position": {
-        "x": 1176.1,
-        "z": -476.8
+        "x": 1171.4,
+        "z": -465.8
       },
       "size": {
-        "width": 24,
-        "depth": 16,
-        "height": 8
+        "width": 99.7,
+        "depth": 62.3,
+        "height": 10
       },
-      "glbModel": null,
+      "glbModel": "models/places/Lahar_LTDA.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 194,
       "entryWaypoint": "entryWaypoint_LTDA",
-      "glbTint": true
+      "glbTint": true,
+      "labelOffset": {
+        "x": 18.6,
+        "y": 0,
+        "z": -7.5
+      }
     },
     {
       "id": "place_banggar",
@@ -3710,6 +3725,32 @@
         "z": 0.6
       },
       "labelHidden": true
+    },
+    {
+      "id": "mango_greenhouse",
+      "name": "Mango Greenhouse",
+      "category": "place",
+      "description": "",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.971041115568232,
+        "lng": 120.19736525894449
+      },
+      "position": {
+        "x": 680.8,
+        "z": -282.7
+      },
+      "size": {
+        "width": 72,
+        "depth": 50,
+        "height": 30
+      },
+      "glbModel": "models/places/Mango_Farm_Cluster_Model.glb",
+      "yOffset": -25,
+      "texturedModel": null,
+      "rotation": 0,
+      "entryWaypoint": null,
+      "modelScale": 2
     }
   ],
   "pavedEdges": [],
