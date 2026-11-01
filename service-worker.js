@@ -6,7 +6,7 @@
 // the same file name (new photos / new file names are picked up automatically).
 const PHOTO_CACHE = 'prmsu-photos-v5';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v3.61'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v3.64'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
