@@ -3746,7 +3746,7 @@
         "height": 30
       },
       "glbModel": "models/places/Mango_Farm_Cluster_Model.glb",
-      "yOffset": -25,
+      "yOffset": -20,
       "texturedModel": null,
       "rotation": 0,
       "entryWaypoint": null,
