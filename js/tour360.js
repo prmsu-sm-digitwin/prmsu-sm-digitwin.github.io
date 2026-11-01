@@ -173,11 +173,15 @@
     var m = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: opacity, depthTest: false, depthWrite: false });
     var mesh = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 5.2), m);
     mesh.rotation.x = -Math.PI / 2;
-    mesh.position.set(0, -5.5, -11);
     mesh.renderOrder = 5;
+    // The arrow sits at (0,-5.5,-11) from the camera. The pivot lets the chevron turn on the spot
+    // (see "aim" below) without moving the circle off the middle of the path.
+    var pivot = new THREE.Group();
+    pivot.position.set(0, -5.5, -11);
+    pivot.add(mesh);
     var group = new THREE.Group();
-    group.add(mesh);
-    return { group: group, mesh: mesh };
+    group.add(pivot);
+    return { group: group, mesh: mesh, pivot: pivot };
   }
 
   // ── Texture cache (keep a handful in memory) ──
@@ -340,7 +344,7 @@
     var line = 'Stop ' + (idx + 1) + ' / ' + stops.length;
     if (hudDetail) {
       var f = String(s.file || '').replace(/^images\/360\//, '');
-      line += '<small>' + f + '<br>fwd ' + (s.fwd != null ? s.fwd : 0) + (fwdOf(s) !== (s.fwd || 0) ? ' (+' + Math.round((fwdOf(s) - (s.fwd || 0)) * 1000) / 1000 + ' offset)' : '') + (s.title ? ' · ' + s.title : '') + '</small>';
+      line += '<small>' + f + '<br>fwd ' + (s.fwd != null ? s.fwd : 0) + (fwdOf(s) !== (s.fwd || 0) ? ' (+' + Math.round((fwdOf(s) - (s.fwd || 0)) * 1000) / 1000 + ' offset)' : '') + (s.title ? ' · ' + s.title : '') + (s.aim != null ? ' · aim ' + s.aim : '') + '</small>';
     }
     el.innerHTML = line;
     el.classList.toggle('tour-hud-open', hudDetail);
@@ -349,6 +353,9 @@
     var s = stops[idx], fy = uToYaw(fwdOf(s));
     var hasNext = nextIdx(idx) >= 0, hasPrev = prevIdx(idx) >= 0;
     arrowFwd.group.rotation.y  = -fy;
+    // Optional "aim" (u, 0..1): at a bend the circle stays at "fwd" (middle of the path where you stand)
+    // but the chevron points along the road ahead.
+    arrowFwd.pivot.rotation.y = (s.aim != null) ? -(uToYaw(s.aim + (fwdOf(s) - (s.fwd || 0))) - fy) : 0;
     arrowBack.group.rotation.y = -(s.back != null ? uToYaw(s.back) : fy + Math.PI);   // optional "back": u for forks
     arrowFwd.group.visible  = hasNext;          // no arrow at the end of the documented path
     arrowBack.group.visible = hasPrev;
