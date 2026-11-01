@@ -3703,54 +3703,85 @@
       "description": "",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.968690353383275,
-        "lng": 120.19732066986214
+        "lat": 14.968714523443822,
+        "lng": 120.19728351229351
       },
       "position": {
-        "x": 676,
-        "z": -20.1
+        "x": 672,
+        "z": -22.8
       },
       "size": {
-        "width": 17.1,
-        "depth": 9.3,
-        "height": 8
+        "width": 39.2,
+        "depth": 35.3,
+        "height": 17
       },
-      "glbModel": null,
+      "glbModel": "models/places/SC_Benches_Trees_FIN.glb",
       "texturedModel": null,
-      "rotation": 23.7,
+      "rotation": 295.1,
       "entryWaypoint": null,
       "labelOffset": {
-        "x": -1.2,
+        "x": -2.2,
         "y": 0,
-        "z": 0.6
+        "z": -0.5
       },
       "labelHidden": true
     },
     {
-      "id": "mango_greenhouse",
-      "name": "Mango Greenhouse",
+      "id": "trees",
+      "name": "trees",
       "category": "place",
       "description": "",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.971041115568232,
-        "lng": 120.19736525894449
+        "lat": 14.969177335343906,
+        "lng": 120.19529093767625
       },
       "position": {
-        "x": 680.8,
-        "z": -282.7
+        "x": 457.5,
+        "z": -74.5
       },
       "size": {
-        "width": 72,
-        "depth": 50,
-        "height": 30
+        "width": 20,
+        "depth": 15,
+        "height": 8
       },
-      "glbModel": "models/places/Mango_Farm_Cluster_Model.glb",
-      "yOffset": -20,
+      "glbModel": "models/places/Small_Trees_Cluster_Model.glb",
       "texturedModel": null,
-      "rotation": 0,
+      "rotation": 91.4,
       "entryWaypoint": null,
+      "labelHidden": true,
       "modelScale": 2
+    },
+    {
+      "id": "trees2",
+      "name": "trees2",
+      "category": "place",
+      "description": "",
+      "color": "#4a90d9",
+      "latLng": {
+        "lat": 14.968560551206268,
+        "lng": 120.19462488825872
+      },
+      "position": {
+        "x": 385.8,
+        "z": -5.6
+      },
+      "size": {
+        "width": 20,
+        "depth": 15,
+        "height": 8
+      },
+      "glbModel": "models/places/Small_Trees_Cluster_Model.glb",
+      "texturedModel": null,
+      "rotation": 355.4,
+      "entryWaypoint": null,
+      "labelHidden": true,
+      "modelScale": 2,
+      "labelOffset": {
+        "x": -0.2,
+        "y": 0,
+        "z": 0
+      }
     }
   ],
   "pavedEdges": [],
