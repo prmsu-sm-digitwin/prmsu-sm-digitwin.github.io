@@ -153,7 +153,7 @@
   function linksOf(i) {
     var s = stops[i], out = [];
     ((s && s.links) || []).forEach(function (l) {
-      if (idToIdx[l.to] != null) out.push({ to: idToIdx[l.to], u: l.u || 0 });
+      if (idToIdx[l.to] != null) out.push({ to: idToIdx[l.to], u: l.u || 0, face: l.face });
     });
     return out;
   }
@@ -299,7 +299,7 @@
   }
 
   // ── Navigation ──
-  function showStop(i, how) {
+  function showStop(i, how, faceU) {
     if (!stops.length) return;
     i = Math.max(0, Math.min(stops.length - 1, i));
     var token = ++loadToken;
@@ -311,11 +311,10 @@
       idx = i;
       var fy = uToYaw(fwdOf(stops[i]));
       // Face the way you're travelling.
-      yaw = (how === 'back') ? fy + Math.PI : fy;
+      yaw = (how === 'back') ? (stops[i].back != null ? uToYaw(stops[i].back) : fy + Math.PI) : (faceU != null ? uToYaw(faceU + (fwdOf(stops[i]) - (stops[i].fwd || 0))) : fy);
       if (how === 'init') pitch = -0.05;
       velYaw = velPitch = 0;
       updateHud(); updateArrows();
-      if (how === 'fwd' && stops[i].end) toast('This is as far as the path has been photographed.');
       fadeEl.classList.remove('on');
       stepBusy = false;
       dirty = true;
@@ -332,7 +331,9 @@
     });
   }
   function next() { var n = nextIdx(idx); if (n >= 0) showStop(n, 'fwd'); }
-  function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, 'back'); }
+  // Back along the route keeps you facing backwards; but when Back returns from a side branch to a fork
+  // (the stop before isn't the next one in the list, e.g. dorm path -> fork), face the fork's forward way.
+  function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, p === idx - 1 ? 'back' : 'jump'); }
 
   // Stop counter (top-left). Tap it to show the photo file + the "fwd" value, which is handy for
   // spotting a stop whose photo faces the wrong way: note its number, then fix its "fwd" in data/tour360.json.
@@ -364,7 +365,7 @@
     linkArrows.forEach(function (a, k) {
       var l = links[k];
       a.group.visible = !!l;
-      if (l) { a.group.rotation.y = -uToYaw(l.u); a.target = l.to; }
+      if (l) { a.group.rotation.y = -uToYaw(l.u); a.target = l.to; a.face = l.face; }
     });
   }
 
@@ -453,7 +454,7 @@
         else {
           if (first && hit.object !== arrowFwd.mesh) {
             first = false;
-            for (var k = 0; k < linkArrows.length; k++) if (linkArrows[k].mesh === hit.object) { showStop(linkArrows[k].target, 'fwd'); return; }
+            for (var k = 0; k < linkArrows.length; k++) if (linkArrows[k].mesh === hit.object) { showStop(linkArrows[k].target, 'fwd', linkArrows[k].face); return; }
           }
           first = false;
           if (nextIdx(idx) < 0) return stopHold(); next();
@@ -486,7 +487,7 @@
     if (hit.object === arrowFwd.mesh) next();
     else if (hit.object === arrowBack.mesh) prev();
     else {
-      for (var k = 0; k < linkArrows.length; k++) if (linkArrows[k].mesh === hit.object) { showStop(linkArrows[k].target, 'fwd'); break; }
+      for (var k = 0; k < linkArrows.length; k++) if (linkArrows[k].mesh === hit.object) { showStop(linkArrows[k].target, 'fwd', linkArrows[k].face); break; }
     }
   }
 
