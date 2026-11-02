@@ -642,7 +642,7 @@
     }
     dragMoved += Math.abs(dx) + Math.abs(dy);
     if (dragMoved > 14) stopHold();
-    var sens = (fov * Math.PI / 180) / Math.max(200, stage.clientHeight);
+    var sens = 1.5 * (fov * Math.PI / 180) / Math.max(200, stage.clientHeight);  // 1.5 = look speed (1 = original)
     yaw   -= dx * sens;
     pitch += dy * sens;
     clampPitch();
