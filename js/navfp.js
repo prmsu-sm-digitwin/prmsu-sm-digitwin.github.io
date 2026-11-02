@@ -20,8 +20,8 @@
   var EYE_HEIGHT   = 5;       // metres above the pathway
   var FOV_FP       = 72;
   var AUTO_TURN    = 1.5;     // rad/s the view turns toward a sideways joystick push (second-finger look overrides)
-  var WALK_SPEED   = 30;      // scene units (metres) per second at full joystick
-  var HALF_WIDTH   = 1.5;     // how far from a pathway's centreline you can stray
+  var WALK_SPEED   = 25;      // scene units (metres) per second at full joystick
+  var HALF_WIDTH   = 1;     // how far from a pathway's centreline you can stray
   var LABEL_RANGE_FP = 170;   // name tags farther than this are hidden in first-person
   // collision against the building models (walls block you; archways / gaps are walkable)
   var CELL         = 0.5;     // collision grid resolution (metres)

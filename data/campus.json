@@ -1396,7 +1396,7 @@
       "neighbors": [
         "Z5_corner",
         "Z5_Int2",
-        "entryWaypoint_Granary"
+        "entryWaypoint_MRF"
       ]
     },
     {
@@ -1449,23 +1449,6 @@
       ]
     },
     {
-      "id": "entryWaypoint_Granary",
-      "label": "Granary Entry",
-      "latLng": {
-        "lat": 14.968263348980296,
-        "lng": 120.19926401070099
-      },
-      "position": {
-        "x": 885.2,
-        "z": 27.6
-      },
-      "neighbors": [
-        "Z5_Int1",
-        "entryWaypoint_MRF",
-        "Z1_Int17"
-      ]
-    },
-    {
       "id": "entryWaypoint_MRF",
       "label": "MRF Entry",
       "latLng": {
@@ -1477,8 +1460,8 @@
         "z": 17.9
       },
       "neighbors": [
-        "entryWaypoint_Granary",
-        "Z1_Int17"
+        "Z1_Int17",
+        "Z5_Int1"
       ]
     },
     {
@@ -1541,8 +1524,7 @@
         "z": -117.3
       },
       "neighbors": [
-        "entryWaypoint_MRF",
-        "entryWaypoint_Granary"
+        "entryWaypoint_MRF"
       ]
     },
     {
@@ -2067,12 +2049,12 @@
       "description": "LHS faculty with CCIT classrooms.",
       "color": "#d1a733",
       "latLng": {
-        "lat": 14.969957043593372,
-        "lng": 120.19874566261873
+        "lat": 14.970000907777326,
+        "lng": 120.19876424140304
       },
       "position": {
-        "x": 829.4,
-        "z": -161.6
+        "x": 831.4,
+        "z": -166.5
       },
       "size": {
         "width": 23,
@@ -2792,48 +2774,18 @@
       "glbTint": true
     },
     {
-      "id": "granary",
-      "name": "Granary",
-      "category": "facility",
-      "description": "",
-      "color": "#948370",
-      "latLng": {
-        "lat": 14.968327802475086,
-        "lng": 120.1993661940147
-      },
-      "position": {
-        "x": 896.2,
-        "z": 20.4
-      },
-      "size": {
-        "width": 5.7,
-        "depth": 4.6,
-        "height": 1
-      },
-      "glbModel": null,
-      "texturedModel": null,
-      "rotation": 0,
-      "entryWaypoint": "entryWaypoint_Granary",
-      "glbTint": true,
-      "labelOffset": {
-        "x": 0,
-        "y": 6.5,
-        "z": 0
-      }
-    },
-    {
       "id": "mrf",
-      "name": "MRF",
+      "name": "MRF and Granary",
       "category": "facility",
       "description": "",
       "color": "#948370",
       "latLng": {
-        "lat": 14.968452233527525,
-        "lng": 120.19931974705392
+        "lat": 14.968406578968716,
+        "lng": 120.19929094993824
       },
       "position": {
-        "x": 891.2,
-        "z": 6.5
+        "x": 888.1,
+        "z": 11.6
       },
       "size": {
         "width": 12,
