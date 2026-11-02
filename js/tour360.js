@@ -559,13 +559,6 @@
     renderer.render(scene, camera);
   }
 
-  // ── Debug / test hook (harmless in production) ──
-  window.Tour360 = {
-    _state: function () { return { idx: idx, yaw: yaw, pitch: pitch, stops: stops.length }; },
-    _set: function (y, p, f) { yaw = y; pitch = p; velYaw = velPitch = 0; if (f) setFov(f); dirty = true; },
-    next: next, prev: prev, go: function (i) { showStop(i, 'jump'); }
-  };
-
   // ── Page hooks (script.js calls these when the Walkthrough page opens / closes) ──
   window.CampusWalkthrough = {
     onEnter: tourEnter,

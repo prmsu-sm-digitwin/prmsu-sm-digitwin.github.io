@@ -15,36 +15,36 @@
       "id": "pathway",
       "label": "Campus Pathway",
       "photo": "images/devzones/pathway_dz.jpg",
-      "x": 388.7,
-      "y": 479.5
+      "x": 604.5,
+      "y": 480.9
     },
     {
       "id": "chm1",
       "label": "CHM 1",
       "photo": "images/devzones/hm1_dz.jpg",
-      "x": 552.0,
-      "y": 434.5
+      "x": 583.2,
+      "y": 444.7
     },
     {
       "id": "chm2",
       "label": "CHM 2",
       "photo": "images/devzones/hm2_dz.jpg",
-      "x": 630.4,
-      "y": 403.5
+      "x": 643.5,
+      "y": 416.8
     },
     {
       "id": "gabaldon",
       "label": "Gabaldon Court",
       "photo": "images/devzones/gabaldon_dz.jpg",
-      "x": 714.9,
-      "y": 464.9
+      "x": 726.5,
+      "y": 449.1
     },
     {
       "id": "bsed",
       "label": "CTE (BSED)",
       "photo": "images/devzones/bsed_dz.jpg",
-      "x": 670.9,
-      "y": 325.6
+      "x": 676.2,
+      "y": 367.5
     },
     {
       "id": "lhs",
@@ -78,8 +78,8 @@
       "id": "dragon_fruit",
       "label": "Dragon Fruit Farm",
       "photo": "images/devzones/dragon_fruit_dz.jpg",
-      "x": 880.0,
-      "y": 450.0
+      "x": 478.5,
+      "y": 555.4
     }
   ]
 }
