@@ -130,6 +130,7 @@
   // Stops are walked in list order, but a stop can also:
   //   "end": true        -> the documented path stops here: no forward arrow
   //   "id": "name"       -> a name other stops can point to
+  //   "next": "name"     -> where the Forward arrow goes (default: the next stop in the list)
   //   "prev": "name"     -> where the Back arrow goes (default: the stop before it in the list)
   //   "links": [{"to": "name", "u": 0.3}]  -> an extra forward arrow (a fork), pointing at
   //                         horizontal photo position u (0..1) and leading to stop "name"
@@ -142,6 +143,7 @@
   function nextIdx(i) {
     var s = stops[i];
     if (!s || s.end || i >= stops.length - 1) return -1;
+    if (s.next != null && idToIdx[s.next] != null) return idToIdx[s.next];   // "next": id -> skip a side branch listed in between
     return i + 1;
   }
   function prevIdx(i) {
@@ -333,7 +335,7 @@
   function next() { var n = nextIdx(idx); if (n >= 0) showStop(n, 'fwd'); }
   // Back along the route keeps you facing backwards; but when Back returns from a side branch to a fork
   // (the stop before isn't the next one in the list, e.g. dorm path -> fork), face the fork's forward way.
-  function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, p === idx - 1 ? 'back' : 'jump'); }
+  function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, (p === idx - 1 || (stops[p].next != null && idToIdx[stops[p].next] === idx)) ? 'back' : 'jump'); }
 
   // Stop counter (top-left). Tap it to show the photo file + the "fwd" value, which is handy for
   // spotting a stop whose photo faces the wrong way: note its number, then fix its "fwd" in data/tour360.json.
@@ -359,7 +361,7 @@
     arrowFwd.pivot.rotation.y = (s.aim != null) ? -(uToYaw(s.aim + (fwdOf(s) - (s.fwd || 0))) - fy) : 0;
     arrowBack.group.rotation.y = -(s.back != null ? uToYaw(s.back) : fy + Math.PI);   // optional "back": u for forks
     arrowFwd.group.visible  = hasNext;          // no arrow at the end of the documented path
-    arrowBack.group.visible = hasPrev;
+    arrowBack.group.visible = hasPrev && !s.noback;   // optional "noback": true hides the Back arrow here
     var links = linksOf(idx);
     while (linkArrows.length < links.length) { var a = makeArrow(1.0); linkArrows.push(a); scene.add(a.group); }
     linkArrows.forEach(function (a, k) {
