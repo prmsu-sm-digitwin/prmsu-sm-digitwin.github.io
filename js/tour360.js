@@ -45,7 +45,7 @@
   var arrowFwd, arrowBack, raycaster;
   var texCache = {};            // file -> THREE.Texture
   var texOrder = [];            // LRU of cached files
-  var loadToken = 0;
+  var loadToken = 0, fadeTimer = null, travelDir = 1;
   var running = false, rafId = null, dirty = true;
   var inited = false, autoTimer = null, toastTimer = null;
   var stepBusy = false, holdTimer = null, holdIv = null, holdFired = false;
@@ -198,7 +198,7 @@
     catch (e) { return false; }
   })();
   var TEX_W = SMALL_DEVICE ? 3072 : 4096;
-  var MAX_KEEP = 6;
+  var MAX_KEEP = SMALL_DEVICE ? 7 : 10;
   var pending = {};             // file -> in-flight Promise (so a photo is never fetched twice)
 
   function finishTex(t, file) {
@@ -306,7 +306,11 @@
     i = Math.max(0, Math.min(stops.length - 1, i));
     var token = ++loadToken;
     stepBusy = true;
-    fadeEl.classList.add('on');
+    travelDir = (how === 'back') ? -1 : 1;
+    // Keep the current photo on screen while the next one loads; only dim a little if it is really slow
+    // (a fade on every step is what flashed dark while holding an arrow).
+    clearTimeout(fadeTimer);
+    fadeTimer = setTimeout(function () { fadeEl.classList.add('on'); }, 450);
     loadTex(stops[i].file).then(function (tex) {
       if (token !== loadToken) return;
       mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true;
@@ -317,16 +321,17 @@
       if (how === 'init') pitch = -0.05;
       velYaw = velPitch = 0;
       updateHud(); updateArrows();
-      fadeEl.classList.remove('on');
+      clearTimeout(fadeTimer); fadeEl.classList.remove('on');
       stepBusy = false;
       dirty = true;
-      preload(i + 1); preload(i + 2); preload(i - 1); preload(i + 3);
+      var d = travelDir;                                   // fetch ahead in the direction you are walking
+      preload(i + d); preload(i + 2 * d); preload(i + 3 * d); preload(i + 4 * d); preload(i - d);
       linksOf(i).forEach(function (l) { preload(l.to); });
       preload(prevIdx(i));
       warmRoute();
     }).catch(function () {
       if (token !== loadToken) return;
-      fadeEl.classList.remove('on');
+      clearTimeout(fadeTimer); fadeEl.classList.remove('on');
       stepBusy = false; stopHold();
       toast('Could not load this photo (offline and not cached yet?)');
       stopAuto();
