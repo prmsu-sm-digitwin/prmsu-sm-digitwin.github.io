@@ -80,6 +80,41 @@
       "photo": "images/devzones/dragon_fruit_dz.jpg",
       "x": 478.5,
       "y": 555.4
+    },
+    {
+      "id": "student_center",
+      "label": "Student Center",
+      "photo": "images/devzones/sc_dz.jpg",
+      "x": 690.0,
+      "y": 473.0
+    },
+    {
+      "id": "asb",
+      "label": "Agricultural Science Building",
+      "photo": "images/devzones/asb_dz.jpg",
+      "x": 913.0,
+      "y": 415.0
+    },
+    {
+      "id": "lhs_ccit",
+      "label": "LHS Faculty and CCIT Classrooms",
+      "photo": "images/devzones/ccit_lhs_dz.jpg",
+      "x": 826.0,
+      "y": 338.0
+    },
+    {
+      "id": "ccit_main",
+      "label": "CCIT",
+      "photo": "images/devzones/ccit_main_dz.jpg",
+      "x": 890.0,
+      "y": 312.0
+    },
+    {
+      "id": "3_lab_rooms",
+      "label": "3 Lab Rooms",
+      "photo": "images/devzones/3labrooms_dz.jpg",
+      "x": 797.0,
+      "y": 290.0
     }
   ]
 }

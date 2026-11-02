@@ -19,6 +19,7 @@
   // ── Tunables ──
   var EYE_HEIGHT   = 5;       // metres above the pathway
   var FOV_FP       = 72;
+  var AUTO_TURN    = 1.5;     // rad/s the view turns toward a sideways joystick push (second-finger look overrides)
   var WALK_SPEED   = 30;      // scene units (metres) per second at full joystick
   var HALF_WIDTH   = 2.4;     // how far from a pathway's centreline you can stray
   var LABEL_RANGE_FP = 170;   // name tags farther than this are hidden in first-person
@@ -559,6 +560,13 @@
     if (jobs.length) pumpBake(NavFP.active ? 3 : 6);      // background baking, a few ms per frame
     if (NavFP.active) {
       var jx = joy.x, jy = joy.y;
+      // Auto-steer: pushing the joystick sideways also turns the view that way, so at an
+      // intersection the camera follows where you are going instead of staring at the edge
+      // of the path. Dragging a second finger to look around always overrides it.
+      if (jx && look.id === null) {
+        yaw -= jx * AUTO_TURN * dt;
+        jx *= 0.6;                                          // part of the sideways push becomes the turn
+      }
       if (jx || jy) {
         var fx = -Math.sin(yaw), fz = -Math.cos(yaw);       // forward
         var rx =  Math.cos(yaw), rz = -Math.sin(yaw);       // right

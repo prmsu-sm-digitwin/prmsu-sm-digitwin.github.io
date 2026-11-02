@@ -344,8 +344,12 @@ function fitDevzonesMap() {
 
   const fit = Math.max(wrapW / devzonesView.imgW, wrapH / devzonesView.imgH);
   devzonesView.baseScale = fit;
-  devzonesView.minScale = fit;
+  // Zooming out is allowed down to the "whole map visible" size (contain). Any
+  // leftover space around the map is filled by a blurred copy of the same
+  // satellite image (see .devzones-map-wrap::before) so no black shows.
+  devzonesView.minScale = Math.min(wrapW / devzonesView.imgW, wrapH / devzonesView.imgH);
   devzonesView.maxScale = fit * 6;
+  wrap.style.setProperty('--dz-bg', 'url("' + img.getAttribute('src') + '")');
   devzonesView.scale = fit;
   devzonesView.tx = (wrapW - devzonesView.imgW * fit) / 2;
   devzonesView.ty = (wrapH - devzonesView.imgH * fit) / 2;

@@ -715,12 +715,13 @@ function initControls() {
     panStart(e);
   });
   canvas.addEventListener('pointermove', panMove);
+  canvas.addEventListener('contextmenu', e => e.preventDefault()); // right-drag rotates, so no browser menu
   canvas.addEventListener('pointerup', e => {
     panEnd();
     // Only do building hit-test on a real tap (not the end of a drag)
     const dx = Math.abs(e.clientX - _tapX);
     const dy = Math.abs(e.clientY - _tapY);
-    if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
+    if (e.button !== 2 && dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
       onPointerDown({ clientX: _tapX, clientY: _tapY });
     }
   });
@@ -745,7 +746,8 @@ function panStart(e) {
   pan.active = true;
   // Shift+drag rotates instead of panning — a one-pointer stand-in for the
   // two-finger rotate gesture below, so rotation is also testable with a mouse.
-  pan.mode = e.shiftKey ? 'rotate' : 'pan';
+  // On a laptop/desktop the right mouse button rotates too (left = pan, right = rotate).
+  pan.mode = (e.shiftKey || e.button === 2) ? 'rotate' : 'pan';
   pan.lastX = e.clientX ?? (e.touches?.[0]?.clientX ?? 0);
   pan.lastY = e.clientY ?? (e.touches?.[0]?.clientY ?? 0);
 }

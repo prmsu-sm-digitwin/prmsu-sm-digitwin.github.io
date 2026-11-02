@@ -887,6 +887,16 @@
     cursor: grab;
   }
   .devzones-map-wrap.dragging { cursor: grabbing; }
+  /* Zoomed out past the map's edges: show a blurred copy of the satellite
+     image instead of a black background. */
+  .devzones-map-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -30px;
+    background: var(--dz-bg) center / cover no-repeat;
+    filter: blur(14px) brightness(0.8);
+    pointer-events: none;
+  }
   .devzones-map-img {
     position: absolute;
     top: 0;
