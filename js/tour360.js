@@ -77,13 +77,19 @@
       '<div class="tour-fade" id="tour-fade"></div>' +
       '<div class="tour-hint" id="tour-hint">Drag to look around · tap or hold the arrows to walk</div>' +
       '<div class="tour-toast" id="tour-toast"></div>' +
-      '<div class="tour-hud" id="tour-hud" title="Tap for details"></div>' +
+      '<div class="tour-topleft">' +
+        '<div class="tour-hud" id="tour-hud" title="Tap for details"></div>' +
+        '<button class="tour-places-btn" id="tour-places-btn" type="button" aria-label="Places" title="Places">' +
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="3.6" cy="6" r="1" fill="currentColor"/><circle cx="3.6" cy="12" r="1" fill="currentColor"/><circle cx="3.6" cy="18" r="1" fill="currentColor"/></svg></button>' +
+      '</div>' +
+      '<div class="tour-places" id="tour-places"><div class="tour-places-title">Go to</div><div class="tour-places-list" id="tour-places-list"></div></div>' +
       '<button class="tour-back" id="tour-back" type="button" aria-label="Back to home" title="Back">' +
       '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>';
 
     canvas   = document.getElementById('tour-canvas');
     btnBack  = document.getElementById('tour-back');
     document.getElementById('tour-hud').addEventListener('click', function () { hudDetail = !hudDetail; updateHud(); });
+    document.getElementById('tour-places-btn').addEventListener('click', function (e) { e.stopPropagation(); togglePlaces(); });
     fadeEl   = document.getElementById('tour-fade');
     toastEl  = document.getElementById('tour-toast');
     loadingEl = document.getElementById('tour-loading');
@@ -120,6 +126,7 @@
       .then(function (d) {
         data = d; stops = d.stops || [];
         resolveLinks();
+        buildPlaces(d.places || []);
         loadingEl.classList.add('tour-hidden');
         showStop(0, 'init');
       })
@@ -140,6 +147,34 @@
     idToIdx = {};
     stops.forEach(function (s, i) { if (s.id) idToIdx[s.id] = i; });
   }
+  // ── Places (teleport) ──
+  // data.places = [{name, to: stop id, face: u}] -> the list button (top-left) jumps straight to that
+  // stop, already turned to face the building (face = horizontal photo position 0..1).
+  var placesEl = null;
+  function buildPlaces(list) {
+    var box = document.getElementById('tour-places-list');
+    var btn = document.getElementById('tour-places-btn');
+    placesEl = document.getElementById('tour-places');
+    if (!box) return;
+    box.innerHTML = '';
+    var any = false;
+    list.forEach(function (p) {
+      if (idToIdx[p.to] == null) return;
+      any = true;
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'tour-place'; b.textContent = p.name;
+      b.addEventListener('click', function (e) {
+        e.stopPropagation(); closePlaces(); stopAuto();
+        showStop(idToIdx[p.to], 'tp', p.face);
+      });
+      box.appendChild(b);
+    });
+    if (btn) btn.style.display = any ? '' : 'none';
+    placesEl.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+  }
+  function togglePlaces() { if (placesEl) { placesEl.classList.toggle('open'); hideHint(); } }
+  function closePlaces() { if (placesEl) placesEl.classList.remove('open'); }
+
   function nextIdx(i) {
     var s = stops[i];
     if (!s || s.end || i >= stops.length - 1) return -1;
@@ -319,6 +354,7 @@
       // Face the way you're travelling.
       yaw = (how === 'back') ? (stops[i].back != null ? uToYaw(stops[i].back) : fy + Math.PI) : (faceU != null ? uToYaw(faceU + (fwdOf(stops[i]) - (stops[i].fwd || 0))) : fy);
       if (how === 'init') pitch = -0.05;
+      if (how === 'tp') pitch = -0.03;
       velYaw = velPitch = 0;
       updateHud(); updateArrows();
       clearTimeout(fadeTimer); fadeEl.classList.remove('on');
@@ -397,6 +433,7 @@
     if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
   }
   function onDown(e) {
+    closePlaces();
     try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
     pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
     var n = Object.keys(pointers).length;
