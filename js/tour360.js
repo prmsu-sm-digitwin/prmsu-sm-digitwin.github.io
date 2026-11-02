@@ -127,6 +127,7 @@
         data = d; stops = d.stops || [];
         resolveLinks();
         buildPlaces(d.places || []);
+        try { buildOffline(); } catch (err) { console.warn('[tour] offline panel unavailable', err); }   // never block the tour
         loadingEl.classList.add('tour-hidden');
         showStop(0, 'init');
       })
@@ -172,8 +173,193 @@
     if (btn) btn.style.display = any ? '' : 'none';
     placesEl.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   }
-  function togglePlaces() { if (placesEl) { placesEl.classList.toggle('open'); hideHint(); } }
+  function togglePlaces() { if (placesEl) { closeOffline(); placesEl.classList.toggle('open'); hideHint(); } }
   function closePlaces() { if (placesEl) placesEl.classList.remove('open'); }
+
+
+  // ── Offline download ──
+  // Photos are normally saved on the phone only as they are visited. This panel (download button
+  // next to the Places button; also offered once on the first visit) saves ALL the tour photos in
+  // the photo cache so the whole walkthrough works with no internet. It is opt-in: it shows the
+  // size, checks free space, can be resumed after an interruption (already-saved photos are
+  // skipped) and the saved photos can be removed again.
+  var PHOTO_CACHE_NAME = 'prmsu-photos-v5';      // must match PHOTO_CACHE in service-worker.js
+  var AVG_PHOTO_MB = 0.69;                        // average size of one tour photo (about 760 MB / 1100)
+  var OFFLINE_ASKED_KEY = 'tour360-offline-asked';
+  var offlineEl = null, offlineSavedSet = {}, offlineBusy = false, offlineCancel = false, wakeLock = null;
+
+  function photoUrls() {
+    var seen = {}, out = [];
+    stops.forEach(function (s) {
+      if (s.file && !seen[s.file]) { seen[s.file] = 1; out.push(new URL(s.file, location.href).href); }
+    });
+    return out;
+  }
+  function mb(n) { return n >= 1000 ? (n / 1024).toFixed(1) + ' GB' : Math.round(n) + ' MB'; }
+
+  function buildOffline() {
+    if (!('caches' in window) || !stage) return;
+    var top = stage.querySelector('.tour-topleft');
+    if (top && !document.getElementById('tour-offline-btn')) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.id = 'tour-offline-btn'; b.className = 'tour-places-btn';
+      b.setAttribute('aria-label', 'Download for offline'); b.title = 'Download for offline';
+      b.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
+      b.addEventListener('click', function (e) { e.stopPropagation(); toggleOffline(); });
+      top.appendChild(b);
+    }
+    offlineEl = document.createElement('div');
+    offlineEl.className = 'tour-offline'; offlineEl.id = 'tour-offline';
+    offlineEl.innerHTML =
+      '<div class="tour-places-title">Offline mode</div>' +
+      '<div class="tour-offline-body">' +
+        '<p class="tour-offline-text" id="tour-offline-text"></p>' +
+        '<div class="tour-offline-bar"><div class="tour-offline-fill" id="tour-offline-fill"></div></div>' +
+        '<div class="tour-offline-status" id="tour-offline-status"></div>' +
+        '<div class="tour-offline-actions">' +
+          '<button type="button" class="tour-offline-go" id="tour-offline-go">Download all</button>' +
+          '<button type="button" class="tour-offline-alt" id="tour-offline-alt">Later</button>' +
+        '</div>' +
+        '<button type="button" class="tour-offline-remove" id="tour-offline-remove">Remove downloaded photos</button>' +
+      '</div>';
+    stage.appendChild(offlineEl);
+    offlineEl.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+    document.getElementById('tour-offline-go').addEventListener('click', function (e) { e.stopPropagation(); startOfflineDownload(); });
+    document.getElementById('tour-offline-alt').addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (offlineBusy) { offlineCancel = true; } else closeOffline();
+    });
+    document.getElementById('tour-offline-remove').addEventListener('click', function (e) { e.stopPropagation(); removeOffline(); });
+
+    // Offer it once, on the very first visit (never again after "Later" or a download).
+    var asked = false;
+    try { asked = !!localStorage.getItem(OFFLINE_ASKED_KEY); } catch (err) {}
+    refreshOffline().then(function (state) {
+      if (!asked && state.saved < state.total) {
+        setTimeout(function () { if (running) openOffline(); }, 2500);
+      }
+    });
+  }
+
+  function refreshOffline() {
+    var urls = photoUrls();
+    return caches.open(PHOTO_CACHE_NAME).then(function (c) { return c.keys(); }).then(function (keys) {
+      offlineSavedSet = {};
+      keys.forEach(function (r) { offlineSavedSet[r.url] = 1; });
+      var saved = urls.filter(function (u) { return offlineSavedSet[u]; }).length;
+      var state = { saved: saved, total: urls.length, urls: urls };
+      renderOffline(state);
+      return state;
+    }).catch(function () { return { saved: 0, total: urls.length, urls: urls }; });
+  }
+
+  function renderOffline(st) {
+    if (!offlineEl) return;
+    var text = document.getElementById('tour-offline-text');
+    var fill = document.getElementById('tour-offline-fill');
+    var go = document.getElementById('tour-offline-go');
+    var alt = document.getElementById('tour-offline-alt');
+    var rem = document.getElementById('tour-offline-remove');
+    var left = st.total - st.saved;
+    fill.style.width = (st.total ? Math.round(st.saved / st.total * 100) : 0) + '%';
+    rem.style.display = st.saved > 0 && !offlineBusy ? '' : 'none';
+    if (left <= 0) {
+      text.textContent = 'All ' + st.total + ' photos are saved on this device. The whole campus walkthrough works with no internet.';
+      go.style.display = 'none'; alt.textContent = 'Close'; alt.style.display = '';
+    } else {
+      text.textContent = 'Save the whole walkthrough on this phone so it works with no internet. About ' + mb(left * AVG_PHOTO_MB) +
+        ' still to download (' + st.saved + ' of ' + st.total + ' saved). Wi-Fi is recommended.';
+      go.style.display = offlineBusy ? 'none' : ''; go.textContent = st.saved > 0 ? 'Download the rest' : 'Download all';
+      alt.textContent = offlineBusy ? 'Pause' : 'Later'; alt.style.display = '';
+    }
+  }
+
+  function setOfflineStatus(t) { var el = document.getElementById('tour-offline-status'); if (el) el.textContent = t || ''; }
+  function openOffline() { if (!offlineEl) return; closePlaces(); offlineEl.classList.add('open'); refreshOffline(); hideHint(); }
+  function closeOffline() {
+    if (!offlineEl) return;
+    offlineEl.classList.remove('open');
+    try { localStorage.setItem(OFFLINE_ASKED_KEY, '1'); } catch (e) {}
+  }
+  function toggleOffline() { if (offlineEl && offlineEl.classList.contains('open')) closeOffline(); else openOffline(); }
+
+  function startOfflineDownload() {
+    if (offlineBusy) return;
+    try { localStorage.setItem(OFFLINE_ASKED_KEY, '1'); } catch (e) {}
+    refreshOffline().then(function (st) {
+      var todo = st.urls.filter(function (u) { return !offlineSavedSet[u]; });
+      if (!todo.length) { setOfflineStatus(''); return; }
+      var needMB = todo.length * AVG_PHOTO_MB;
+      var est = navigator.storage && navigator.storage.estimate ? navigator.storage.estimate() : Promise.resolve(null);
+      if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) {} }
+      est.then(function (e) {
+        if (e && e.quota) {
+          var freeMB = (e.quota - (e.usage || 0)) / 1048576;
+          if (freeMB < needMB * 1.15) {
+            setOfflineStatus('Not enough free space: about ' + mb(needMB) + ' needed, only ' + mb(Math.max(0, freeMB)) + ' available. Free up some storage and try again.');
+            return;
+          }
+        }
+        runOfflineDownload(todo, st.total, st.saved);
+      });
+    });
+  }
+
+  function runOfflineDownload(todo, total, savedAtStart) {
+    offlineBusy = true; offlineCancel = false;
+    var done = 0, failed = 0, idx = 0, active = 0;
+    if (navigator.wakeLock && navigator.wakeLock.request) {
+      navigator.wakeLock.request('screen').then(function (l) { wakeLock = l; }).catch(function () {});
+    }
+    renderOffline({ saved: savedAtStart, total: total });
+    caches.open(PHOTO_CACHE_NAME).then(function (cache) {
+      function progress() {
+        var saved = savedAtStart + done;
+        document.getElementById('tour-offline-fill').style.width = Math.round(saved / total * 100) + '%';
+        setOfflineStatus('Downloading… ' + saved + ' / ' + total + ' photos. Keep this screen open.');
+      }
+      function finish() {
+        offlineBusy = false;
+        if (wakeLock) { try { wakeLock.release(); } catch (e) {} wakeLock = null; }
+        refreshOffline().then(function (st) {
+          if (st.saved >= st.total) setOfflineStatus('Done. You can now use the walkthrough offline.');
+          else if (offlineCancel) setOfflineStatus('Paused. Tap "Download the rest" to continue where you stopped.');
+          else setOfflineStatus('Stopped (connection problem or full storage). Tap "Download the rest" to try again.');
+        });
+      }
+      function pump() {
+        if (offlineCancel || failed >= 6) { if (active === 0) finish(); return; }
+        if (idx >= todo.length) { if (active === 0) finish(); return; }
+        var url = todo[idx++]; active++;
+        fetchWithRetry(url, 2).then(function (resp) {
+          return cache.put(new Request(url), resp);
+        }).then(function () { done++; }, function () { failed++; }).then(function () {
+          active--; progress(); pump();
+        });
+      }
+      progress();
+      for (var k = 0; k < 4; k++) pump();
+    });
+  }
+
+  function fetchWithRetry(url, tries) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r;
+    }).catch(function (err) {
+      if (tries > 0 && !offlineCancel) return fetchWithRetry(url, tries - 1);
+      throw err;
+    });
+  }
+
+  function removeOffline() {
+    if (offlineBusy) return;
+    caches.open(PHOTO_CACHE_NAME).then(function (cache) {
+      return cache.keys().then(function (keys) {
+        return Promise.all(keys.filter(function (r) { return /\/images\/360\//.test(r.url); }).map(function (r) { return cache.delete(r); }));
+      });
+    }).then(function () { setOfflineStatus('Downloaded photos removed.'); return refreshOffline(); });
+  }
 
   function nextIdx(i) {
     var s = stops[i];
@@ -434,6 +620,7 @@
   }
   function onDown(e) {
     closePlaces();
+    if (offlineEl && !offlineBusy && offlineEl.classList.contains('open')) closeOffline();
     try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
     pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
     var n = Object.keys(pointers).length;

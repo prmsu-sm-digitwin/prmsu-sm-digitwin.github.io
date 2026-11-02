@@ -2139,3 +2139,31 @@
   content: ''; position: absolute; left: 50%; bottom: -5px; margin-left: -5px;
   border: 5px solid transparent; border-bottom: 0; border-top-color: #1f2937;
 }
+
+/* Offline download panel (Campus Walkthrough) */
+.tour-offline {
+  position: absolute; z-index: 6; left: 10px; right: 10px;
+  top: calc(58px + env(safe-area-inset-top, 0px));
+  max-width: 320px; display: none; flex-direction: column;
+  border-radius: 14px; overflow: hidden;
+  background: rgba(18,22,26,0.92); backdrop-filter: blur(10px);
+  font-family: 'DM Sans', sans-serif; color: #fff;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+.tour-offline.open { display: flex; }
+.tour-offline-body { padding: 0 16px 14px; }
+.tour-offline-text { margin: 4px 0 12px; font-size: 13.5px; line-height: 1.45; }
+.tour-offline-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.16); overflow: hidden; }
+.tour-offline-fill { height: 100%; width: 0; background: #f39c12; transition: width .25s; }
+.tour-offline-status { min-height: 16px; margin: 8px 0 10px; font-size: 12px; line-height: 1.4; opacity: .85; }
+.tour-offline-actions { display: flex; gap: 8px; }
+.tour-offline-go, .tour-offline-alt {
+  flex: 1; padding: 11px 10px; border: 0; border-radius: 10px;
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.tour-offline-go { background: #f39c12; color: #1a1a1a; }
+.tour-offline-alt { background: rgba(255,255,255,0.14); color: #fff; }
+.tour-offline-remove {
+  display: block; width: 100%; margin-top: 10px; padding: 6px; border: 0; background: none;
+  color: rgba(255,255,255,0.6); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer;
+}
