@@ -20,7 +20,7 @@
   var EYE_HEIGHT   = 5;       // metres above the pathway
   var FOV_FP       = 72;
   var AUTO_TURN    = 1.5;     // rad/s the view turns toward a sideways joystick push (second-finger look overrides)
-  var LOOK_SPEED   = 1.5;     // finger / mouse drag look speed (1 = original; higher = faster)
+  var LOOK_SPEED   = 2;     // finger / mouse drag look speed (1 = original; higher = faster)
   var WALK_SPEED   = 25;      // scene units (metres) per second at full joystick
   var HALF_WIDTH   = 1;     // how far from a pathway's centreline you can stray
   var LABEL_RANGE_FP = 170;   // name tags farther than this are hidden in first-person
