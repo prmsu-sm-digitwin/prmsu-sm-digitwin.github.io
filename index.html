@@ -674,8 +674,6 @@
     }
 
     window.showUpdateToast = showUpdateToast;
-    // Preview: open the app with ?updatetest on the end of the address to see the pill without a real update.
-    if (/[?&]updatetest/.test(location.search)) window.addEventListener('load', () => setTimeout(showUpdateToast, 1500));
 
     // Installed apps are often resumed, not reopened: look for a new version when the app comes back.
     let lastCheck = 0;
