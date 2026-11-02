@@ -21,6 +21,7 @@
   {"name": "LHS", "to": "lhsmain_start", "face": 0.82},
   {"name": "LHS Faculty and CCIT Classrooms", "to": "tp_lhs_faculty_and_ccit_classrooms", "face": 0.12},
   {"name": "Library", "to": "z1_lib_fork", "face": 0.69},
+  {"name": "Main Gate", "to": "tp_main_gate", "face": 0.94},
   {"name": "Men's Dormitory", "to": "tp_men_s_dormitory", "face": 0.72},
   {"name": "Mitos Magsaysay Building", "to": "tp_mitos_magsaysay_building", "face": 0.27},
   {"name": "Motorpool", "to": "tp_motorpool", "face": 0.72},
@@ -33,7 +34,7 @@
   {"name": "Women's Dormitory", "to": "tp_women_s_dormitory", "face": 0.22}
  ],
  "stops": [
-  {"file": "images/360/MainGate_to_InnerGate/p01.jpg", "title": "Main Gate", "fwd": 0.948},
+  {"file": "images/360/MainGate_to_InnerGate/p01.jpg", "title": "Main Gate", "fwd": 0.948, "id": "tp_main_gate"},
   {"file": "images/360/MainGate_to_InnerGate/p02.jpg", "title": "Main Gate", "fwd": 0.954},
   {"file": "images/360/MainGate_to_InnerGate/p03.jpg", "title": "Main Gate", "fwd": -0.046},
   {"file": "images/360/MainGate_to_InnerGate/p04.jpg", "title": "Main Gate", "fwd": -0.028},
