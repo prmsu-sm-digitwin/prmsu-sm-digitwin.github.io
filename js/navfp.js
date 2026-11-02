@@ -20,6 +20,7 @@
   var EYE_HEIGHT   = 5;       // metres above the pathway
   var FOV_FP       = 72;
   var AUTO_TURN    = 1.5;     // rad/s the view turns toward a sideways joystick push (second-finger look overrides)
+  var LOOK_SPEED   = 1.5;     // finger / mouse drag look speed (1 = original; higher = faster)
   var WALK_SPEED   = 25;      // scene units (metres) per second at full joystick
   var HALF_WIDTH   = 1;     // how far from a pathway's centreline you can stray
   var LABEL_RANGE_FP = 170;   // name tags farther than this are hidden in first-person
@@ -545,7 +546,7 @@
     if (look.id === null || e.pointerId !== look.id) return;
     var dx = e.clientX - look.x, dy = e.clientY - look.y;
     look.x = e.clientX; look.y = e.clientY;
-    var sens = THREE.MathUtils.degToRad(camera.fov) / Math.max(300, renderer.domElement.clientHeight);
+    var sens = LOOK_SPEED * THREE.MathUtils.degToRad(camera.fov) / Math.max(300, renderer.domElement.clientHeight);
     yaw   += dx * sens;
     pitch += dy * sens;
     pitch = Math.max(-0.9, Math.min(0.9, pitch));
