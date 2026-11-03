@@ -6,7 +6,7 @@
 // the same file name (new photos / new file names are picked up automatically).
 const PHOTO_CACHE = 'prmsu-photos-v6';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v4.84'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v4.85'; // Update this version whenever files change
 
 const STATIC_ASSETS = [
   './',
@@ -126,7 +126,10 @@ self.addEventListener('fetch', event => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
         // Cache successful same-origin responses
-        if (response && response.status === 200 && url.origin === self.location.origin) {
+        // Campus Walkthrough photos (/images/360/) are NOT saved just by viewing them: they only
+        // work offline if the user taps the optional download button (that writes to PHOTO_CACHE itself).
+        const isTourPhoto = /\/images\/360\//.test(url.pathname);
+        if (!isTourPhoto && response && response.status === 200 && url.origin === self.location.origin) {
           const clone = response.clone();
           caches.open(isPhotoPath(url.pathname) ? PHOTO_CACHE : CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
