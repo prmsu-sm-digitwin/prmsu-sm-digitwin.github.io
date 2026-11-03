@@ -1,12 +1,7 @@
-// Update version in CACHE_NAME whenever files change
 
-// Big photos (360° tour + Development Zones) live in their OWN cache, so a normal
-// app update (new CACHE_NAME) doesn't throw ~90 MB away and make every phone
-// download it all again. Only bump PHOTO_CACHE when you REPLACE photos that keep
-// the same file name (new photos / new file names are picked up automatically).
 const PHOTO_CACHE = 'prmsu-photos-v6';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v4.85'; // Update this version whenever files change
+const CACHE_NAME = 'prmsu-digitwin-v4.87';
 
 const STATIC_ASSETS = [
   './',
@@ -25,7 +20,7 @@ const STATIC_ASSETS = [
   './js/vendor/GLTFLoader.js',
   './data/campus.json',
   './data/devzones.json',
-  './images/devzones/DEV_ZONES_SATMAP.jpg',   // (heavy -> background, see HEAVY below)
+  './images/devzones/DEV_ZONES_SATMAP.jpg',
   './models/QuadrangleNav.glb',
   './images/admin-building.png',
   './images/university-gate.jpg',
@@ -40,29 +35,15 @@ const STATIC_ASSETS = [
   './js/vendor/three.min.js',
 ];
 
-// Heavy files (models, big images) are NOT downloaded during install. Install used to fetch ~20 MB
-// every version bump, so a new version took 30+ seconds to go live and pull-to-refresh kept showing
-// the old app. Now install only fetches the small app files (a few seconds), the new version goes live
-// right away, and the heavy files are cached in the background right after (see 'WARM_CACHE' below).
-// Until they're cached the normal fetch handler loads them from the network and caches them.
-// heavy = 3D models + anything big; the small hero/legend images stay in the quick install
 const HEAVY_NAMES = ['QuadrangleNav.glb', 'admin-building.png', 'DEV_ZONES_SATMAP.jpg'];
 const isHeavy = u => HEAVY_NAMES.some(n => u.endsWith('/' + n));
 const CORE_ASSETS  = STATIC_ASSETS.filter(u => !isHeavy(u));
 const HEAVY_ASSETS = STATIC_ASSETS.filter(isHeavy);
 
-// Install the cache: only the small core files, so the update is quick
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('[SW] Caching static assets');
-      // Cache one by one so a single failure doesn't break the whole install.
-      // { cache: 'reload' } forces each fetch to bypass the browser's own
-      // HTTP cache -- without this, cache.add(url) can silently reuse an
-      // HTTP-cached (stale) response even though CACHE_NAME just changed,
-      // which is why a bumped version sometimes still shows old data.json
-      // content until a hard refresh. This makes a version bump actually
-      // guarantee a fresh network fetch for every asset, every time.
       return Promise.allSettled(
         CORE_ASSETS.map(url => cache.add(new Request(url, { cache: 'reload' })))
       );
@@ -71,14 +52,10 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Background caching of the heavy files + Development Zones photos. The page asks for it once it has
-// loaded (message from index.html), so it never delays an update or a first paint.
 function warmHeavy() {
   return caches.open(CACHE_NAME).then(cache => Promise.allSettled(
     HEAVY_ASSETS.map(url => cache.match(url).then(hit => hit || cache.add(new Request(url, { cache: 'reload' }))))
   )).then(() =>
-    // Development Zones photos: the list comes from data/devzones.json, so zones added in
-    // devzones-editor.html are cached for offline use too, with no change needed here.
     fetch('./data/devzones.json', { cache: 'reload' })
       .then(r => r.json())
       .then(d => caches.open(PHOTO_CACHE).then(pc => Promise.allSettled(
@@ -94,7 +71,6 @@ self.addEventListener('message', event => {
   if (event.data && event.data.type === 'WARM_CACHE') event.waitUntil(warmHeavy());
 });
 
-// Activate the service worker and clean up old caches then tell every open tab to reload
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -103,31 +79,23 @@ self.addEventListener('activate', event => {
       )
       .then(() => self.clients.claim())
       .then(() =>
-        // Notify the tabs that a new version is ready
         self.clients.matchAll({ type: 'window', includeUncontrolled: true })
           .then(clients => clients.forEach(client => client.postMessage({ type: 'SW_UPDATED' })))
       )
   );
 });
 
-// Fetch yung cache-first for assets amd network-first for everything else
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Skip non-GET and cross-origin requests we don't control
   if (event.request.method !== 'GET') return;
 
-  // The campus editor is a developer tool, not part of the app: never serve it
-  // (or the data it edits) from this cache, or edits show up stale.
   if (url.pathname.endsWith('/campus-editor.html') || url.pathname.endsWith('/devzones-editor.html')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        // Cache successful same-origin responses
-        // Campus Walkthrough photos (/images/360/) are NOT saved just by viewing them: they only
-        // work offline if the user taps the optional download button (that writes to PHOTO_CACHE itself).
         const isTourPhoto = /\/images\/360\//.test(url.pathname);
         if (!isTourPhoto && response && response.status === 200 && url.origin === self.location.origin) {
           const clone = response.clone();
@@ -135,7 +103,6 @@ self.addEventListener('fetch', event => {
         }
         return response;
       }).catch(() => {
-        // Offline fallback for HTML pages
         if (event.request.headers.get('accept')?.includes('text/html')) {
           return caches.match('./index.html');
         }

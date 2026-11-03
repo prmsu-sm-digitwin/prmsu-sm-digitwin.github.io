@@ -268,9 +268,8 @@
 (function () {
   'use strict';
 
-  // ---------- Coordinate transform (matches the conversion used by hand so far) ----------
-  const TX_SCALE_X = 107649.67;   // x = TX_SCALE_X * (lng - lng0)
-  const TX_SCALE_Z = -111708.45;  // z = TX_SCALE_Z * (lat - lat0)
+  const TX_SCALE_X = 107649.67;
+  const TX_SCALE_Z = -111708.45;
 
   function llToXZ(lat, lng, origin) {
     return {
@@ -286,19 +285,18 @@
   }
   function round1(n) { return Math.round(n * 10) / 10; }
 
-  // ---------- State ----------
   const state = {
     data: null,
-    selected: null,       // { type: 'waypoint'|'building', id }
+    selected: null,
     mode: 'select',
-    linkFirst: null,       // waypoint id, when mode === 'link'
+    linkFirst: null,
     view: { x: 500, z: -80, scale: 0.55 },
-    dragging: null,        // { kind: 'pan'|'moveNode', startScreen, ... }
+    dragging: null,
     dirty: false,
     history: [],
     redoStack: [],
     idSeq: 1,
-    showLabels: true,      // draw the draggable building name tags
+    showLabels: true,
   };
 
   const canvas = document.getElementById('canvas');
@@ -313,10 +311,7 @@
     toast._t = setTimeout(() => el.classList.remove('show'), ms || 2200);
   }
 
-  // ---------- Load ----------
   function setData(data, sourceLabel) {
-    // The app now draws every route as one gray "Pathways" style, so the old
-    // paved/unpaved split is dropped (pavedEdges is kept as an empty list).
     data.pavedEdges = [];
     if (!Array.isArray(data.ovals)) data.ovals = [];
     state.data = data;
@@ -367,11 +362,10 @@
     document.getElementById('fileFallback').classList.remove('show');
   });
 
-  // ---------- Undo ----------
   function snapshot() {
     state.history.push(JSON.stringify(state.data));
     if (state.history.length > 60) state.history.shift();
-    state.redoStack = [];          // a new edit invalidates anything that was undone
+    state.redoStack = [];
   }
   function undo() {
     if (!state.history.length) { toast('Nothing to undo'); return; }
@@ -390,7 +384,6 @@
   function restoreSnapshot(json) {
     state.data = JSON.parse(json);
     rebuildIndex();
-    // selection may no longer exist
     if (state.selected) {
       let stillThere;
       if (state.selected.type === 'waypoint') stillThere = waypointMap[state.selected.id];
@@ -416,7 +409,6 @@
     if (e.key === 'Escape') { state.linkFirst = null; setMode('select'); }
   });
 
-  // ---------- View transform ----------
   function screenToWorld(sx, sy) {
     const r = canvas.getBoundingClientRect();
     const cx = r.width / 2, cy = r.height / 2;
@@ -464,7 +456,6 @@
     redraw();
   }
 
-  // ---------- Resize ----------
   function resizeCanvas() {
     const wrap = document.getElementById('canvas2DWrap');
     const dpr = window.devicePixelRatio || 1;
@@ -476,21 +467,13 @@
     redraw();
   }
   window.addEventListener('resize', resizeCanvas);
-  // The 3D preview panel opening/closing changes #canvas2DWrap's size via
-  // flex layout, not a window resize event, so resizeCanvas() alone would
-  // miss it and leave the 2D canvas element's fixed pixel size stale
-  // (stale enough to visually/hit-test overlap the 3D panel). A
-  // ResizeObserver catches every size change, including each frame of the
-  // panel's open/close CSS transition.
   new ResizeObserver(() => resizeCanvas()).observe(document.getElementById('canvas2DWrap'));
 
-  // ---------- Drawing ----------
   const NODE_R = 5;
   const NODE_R_SEL = 7.5;
 
   function edgeKeyOf(a, b) { return [a, b].sort().join('|'); }
 
-  // Every road is a "Pathway" now (no paved / unpaved split).
   function isPaved(a, b) { return true; }
 
   function redraw() {
@@ -499,14 +482,12 @@
     if (!state.data) return;
     const d = state.data;
 
-    // ground
     const g = d.ground;
     const gTL = worldToScreen(g.offsetX - g.width / 2, g.offsetZ - g.depth / 2);
     const gBR = worldToScreen(g.offsetX + g.width / 2, g.offsetZ + g.depth / 2);
     ctx.fillStyle = g.color || '#7cb87a';
     ctx.fillRect(gTL.x, gTL.y, gBR.x - gTL.x, gBR.y - gTL.y);
 
-    // bounds (dashed)
     const b = d.bounds;
     const bTL = worldToScreen(b.minX, b.minZ);
     const bBR = worldToScreen(b.maxX, b.maxZ);
@@ -517,7 +498,6 @@
     ctx.strokeRect(bTL.x, bTL.y, bBR.x - bTL.x, bBR.y - bTL.y);
     ctx.restore();
 
-    // roads (all Pathways)
     const drawn = new Set();
     const edgesToDraw = [];
     d.waypoints.forEach(wp => {
@@ -530,7 +510,7 @@
         edgesToDraw.push([wp, nb, isPaved(wp.id, nid)]);
       });
     });
-    edgesToDraw.sort((a, c) => (a[2] === c[2]) ? 0 : (a[2] ? 1 : -1)); // unpaved first
+    edgesToDraw.sort((a, c) => (a[2] === c[2]) ? 0 : (a[2] ? 1 : -1));
     edgesToDraw.forEach(([wp, nb, paved]) => {
       const p1 = worldToScreen(wp.position.x, wp.position.z);
       const p2 = worldToScreen(nb.position.x, nb.position.z);
@@ -543,7 +523,6 @@
       ctx.stroke();
     });
 
-    // link-mode: highlight first-picked node
     if (state.mode === 'link' && state.linkFirst) {
       const wp = waypointMap[state.linkFirst];
       if (wp) {
@@ -556,17 +535,14 @@
       }
     }
 
-    // running-track ovals (procedural stadium shapes, same data + math as main.js's buildOval)
     (d.ovals || []).forEach(oval => {
       drawOval(oval, state.selected && state.selected.type === 'oval' && state.selected.id === oval.id);
     });
 
-    // buildings
     d.buildings.forEach(bld => {
       drawBuilding(bld, state.selected && state.selected.type === 'building' && state.selected.id === bld.id);
     });
 
-    // waypoints
     d.waypoints.forEach(wp => {
       const p = worldToScreen(wp.position.x, wp.position.z);
       const selected = state.selected && state.selected.type === 'waypoint' && state.selected.id === wp.id;
@@ -585,14 +561,12 @@
       }
     });
 
-    // building name tags (selected one last so it is on top)
     if (state.showLabels) {
       const selId = state.selected && state.selected.type === 'building' ? state.selected.id : null;
       d.buildings.forEach(b => { if (b.id !== selId) drawLabel(b, false); });
       if (selId) { const sb = d.buildings.find(b => b.id === selId); if (sb) drawLabel(sb, true); }
     }
 
-    // resize + rotate handles for the selected building/oval (drawn last, on top)
     if (state.selected && state.mode === 'select') {
       if (state.selected.type === 'building') {
         const selBld = d.buildings.find(b => b.id === state.selected.id);
@@ -617,11 +591,6 @@
     });
   }
 
-  // ---------- Building name tags (what the NavMap shows above each building) ----------
-  // A tag is anchored at (building position + labelOffset) in metres; its tip sits
-  // on that point. Drag a tag to move it in any direction; the app reads the same
-  // building.labelOffset {x, y, z} (y = extra height above the roof), labelText
-  // (optional text; falls back to Name) and labelHidden (true = no tag).
   const LABEL_CAT_COLOR = { academic: '#2f6fb5', facility: '#d49a12', court: '#6d7480', housing: '#2a9d8f' };
   const LABEL_FONT = '600 12px "DM Sans", system-ui, sans-serif';
 
@@ -646,7 +615,7 @@
     if (cur) lines.push(cur);
     let tw = 0; lines.forEach(l => { tw = Math.max(tw, ctx.measureText(l).width); });
     ctx.restore();
-    return { lines, w: Math.ceil(tw + 18), h: lines.length * 15 + 16 };   // h includes the 6px pointer
+    return { lines, w: Math.ceil(tw + 18), h: lines.length * 15 + 16 };
   }
   function labelRect(bld) {
     const a = worldToScreen(...Object.values(labelAnchorWorld(bld)));
@@ -667,7 +636,6 @@
     const o = labelOffsetOf(bld);
     ctx.save();
     if (hidden) ctx.globalAlpha = 0.4;
-    // leader line from the building centre to the tag's tip when it has been moved
     if (o.x || o.z) {
       const c = worldToScreen(bld.position.x, bld.position.z);
       ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(r.ax, r.ay);
@@ -683,14 +651,12 @@
     ctx.fillStyle = 'rgba(255,255,255,0.96)'; ctx.fill();
     ctx.font = LABEL_FONT; ctx.fillStyle = '#2b1a1a'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
     m.lines.forEach((l, i) => ctx.fillText(l, r.x0 + 9, r.y0 + 5 + 15 * i + 8.5));
-    // anchor dot
     ctx.beginPath(); ctx.arc(r.ax, r.ay, 2.6, 0, Math.PI * 2); ctx.fillStyle = '#e74c3c'; ctx.fill();
     ctx.restore();
   }
   function hitTestLabel(sx, sy) {
     if (!state.data || !state.showLabels) return null;
     const blds = state.data.buildings;
-    // the selected building's tag sits on top, then reverse draw order
     const order = blds.slice().reverse();
     if (state.selected && state.selected.type === 'building') {
       const i = order.findIndex(b => b.id === state.selected.id);
@@ -730,13 +696,6 @@
     }
   }
 
-  // ---------- Ovals (running track, stadium shape: two straight sides +
-  // semicircular ends — same math as main.js's buildOval, kept in sync by
-  // hand since one is Canvas2D and the other Three.js). majorAxis is the
-  // full length along the local x axis, minorAxis the full width along the
-  // local z axis — i.e. exactly like a building's width/depth, which is
-  // what lets the resize-handle code below be a near copy of the building
-  // version.
   function stadiumSubpath(halfLen, r) {
     ctx.moveTo(-halfLen, -r);
     ctx.lineTo(halfLen, -r);
@@ -788,9 +747,6 @@
     }
   }
 
-  // Point-in-stadium test in world space: clamp the point's local x to the
-  // straight-side range, then it's just a distance-to-that-point <= radius
-  // check (the standard "distance to a capsule's centerline segment" test).
   function pointInOval(wx, wz, oval) {
     const rot = (oval.rotation || 0) * Math.PI / 180;
     const local = inverseRotateLocal(wx - oval.center.x, wz - oval.center.z, rot);
@@ -801,7 +757,6 @@
     return (dx * dx + dz * dz) <= r * r;
   }
 
-  // ---------- Resize handles ----------
   const MIN_BUILDING_SIZE = 2;
   const HANDLE_HIT_R = 9;
 
@@ -857,11 +812,6 @@
     });
   }
 
-  // ---------- Rotate handle ----------
-  // A round handle sticking out past the building's "north" edge (its local
-  // -z side, i.e. straight up on screen at rotation 0). Held a constant
-  // *screen* distance away (converted to world units via the current zoom)
-  // so it's equally easy to grab at any zoom level.
   const ROTATE_HANDLE_OFFSET_PX = 22;
   const ROTATE_HANDLE_HIT_R = 8;
 
@@ -902,12 +852,6 @@
     ctx.stroke();
   }
 
-  // The handle always points straight at the mouse (snapping the building
-  // to face it), same behavior as the rotate handle in most design tools.
-  // Screen +y is world +z (no view rotation), so a plain atan2 on the
-  // screen-space vector from the building's center to the mouse gives the
-  // angle directly; +90 lines it up with the "north = rotation 0" handle
-  // convention derived from buildingHandleScreenPositions' rotateLocal().
   function applyRotateBuilding(id, sx, sy, snap) {
     const bld = state.data.buildings.find(b => b.id === id);
     if (!bld) return;
@@ -923,12 +867,6 @@
     if (preview3D.isOpen) preview3D.syncTransform(bld);
   }
 
-  // Starts a corner/edge resize: (sxH, szH) identify which handle was
-  // grabbed (each -1/0/1 — see buildingHandleDefs). The OPPOSITE
-  // corner/edge is fixed in world space for the whole drag; width/depth
-  // and the new center are re-derived from that fixed anchor every frame,
-  // so it behaves like resizing in a normal design tool even when the
-  // building is rotated.
   function startResizeBuilding(bld, sxH, szH) {
     const rot = (bld.rotation || 0) * Math.PI / 180;
     const hw0 = bld.size.width / 2, hd0 = bld.size.depth / 2;
@@ -960,9 +898,6 @@
     if (preview3D.isOpen) preview3D.syncTransform(bld);
   }
 
-  // ---------- Oval resize + rotate handles ----------
-  // majorAxis/minorAxis are full extents (like a building's width/depth),
-  // so this is a near copy of the building resize/rotate code above.
   const MIN_OVAL_SIZE = 20;
 
   function ovalHandleScreenPositions(oval) {
@@ -1081,10 +1016,8 @@
     if (preview3D.isOpen) preview3D.syncOvalTransform(oval);
   }
 
-  // ---------- Hit testing ----------
   function hitTest(sx, sy) {
     if (!state.data) return null;
-    // waypoints (check last-drawn / topmost first = reverse order)
     const wps = state.data.waypoints;
     for (let i = wps.length - 1; i >= 0; i--) {
       const wp = wps[i];
@@ -1094,13 +1027,11 @@
         return { type: 'waypoint', id: wp.id };
       }
     }
-    // buildings (point-in-polygon on screen space)
     const blds = state.data.buildings;
     for (let i = blds.length - 1; i >= 0; i--) {
       const corners = buildingCorners(blds[i]);
       if (pointInPoly(sx, sy, corners)) return { type: 'building', id: blds[i].id };
     }
-    // ovals (checked last — large shapes, buildings/waypoints "on top" win first)
     const ovals = state.data.ovals || [];
     if (ovals.length) {
       const w = screenToWorld(sx, sy);
@@ -1120,7 +1051,6 @@
     return inside;
   }
 
-  // ---------- Mouse / touch interaction ----------
   let lastMouse = { x: 0, y: 0 };
 
   canvas.addEventListener('mousedown', (e) => {
@@ -1161,7 +1091,6 @@
       return;
     }
 
-    // select mode
     const rotateHit = hitTestRotateHandle(sx, sy);
     if (rotateHit) {
       snapshot();
@@ -1203,7 +1132,7 @@
     const hit = hitTest(sx, sy);
     if (hit) {
       selectItem(hit);
-      snapshot(); // snapshot before a possible drag-move
+      snapshot();
       state.dragging = { kind: 'moveNode', item: hit };
       canvas.classList.add('dragging');
     } else {
@@ -1265,7 +1194,6 @@
     zoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.12 : 0.89);
   }, { passive: false });
 
-  // ---------- Mode switching ----------
   const hints = {
     select: 'Drag to pan · scroll to zoom · click a point, building, or oval to select it, drag it to move it, drag a corner/edge handle to resize it, drag the round handle above it to rotate it (hold Shift to snap to 15\u00b0) · drag a white name tag to move its label',
     addWaypoint: 'Click anywhere on the map to drop a new waypoint',
@@ -1287,7 +1215,6 @@
     btn.addEventListener('click', () => setMode(btn.dataset.mode));
   });
 
-  // ---------- Mutations ----------
   function genId(prefix) {
     let n = state.idSeq;
     let id;
@@ -1377,7 +1304,6 @@
     if (connected) {
       a.neighbors = a.neighbors.filter(n => n !== idB);
       b.neighbors = b.neighbors.filter(n => n !== idA);
-      // also drop from pavedEdges if present
       const key = edgeKeyOf(idA, idB);
       state.data.pavedEdges = state.data.pavedEdges.filter(([x, y]) => edgeKeyOf(x, y) !== key);
       toast('Disconnected ' + (a.label || idA) + ' ↔ ' + (b.label || idB));
@@ -1469,17 +1395,12 @@
     redraw();
   }
 
-  // ---------- Selection & side panel ----------
   function selectItem(item) {
     const prev = state.selected;
     state.selected = item;
     state.linkFirst = null;
     renderPanel();
     redraw();
-    // Only auto-frame the 3D camera when the SELECTED BUILDING actually
-    // changes. Re-clicking (or starting a move-drag on) a building that
-    // was already selected must not yank the camera back to a close-up —
-    // that's what was causing the preview to keep "snapping to close up".
     const isDifferentBuilding = item && item.type === 'building' &&
       !(prev && prev.type === 'building' && prev.id === item.id);
     if (isDifferentBuilding && preview3D.isOpen) {
@@ -1760,7 +1681,6 @@
     });
   }
 
-  // shared X/Z <-> Lat/Lng sync for whichever object is selected
   function bindNumberSync(obj, kind) {
     const el = document.getElementById('panelContent');
     const fx = el.querySelector('#f_x'), fz = el.querySelector('#f_z');
@@ -1794,7 +1714,6 @@
   function escHtml(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
   function escAttr(s) { return String(s).replace(/"/g, '&quot;'); }
 
-  // ---------- Validate ----------
   function runValidation() {
     const issues = [];
     const d = state.data;
@@ -1831,8 +1750,6 @@
     (d.ovals || []).forEach(oval => {
       const { x, z } = oval.center;
       if (x < gMinX || x > gMaxX || z < gMinZ || z > gMaxZ) issues.push({ level: 'warn', msg: '"' + (oval.label || oval.id) + '" is outside the rendered ground' });
-      // Flag a building whose footprint dips into the oval's footprint — the
-      // same clearance you'd otherwise only catch by eyeballing the 3D preview.
       d.buildings.forEach(bld => {
         const rot = (bld.rotation || 0) * Math.PI / 180;
         const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sxc, szc]) => {
@@ -1861,7 +1778,6 @@
     document.getElementById('validateResults').classList.remove('show');
   });
 
-  // ---------- Fit ground/bounds ----------
   document.getElementById('fitBoundsBtn').addEventListener('click', () => {
     const d = state.data;
     let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
@@ -1875,7 +1791,7 @@
       minZ = Math.min(minZ, b.position.z - half); maxZ = Math.max(maxZ, b.position.z + half);
     });
     (d.ovals || []).forEach(o => {
-      const half = o.majorAxis / 2; // conservative (majorAxis is the largest extent, regardless of rotation)
+      const half = o.majorAxis / 2;
       minX = Math.min(minX, o.center.x - half); maxX = Math.max(maxX, o.center.x + half);
       minZ = Math.min(minZ, o.center.z - half); maxZ = Math.max(maxZ, o.center.z + half);
     });
@@ -1902,7 +1818,6 @@
     toast('Ground and bounds updated.');
   });
 
-  // ---------- Export ----------
   document.getElementById('exportBtn').addEventListener('click', () => {
     if (!state.data) return;
     const issues = runValidation().filter(i => i.level === 'error');
@@ -1926,23 +1841,18 @@
   });
 
 
-  // ---------- 3D live preview ----------
-  // A real Three.js viewport showing the actual campus (ground, roads,
-  // buildings — GLB models where a building has one, boxes otherwise) so
-  // you can see how a placement really looks, not just its 2D footprint.
-  // Lazily initialized on first open so nothing is spent if it's never used.
   const preview3D = (function () {
     let inited = false, ready = false, panelOpen = false;
-    let cameraPositioned = false; // true once the camera has been auto-framed at least once
+    let cameraPositioned = false;
     let scene3, camera3, renderer3, canvas3;
-    let meshes = {};           // buildingId -> { group, kind: 'box'|'glb'|'box-fallback' }
-    let ovalMeshes = {};       // ovalId -> { group }
+    let meshes = {};
+    let ovalMeshes = {};
     let roadGroup = null, groundMesh = null;
-    const glbCache = {};       // glbModel path -> Promise<THREE.Object3D template>
+    const glbCache = {};
 
     let target = { x: 0, y: 0, z: 0 };
     let radius = 220, theta = 50 * Math.PI / 180, phi = 35 * Math.PI / 180;
-    let camDragging = null; // { x, y, mode: 'orbit' | 'pan' }
+    let camDragging = null;
 
     function canvasWrapEl() { return document.getElementById('preview3DCanvasWrap'); }
 
@@ -2010,9 +1920,6 @@
     }
 
     function wireOrbitControls() {
-      // Left-drag orbits, right-drag pans (the usual split in 3D viewers),
-      // scroll zooms. The context menu is suppressed so a right-drag doesn't
-      // pop the browser menu on mouseup.
       canvas3.addEventListener('contextmenu', (e) => e.preventDefault());
       canvas3.addEventListener('mousedown', (e) => {
         camDragging = { x: e.clientX, y: e.clientY, mode: e.button === 2 ? 'pan' : 'orbit' };
@@ -2027,12 +1934,6 @@
           const minT = 8 * Math.PI / 180, maxT = 85 * Math.PI / 180;
           theta = Math.max(minT, Math.min(maxT, theta + dy * 0.006));
         } else {
-          // Pan: shift the orbit target along the camera's own right/up axes
-          // (not world axes), scaled by the current zoom so a drag covers
-          // roughly the same apparent distance whether zoomed in or out.
-          // "Right" is kept horizontal (no camera roll); "up" is whatever's
-          // left over so it tilts with the current pitch, matching what you
-          // see on screen.
           const cosT = Math.cos(theta), sinT = Math.sin(theta);
           const cosP = Math.cos(phi), sinP = Math.sin(phi);
           const fx = -cosT * cosP, fy = -sinT, fz = -cosT * sinP;
@@ -2056,14 +1957,9 @@
       }, { passive: false });
     }
 
-    // ---------- Name tags (same look + data as the NavMap's tags) ----------
-    // One floating sprite per building at (position + labelOffset), at roof height
-    // + 1.5 + labelOffset.y. Kept in sync every frame (cheap: ~40 buildings) so
-    // any edit — dragging a tag on the 2D map, the panel fields, renaming,
-    // resizing — shows up immediately. Constant on-screen size, like the app.
     let showLabels3 = true;
-    let labelRecs = {};        // buildingId -> { sprite, key, lw, lh }
-    const tagTexCache = {};    // "text|color" -> { tex, lw, lh }
+    let labelRecs = {};
+    const tagTexCache = {};
 
     function makeTag3(text, accent) {
       const ck = text + '|' + accent;
@@ -2136,7 +2032,7 @@
         rec.sprite.position.set(x, y, z);
         const dx = x - camera3.position.x, dy = y - camera3.position.y, dz = z - camera3.position.z;
         const depth = Math.max(1, Math.sqrt(dx * dx + dy * dy + dz * dz));
-        const wH = rec.lh * (2 * depth * tanHalf) / H;           // world height that is lh px tall
+        const wH = rec.lh * (2 * depth * tanHalf) / H;
         rec.sprite.scale.set(wH * rec.lw / rec.lh, wH, 1);
         rec.sprite.visible = true;
       });
@@ -2175,9 +2071,6 @@
       updateModelStatus();
     }
 
-    // ---------- Ovals (running track) ----------
-    // Mirrors main.js's buildOval() exactly (same stadium-shape math, same
-    // colors/y-offsets) so the preview matches the real map.
     function stadiumShape3(halfLen, r) {
       const shape = new THREE.Shape();
       shape.moveTo(-halfLen, r);
@@ -2219,9 +2112,6 @@
       return group;
     }
 
-    // Rebuilds an oval's mesh from scratch — cheap enough (a couple of flat
-    // shapes) to just redo on every move/resize/rotate, same as a box
-    // building's syncTransform.
     function rebuildOval(oval) {
       if (!ensureInit()) return;
       removeOvalMesh(oval.id);
@@ -2270,7 +2160,7 @@
           drawn.add(key);
           const nb = waypointMap[nid];
           if (!nb) return;
-          const isMain = true;   // one style: Pathways
+          const isMain = true;
           const ax = wp.position.x, az = wp.position.z, bx = nb.position.x, bz = nb.position.z;
           const dx = bx - ax, dz = bz - az;
           const length = Math.sqrt(dx * dx + dz * dz);
@@ -2292,9 +2182,6 @@
         glbCache[path] = new Promise((resolve, reject) => {
           new THREE.GLTFLoader().load(path, gltf => {
             const scene = gltf.scene;
-            // Native (un-rotated, un-positioned, unscaled) bounding box, so
-            // the model can be fit to a building's declared width/height/depth
-            // footprint the same way js/main.js does.
             const box = new THREE.Box3().setFromObject(scene);
             const nativeSize = {
               x: box.max.x - box.min.x,
@@ -2303,7 +2190,7 @@
             };
             resolve({ scene, nativeSize });
           }, undefined, (err) => {
-            delete glbCache[path];           // don't cache a failure: allow a retry
+            delete glbCache[path];
             reject(err);
           });
         });
@@ -2311,8 +2198,7 @@
       return glbCache[path];
     }
 
-    // ---------- model-load status (so a failure is visible, not silent) ----------
-    const modelErrors = {};   // buildingId -> reason text
+    const modelErrors = {};
     function errText(err) {
       if (location.protocol === 'file:') return 'page opened from a file:// address (browsers block model files there)';
       if (!err) return 'unknown error';
@@ -2327,7 +2213,7 @@
       let total = 0, ok = 0, bad = 0;
       Object.keys(meshes).forEach(id => {
         const r = meshes[id];
-        if (r.kind === 'box') return;            // plain box building (no model assigned)
+        if (r.kind === 'box') return;
         total++;
         if (r.kind === 'glb' && r.instance) ok++;
         else if (r.kind === 'box-fallback') bad++;
@@ -2349,10 +2235,6 @@
       fullRebuild();
     }
 
-    // Place models from the artist are not centered on their own origin, so (like
-    // js/main.js's preparePlaceModel) they are re-centered: horizontally on their
-    // bounding box, base at the ground. bld.glbStrip = name prefixes of parts to
-    // leave out (e.g. the trees bundled into the statue files).
     function preparePlace(root, strip) {
       if (strip && strip.length) {
         const drop = [];
@@ -2371,15 +2253,10 @@
       wrapper.add(root);
       return { obj: wrapper, nativeSize: { x: box.max.x - box.min.x, y: box.max.y - box.min.y, z: box.max.z - box.min.z } };
     }
-    // Resolves to the model's real size {x,y,z} (after glbStrip) — for "Set size from model".
     function measureModel(bld) {
       return loadGLBTemplate(bld.glbModel).then(({ scene }) => preparePlace(scene.clone(true), bld.glbStrip).nativeSize);
     }
 
-    // Scales a cloned GLB instance to fit a building's declared footprint
-    // (per axis), with modelScale as an extra uniform correction on top —
-    // shared by rebuildBuilding (initial load) and syncTransform (live
-    // resize-handle drags).
     function applyGlbScale(inst, bld, nativeSize) {
       const extra = bld.modelScale || 1;
       const sx = nativeSize.x > 1e-6 ? (bld.size.width / nativeSize.x) * extra : extra;
@@ -2388,11 +2265,6 @@
       inst.scale.set(sx, sy, sz);
     }
 
-    // Replaces a cloned GLB instance's own material with a flat color from
-    // the building's Color field — for a scan whose baked material is wrong
-    // (e.g. solid black, no texture) — same idea as main.js's loadGLB tint.
-    // Only touches the CLONE, never the cached template, so toggling
-    // glbTint off and rebuilding restores the model's original material.
     function applyGlbTint(inst, bld) {
       if (!bld.glbTint) return;
       const color = parseInt((bld.color || '#4a90d9').replace('#', ''), 16);
@@ -2436,8 +2308,6 @@
       group.rotation.y = THREE.MathUtils.degToRad(bld.rotation || 0);
     }
 
-    // Recreates a building's mesh from scratch — used when its color,
-    // glbModel path, or size changes (box geometry can't resize in place).
     function rebuildBuilding(bld) {
       if (!ensureInit()) return;
       removeBuildingMesh(bld.id);
@@ -2450,12 +2320,12 @@
         scene3.add(group);
         positionGroup(group, bld);
         loadGLBTemplate(bld.glbModel).then(({ scene, nativeSize }) => {
-          if (meshes[bld.id] !== rec) return; // superseded by a later edit
+          if (meshes[bld.id] !== rec) return;
           let inst = scene.clone(true), ns = nativeSize;
           if (bld.category === 'place') {
             const pp = preparePlace(inst, bld.glbStrip);
             inst = pp.obj; ns = pp.nativeSize;
-            inst.position.y = 0.45;            // base clear of the road strips, same as the app
+            inst.position.y = 0.45;
           }
           rec.instance = inst;
           rec.nativeSize = ns;
@@ -2479,13 +2349,6 @@
       }
     }
 
-    // Cheap per-frame update during a drag: position/rotation always; for
-    // box buildings (no glbModel) the box is small enough to just redo, so
-    // width/depth/height resizing shows up live too. GLB models are rescaled
-    // per-axis to fit the current width/height/depth footprint (matches
-    // js/main.js's loadGLB) — if the model hasn't finished loading yet,
-    // rebuildBuilding's own .then() will apply the (by-then current) size
-    // once it resolves, so there's nothing to do here in that case.
     function syncTransform(bld) {
       if (!ready) return;
       const rec = meshes[bld.id];
@@ -2583,7 +2446,6 @@
   });
   document.getElementById('p3dFitBtn').addEventListener('click', () => { preview3D.fitMap(); });
 
-  // ---------- Boot ----------
   resizeCanvas();
   tryFetchDefault();
 })();

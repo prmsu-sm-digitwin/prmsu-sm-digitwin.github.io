@@ -1,34 +1,17 @@
-// =============================================================
-//  js/navfp.js  —  NavMap extras (thesis adviser, Oct 2026)
-//
-//   1. Building NAME TAGS  — a floating label over every building, so users
-//      don't have to tap a model to see what it is. Tags stay a constant,
-//      readable size on screen; when they'd overlap, the more important one
-//      wins and the other waits until you zoom in.
-//   2. FIRST-PERSON view   — the camera button on the map. Walk the Pathways
-//      with the joystick, drag to look around. The route is drawn as flat
-//      arrowheads here (and as the orange line in the normal top view).
-//
-//  Depends on main.js globals: scene, camera, renderer, campusData,
-//  waypointMap, lookTarget, camOffset, currentGPSPosition, gpsMarker,
-//  activeRouteIds, setRouteStyle(), updateCameraFromTarget().
-// =============================================================
 (function () {
   'use strict';
 
-  // ── Tunables ──
-  var EYE_HEIGHT   = 5;       // metres above the pathway
+  var EYE_HEIGHT   = 5;
   var FOV_FP       = 72;
-  var AUTO_TURN    = 1.5;     // rad/s the view turns toward a sideways joystick push (second-finger look overrides)
-  var LOOK_SPEED   = 2;     // finger / mouse drag look speed (1 = original; higher = faster)
-  var WALK_SPEED   = 25;      // scene units (metres) per second at full joystick
-  var HALF_WIDTH   = 1;     // how far from a pathway's centreline you can stray
-  var LABEL_RANGE_FP = 170;   // name tags farther than this are hidden in first-person
-  // collision against the building models (walls block you; archways / gaps are walkable)
-  var CELL         = 0.5;     // collision grid resolution (metres)
-  var BAND_BOT     = 0.35;    // only geometry between these heights can stop you...
-  var BAND_TOP     = 2.0;     // ...(so roofs overhead and floors underfoot don't count)
-  var PLAYER_R     = 0.6;     // personal space kept from a wall
+  var AUTO_TURN    = 1.5;
+  var LOOK_SPEED   = 2;
+  var WALK_SPEED   = 25;
+  var HALF_WIDTH   = 1;
+  var LABEL_RANGE_FP = 170;
+  var CELL         = 0.5;
+  var BAND_BOT     = 0.35;
+  var BAND_TOP     = 2.0;
+  var PLAYER_R     = 0.6;
   var SKY          = 0xa9d4f0;
   var GROUND       = 0x7cb87a;
 
@@ -47,19 +30,15 @@
   };
   window.NavFP = NavFP;
 
-  var segs = [];                       // pathway centrelines [ax,az,bx,bz]
+  var segs = [];
   var pos = { x: 0, z: 0 }, yaw = 0, pitch = -0.04;
   var saved = null;
   var lastT = 0;
-  var joy = { id: null, x: 0, y: 0 };          // joystick vector, each -1..1 (y up = forward)
+  var joy = { id: null, x: 0, y: 0 };
   var look = { id: null, x: 0, y: 0 };
-  var labels = [];                              // { sprite, lw, lh, x, y, z, prio }
+  var labels = [];
 
-  // ─────────────────────────────────────────────────────────────
-  //  Campus data hook
-  // ─────────────────────────────────────────────────────────────
   function onCampusLoaded(data) {
-    // pathway centrelines for first-person collision
     segs = [];
     var seen = {};
     Object.keys(waypointMap).forEach(function (id) {
@@ -76,9 +55,6 @@
     wireUi();
   }
 
-  // ─────────────────────────────────────────────────────────────
-  //  Building name tags
-  // ─────────────────────────────────────────────────────────────
   var CAT_COLOR = { academic: '#2f6fb5', facility: '#d49a12', court: '#6d7480', housing: '#2a9d8f' };
   var CAT_PRIO  = { academic: 0, facility: 1, court: 2, housing: 4 };
 
@@ -86,16 +62,16 @@
     labels.forEach(function (l) { scene.remove(l.sprite); });
     labels = [];
     buildings.forEach(function (b) {
-      if (b.labelHidden) return;           // campus editor: "Hide this tag"
-      var off = b.labelOffset || {};       // campus editor: tag dragged to a new spot (metres)
+      if (b.labelHidden) return;
+      var off = b.labelOffset || {};
       var text = (b.labelText && String(b.labelText).trim()) || b.name || b.label || b.id;
       var color = CAT_COLOR[b.category] || '#6d7480';
       var made = makeTag(text, color);
       var mat = new THREE.SpriteMaterial({ map: made.tex, transparent: true, depthTest: false, depthWrite: false });
       var sp = new THREE.Sprite(mat);
-      sp.center.set(0.5, 0);               // anchor = bottom-centre, sits on the roof
+      sp.center.set(0.5, 0);
       sp.renderOrder = 20;
-      sp.userData.isNameTag = true;        // not in buildingMeshes -> never tappable
+      sp.userData.isNameTag = true;
       scene.add(sp);
       labels.push({
         sprite: sp, lw: made.lw, lh: made.lh,
@@ -106,13 +82,11 @@
     });
   }
 
-  // Draws the tag onto a canvas at 2x for crispness. lw/lh = logical screen px.
   function makeTag(text, accent) {
     var S = 2, fs = 12, lineH = 15, padX = 9, padY = 5, maxW = 130;
     var font = '600 ' + fs + 'px "DM Sans", system-ui, sans-serif';
     var meas = document.createElement('canvas').getContext('2d');
     meas.font = font;
-    // wrap on words
     var words = String(text).split(/\s+/), lines = [], cur = '';
     words.forEach(function (w) {
       var t = cur ? cur + ' ' + w : w;
@@ -120,20 +94,17 @@
     });
     if (cur) lines.push(cur);
     var tw = 0; lines.forEach(function (l) { tw = Math.max(tw, meas.measureText(l).width); });
-    var lw = Math.ceil(tw + padX * 2), lh = lines.length * lineH + padY * 2 + 6;  // +6: pointer
+    var lw = Math.ceil(tw + padX * 2), lh = lines.length * lineH + padY * 2 + 6;
     var c = document.createElement('canvas');
     c.width = lw * S; c.height = lh * S;
     var g = c.getContext('2d');
     g.scale(S, S);
     var bodyH = lh - 6;
-    // body
     g.fillStyle = 'rgba(255,255,255,0.95)';
     g.strokeStyle = 'rgba(0,0,0,0.18)'; g.lineWidth = 1;
     roundRect(g, 0.5, 0.5, lw - 1, bodyH - 1, 7); g.fill(); g.stroke();
-    // pointer
     g.beginPath(); g.moveTo(lw / 2 - 5, bodyH - 0.5); g.lineTo(lw / 2, lh - 0.5); g.lineTo(lw / 2 + 5, bodyH - 0.5); g.closePath();
     g.fillStyle = 'rgba(255,255,255,0.95)'; g.fill();
-    // text
     g.font = font; g.fillStyle = '#2b1a1a'; g.textBaseline = 'middle'; g.textAlign = 'left';
     lines.forEach(function (l, i) { g.fillText(l, padX, padY + lineH * i + lineH / 2 + 1); });
     var tex = new THREE.CanvasTexture(c);
@@ -159,20 +130,18 @@
     var tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
     var fp = NavFP.active;
 
-    // project every tag
     var items = [];
     for (var i = 0; i < labels.length; i++) {
       var L = labels[i];
       _v.set(L.x, L.y, L.z).applyMatrix4(camera.matrixWorldInverse);
       var depth = -_v.z;
       if (depth < 0.5 || (fp && depth > LABEL_RANGE_FP)) { L.sprite.visible = false; continue; }
-      var wH = L.lh * (2 * depth * tanHalf) / H;          // world height that is lh px tall
+      var wH = L.lh * (2 * depth * tanHalf) / H;
       _v.set(L.x, L.y, L.z).project(camera);
       var sx = (_v.x + 1) / 2 * W, sy = (1 - _v.y) / 2 * H;
       if (sx < -80 || sx > W + 80 || sy < -20 || sy > H + 80) { L.sprite.visible = false; continue; }
       items.push({ L: L, sx: sx, sy: sy, depth: depth, wH: wH });
     }
-    // important first, then nearer first
     items.sort(function (a, b) { return a.L.prio - b.L.prio || a.depth - b.depth; });
     var placed = [];
     items.forEach(function (it) {
@@ -192,24 +161,10 @@
   }
 
 
-  // ─────────────────────────────────────────────────────────────
-  //  Collision with the GLB building models
-  //
-  //  Each model is "baked" once into a flat top-down grid: any wall-like
-  //  triangle that sits at walking height (BAND_BOT..BAND_TOP) marks the grid
-  //  cells under it as solid. Walking is then a cheap grid lookup, however
-  //  heavy the model is. Because only walking-height geometry counts, a
-  //  pathway that goes through an archway / under a raised part of a model
-  //  stays walkable, while the solid walls beside it still stop you.
-  //  Baking happens in small time slices in the background (no freeze).
-  //
-  //  campus.json: set  "noCollision": true  on a building to let people walk
-  //  straight through it (e.g. a covered walkway modelled as a solid block).
-  // ─────────────────────────────────────────────────────────────
   var grid = null, gx0 = 0, gz0 = 0, gw = 0, gh = 0;
-  var owners = [];                 // grid value k>0  ->  owners[k-1] = building id
-  var queued = {};                 // mesh uuid -> true (already queued / baked)
-  var jobs = [];                   // { obj, id, meshes, mi, ti, verts, owner }
+  var owners = [];
+  var queued = {};
+  var jobs = [];
   var scanTick = 0;
   var bakeStats = { tris: 0, ms: 0, models: 0 };
 
@@ -264,7 +219,6 @@
       }
     }
   }
-  // clip a polygon (array of [x,y,z]) to  y >= lo  (keep = +1)  or  y <= hi  (keep = -1)
   function clipY(poly, level, keep) {
     var out = [];
     for (var i = 0; i < poly.length; i++) {
@@ -285,7 +239,7 @@
     var wx = v[o + 6] - v[o], wy = cy - ay, wz = v[o + 8] - v[o + 2];
     var nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx;
     var nl = Math.sqrt(nx * nx + ny * ny + nz * nz);
-    if (nl < 1e-12 || Math.abs(ny) / nl > 0.8) return;            // floors / flat roofs are not walls
+    if (nl < 1e-12 || Math.abs(ny) / nl > 0.8) return;
     var poly = [[v[o], ay, v[o + 2]], [v[o + 3], by, v[o + 5]], [v[o + 6], cy, v[o + 8]]];
     poly = clipY(poly, BAND_BOT, 1);
     if (poly.length) poly = clipY(poly, BAND_TOP, -1);
@@ -302,10 +256,6 @@
   }
 
 
-  // Photogrammetry shells can have small holes in a wall. Make each model SOLID inside:
-  // anything enclosed by its walls (after closing gaps up to ~1 m) is filled, so you can't
-  // slip in through a hole. Real openings (archways, a gap wider than ~1 m) connect to the
-  // outside, so they stay open.
   function fillInterior(obj, owner) {
     if (!grid) return;
     var box = new THREE.Box3().setFromObject(obj);
@@ -316,7 +266,7 @@
     var solid = new Uint8Array(W * H), wall = new Uint8Array(W * H), seen = new Uint8Array(W * H);
     var x, z, i, dx, dz;
     for (z = 0; z < H; z++) for (x = 0; x < W; x++) if (grid[(iz0 + z) * gw + (ix0 + x)]) solid[z * W + x] = 1;
-    for (z = 0; z < H; z++) for (x = 0; x < W; x++) if (solid[z * W + x]) {           // dilate by 1 cell
+    for (z = 0; z < H; z++) for (x = 0; x < W; x++) if (solid[z * W + x]) {
       for (dz = -1; dz <= 1; dz++) for (dx = -1; dx <= 1; dx++) {
         var nx = x + dx, nz = z + dz;
         if (nx >= 0 && nx < W && nz >= 0 && nz < H) wall[nz * W + nx] = 1;
@@ -334,8 +284,7 @@
     var added = 0;
     for (z = 0; z < H; z++) for (x = 0; x < W; x++) {
       i = z * W + x;
-      if (seen[i] || solid[i]) continue;                       // outside, or already a wall
-      // enclosed. Skip the 1-cell dilation skin that touches the outside (it isn't interior)
+      if (seen[i] || solid[i]) continue;
       var touchesOutside = false;
       for (dz = -1; dz <= 1 && !touchesOutside; dz++) for (dx = -1; dx <= 1; dx++) {
         var qx = x + dx, qz = z + dz;
@@ -348,7 +297,6 @@
     bakeStats.filled = (bakeStats.filled || 0) + added;
   }
 
-  // bake for up to `budgetMs`; returns true while work remains
   function pumpBake(budgetMs) {
     var t0 = performance.now();
     while (jobs.length) {
@@ -356,7 +304,6 @@
       if (j.mi >= j.meshes.length) { fillInterior(j.obj, j.owner); jobs.shift(); bakeStats.models++; carveDirty = true; continue; }
       var mesh = j.meshes[j.mi], g = mesh.geometry;
       if (!j.verts) {
-        // world-space positions, computed once per mesh
         var pos = g.attributes.position, n = pos.count, m = mesh.matrixWorld.elements;
         var vs = new Float32Array(n * 3);
         for (var i = 0; i < n; i++) {
@@ -380,16 +327,13 @@
       }
       j.mi++; j.verts = null;
     }
-    if (carveDirty) { carveDirty = false; carvePathways(); }      // all queued models baked -> open the pathway lanes
+    if (carveDirty) { carveDirty = false; carvePathways(); }
     bakeStats.ms += performance.now() - t0;
     return false;
   }
 
 
-  // OPTIONAL (off): a pathway drawn THROUGH a model could be given a narrow walkable
-  // lane. Off by default: the camera must never pass through a model, even where the
-  // pathway line itself runs under it. Per-building opt-out is "noCollision": true.
-  var OPEN_PATHWAY_LANES = false;   // false = models block you EVERYWHERE, even where a Pathway was drawn through/under one
+  var OPEN_PATHWAY_LANES = false;
   var LANE_HALF = 0.9, LANE_PAD = 2.5;
   var carveDirty = false;
   function carvePathways() {
@@ -430,8 +374,6 @@
     return false;
   }
 
-  // if a start point sits inside / against a model (a door waypoint is usually inside its building's
-  // footprint), step out to the nearest open spot so you never start stuck in a wall
   function freeSpotNear(x, z) {
     if (!blockedRing(x, z)) return { x: x, z: z };
     for (var r = CELL; r <= 40; r += CELL) {
@@ -444,7 +386,6 @@
     return { x: x, z: z };
   }
 
-  // try to move (ox,oz) -> (nx,nz); slide along walls instead of stopping dead
   function resolveMove(ox, oz, nx, nz) {
     if (!blockedRing(nx, nz)) return { x: nx, z: nz };
     if (!blockedRing(ox, oz)) {
@@ -452,16 +393,12 @@
       if (!blockedRing(ox, nz)) return { x: ox, z: nz };
       return { x: ox, z: oz };
     }
-    // already hugging a wall (e.g. a route starts right at a door): only forbid stepping INTO a solid cell
     if (!solidAt(nx, nz)) return { x: nx, z: nz };
     if (!solidAt(nx, oz)) return { x: nx, z: oz };
     if (!solidAt(ox, nz)) return { x: ox, z: nz };
     return { x: ox, z: oz };
   }
 
-  // ─────────────────────────────────────────────────────────────
-  //  First-person
-  // ─────────────────────────────────────────────────────────────
   function nearestOnPath(x, z) {
     var best = null;
     for (var i = 0; i < segs.length; i++) {
@@ -480,7 +417,7 @@
     var k = HALF_WIDTH / n.d;
     return { x: n.x + (x - n.x) * k, z: n.z + (z - n.z) * k };
   }
-  function yawFromDir(dx, dz) { return Math.atan2(-dx, -dz); }   // forward = (-sin yaw, -cos yaw)
+  function yawFromDir(dx, dz) { return Math.atan2(-dx, -dz); }
 
   function toggle() { if (NavFP.active) exit(); else enter(); }
 
@@ -492,8 +429,6 @@
       camOffset: { x: camOffset.x, y: camOffset.y, z: camOffset.z },
       bg: scene.background
     };
-    // start: the route's first waypoint (facing along the route), else your GPS spot, else
-    // the pathway nearest what the map is centred on
     var sx, sz, face = null;
     if (activeRouteIds && activeRouteIds.length > 1 && waypointMap[activeRouteIds[0]]) {
       var a = waypointMap[activeRouteIds[0]].position, b = waypointMap[activeRouteIds[1]].position;
@@ -503,10 +438,10 @@
       var n = nearestOnPath(from.x, from.z);
       sx = n.x; sz = n.z;
       var dx = n.dx, dz = n.dz;
-      if (dx < 0 || (dx === 0 && dz < 0)) { dx = -dx; dz = -dz; }   // default: walk east / away from main gate
+      if (dx < 0 || (dx === 0 && dz < 0)) { dx = -dx; dz = -dz; }
       face = yawFromDir(dx, dz);
     }
-    if (jobs.length) pumpBake(2000);                       // make sure collision is ready before the first step
+    if (jobs.length) pumpBake(2000);
     var free = freeSpotNear(sx, sz);
     pos.x = free.x; pos.z = free.z; yaw = face; pitch = -0.04;
 
@@ -527,7 +462,7 @@
     scene.background = saved.bg;
     scene.fog = null;
     camOffset.x = saved.camOffset.x; camOffset.y = saved.camOffset.y; camOffset.z = saved.camOffset.z;
-    lookTarget.x = pos.x; lookTarget.y = 0; lookTarget.z = pos.z;     // map recentres where you stopped
+    lookTarget.x = pos.x; lookTarget.y = 0; lookTarget.z = pos.z;
     if (typeof updateCameraFromTarget === 'function') updateCameraFromTarget();
     if (typeof gpsMarker !== 'undefined' && gpsMarker && currentGPSPosition) gpsMarker.visible = true;
     if (typeof setRouteStyle === 'function') setRouteStyle(false);
@@ -540,7 +475,6 @@
     camera.rotation.set(pitch, yaw, 0, 'YXZ');
   }
 
-  // drag anywhere that isn't the joystick = look around (wired from main.js's pointer handlers)
   function pointerDown(e) { look.id = e.pointerId; look.x = e.clientX; look.y = e.clientY; hideHint(); }
   function pointerMove(e) {
     if (look.id === null || e.pointerId !== look.id) return;
@@ -557,23 +491,20 @@
     var now = performance.now();
     var dt = lastT ? Math.min(0.1, (now - lastT) / 1000) : 0.016;
     lastT = now;
-    if ((scanTick++ % 30) === 0) scanForNewModels();      // picks up models as they finish loading
-    if (jobs.length) pumpBake(NavFP.active ? 3 : 6);      // background baking, a few ms per frame
+    if ((scanTick++ % 30) === 0) scanForNewModels();
+    if (jobs.length) pumpBake(NavFP.active ? 3 : 6);
     if (NavFP.active) {
       var jx = joy.x, jy = joy.y;
-      // Auto-steer: pushing the joystick sideways also turns the view that way, so at an
-      // intersection the camera follows where you are going instead of staring at the edge
-      // of the path. Dragging a second finger to look around always overrides it.
       if (jx && look.id === null) {
         yaw -= jx * AUTO_TURN * dt;
-        jx *= 0.6;                                          // part of the sideways push becomes the turn
+        jx *= 0.6;
       }
       if (jx || jy) {
-        var fx = -Math.sin(yaw), fz = -Math.cos(yaw);       // forward
-        var rx =  Math.cos(yaw), rz = -Math.sin(yaw);       // right
+        var fx = -Math.sin(yaw), fz = -Math.cos(yaw);
+        var rx =  Math.cos(yaw), rz = -Math.sin(yaw);
         var vx = fx * jy + rx * jx, vz = fz * jy + rz * jx;
         var mx = vx * WALK_SPEED * dt, mz = vz * WALK_SPEED * dt;
-        var steps = Math.max(1, Math.ceil(Math.hypot(mx, mz) / 0.25));     // small steps: never tunnel through a thin wall
+        var steps = Math.max(1, Math.ceil(Math.hypot(mx, mz) / 0.25));
         for (var si = 0; si < steps; si++) {
           var c = clampToPath(pos.x + mx / steps, pos.z + mz / steps);
           var r = resolveMove(pos.x, pos.z, c.x, c.z);
@@ -585,9 +516,6 @@
     layoutLabels();
   }
 
-  // ─────────────────────────────────────────────────────────────
-  //  UI: camera button, joystick, hint
-  // ─────────────────────────────────────────────────────────────
   var wired = false;
   function wireUi() {
     if (wired) return; wired = true;

@@ -1,6 +1,3 @@
-//  js/pathfinding.js  —  A* on the campus waypoint graph
-//  Called by main.js:  findPath(waypointMap, startId, goalId)
-//  Returns: array of waypoint ids  "main_gate","inner_gate" or [] if no path exists
 
 
 function findPath(waypointMap, startId, goalId) {
@@ -18,7 +15,6 @@ function findPath(waypointMap, startId, goalId) {
     return [];
   }
 
-  // Heuristic  straight-line distance on the x/z plane
   function h(aId, bId) {
     const a = waypointMap[aId].position;
     const b = waypointMap[bId].position;
@@ -27,12 +23,11 @@ function findPath(waypointMap, startId, goalId) {
     return Math.sqrt(dx * dx + dz * dz);
   }
 
-  // A* data structures 
-  const openSet   = new Set([startId]);  // nodes queued for evaluation
-  const cameFrom  = {};                  // cameFrom[n] = the node before n in best path
+  const openSet   = new Set([startId]);
+  const cameFrom  = {};
 
-  const gScore = {};   // actual cost from start → node
-  const fScore = {};   // gScore + heuristic (estimated total cost through node)
+  const gScore = {};
+  const fScore = {};
 
   for (const id in waypointMap) {
     gScore[id] = Infinity;
@@ -41,7 +36,6 @@ function findPath(waypointMap, startId, goalId) {
   gScore[startId] = 0;
   fScore[startId] = h(startId, goalId);
 
-  // Main loop 
   let iterations = 0;
   const ITER_LIMIT = 1000;   
 
@@ -82,7 +76,6 @@ function findPath(waypointMap, startId, goalId) {
 
     for (const neighborId of neighbors) {
 
-      //skip if neighbor id doesn't exist in map
       if (!waypointMap[neighborId]) {
         console.warn(`[A*] Neighbor "${neighborId}" not in waypointMap (referenced by "${current}"). Check campus.json.`);
         continue;

@@ -1,27 +1,3 @@
-/* ==========================================================================
-   CAMPUS DIRECTORY — carousel browsing of campus buildings
-   --------------------------------------------------------------------------
-   >>> TO ADD OR EDIT CONTENT, ONLY TOUCH `DIRECTORY_DATA` BELOW. <<<
-
-   The whole page builds itself from that one array on load, so:
-     - add a building  -> add an object to that category's `items` array
-     - add a category  -> add another { id, title, items: [...] } object
-     - reorder anything-> just move it in the array
-   No HTML and no CSS changes are ever needed for either one. Nothing in
-   this file is hardcoded to a specific category or a specific number of
-   buildings, so it can't silently break when the lists grow.
-
-   Each item takes:
-     name  - building name shown beside the photo        (required)
-     photo - path to the image, e.g. 'images/directory/ccit.jpg'   (optional)
-             leave it as null (or point it at a file that isn't there yet)
-             and the slide shows a neat "Photo of the building" placeholder
-             instead of a broken image.
-     text  - the short blurb: what's inside, what it's for (optional)
-
-   This page is intentionally STATIC — it does not read data/campus.json.
-   Editing the list here will not affect the 3D map or navigation.
-   ========================================================================== */
 
 const DIRECTORY_DATA = [
   {
@@ -94,15 +70,10 @@ const DIRECTORY_DATA = [
   }
 ];
 
-/* ==========================================================================
-   Everything below is the generic engine. It never mentions a specific
-   building or category by name, so it keeps working no matter how much
-   DIRECTORY_DATA grows.
-   ========================================================================== */
 (function () {
   'use strict';
 
-  var SWIPE_THRESHOLD = 45; // px of horizontal travel before a swipe counts
+  var SWIPE_THRESHOLD = 45;
 
   function el(tag, cls, parent) {
     var n = document.createElement(tag);
@@ -111,11 +82,6 @@ const DIRECTORY_DATA = [
     return n;
   }
 
-  // Slide markup for one building's PHOTO only. The name/blurb used to
-  // live inside each slide too, but now that the photo is full-bleed and
-  // carries the arrows/dots as an overlay, only the photo needs to slide —
-  // the text below the stage just swaps its content on navigation instead
-  // of scrolling with it (see buildCategory's render()).
   function buildPhotoSlide(item, track) {
     var slide = el('div', 'dir-slide', track);
 
@@ -123,16 +89,8 @@ const DIRECTORY_DATA = [
     if (item && item.photo) {
       var img = el('img', 'dir-photo-img', photoBox);
       img.alt = item.name || 'Building photo';
-      // Every category builds its whole carousel up front, so without this
-      // the page would kick off dozens of photo downloads the instant it
-      // opens — most of them for slides/categories the user hasn't scrolled
-      // to yet. loading="lazy" defers each photo until it's actually about
-      // to be visible; decoding="async" keeps a big photo's decode off the
-      // main thread so it can't freeze a swipe/scroll that's already in progress.
       img.loading = 'lazy';
       img.decoding = 'async';
-      // If the file is missing or fails to decode, drop back to the
-      // placeholder rather than showing a broken-image icon.
       img.onerror = function () {
         img.remove();
         photoBox.appendChild(placeholderBox());
@@ -157,7 +115,6 @@ const DIRECTORY_DATA = [
     return ph;
   }
 
-  // Builds one whole category block (overlay title + carousel) from data.
   function buildCategory(cat) {
     var section = el('section', 'dir-cat');
     section.setAttribute('data-cat', cat.id || '');
@@ -166,26 +123,18 @@ const DIRECTORY_DATA = [
 
     var items = Array.isArray(cat.items) ? cat.items : [];
 
-    // A category with nothing in it yet gets a friendly empty card instead
-    // of an empty box (or a crash on items[0]).
     if (items.length === 0) {
       var empty = el('div', 'dir-empty', section);
       empty.textContent = 'No buildings added to this category yet.';
       return section;
     }
 
-    // ---- photo stage: only the photos live in the sliding track. Arrows
-    // and dots are a single shared overlay on top of it (not duplicated
-    // per slide), positioned by CSS relative to the photo itself — which
-    // is what lets the photo go full-bleed edge-to-edge. ----
     var stage = el('div', 'dir-stage', section);
 
     var viewport = el('div', 'dir-viewport', stage);
     var track = el('div', 'dir-track', viewport);
     items.forEach(function (item) { buildPhotoSlide(item, track); });
 
-    // Bottom fade so the arrows/dots stay legible over any photo, without
-    // dimming the rest of the image.
     el('div', 'dir-photo-gradient', stage);
 
     var prev = el('button', 'dir-arrow dir-arrow-left', stage);
@@ -198,8 +147,6 @@ const DIRECTORY_DATA = [
     next.setAttribute('aria-label', 'Next building');
     next.innerHTML = '<span>›</span>';
 
-    // Dots — one per building, and they stay in sync automatically because
-    // they're generated from the same list.
     var dots = el('div', 'dir-dots', stage);
     var dotEls = items.map(function (_, i) {
       var d = el('button', 'dir-dot', dots);
@@ -209,20 +156,14 @@ const DIRECTORY_DATA = [
       return d;
     });
 
-    // ---- name + blurb for whichever building is current. No longer part
-    // of the sliding track — it just swaps content on navigation. ----
     var info = el('div', 'dir-info', section);
     var nameEl = el('div', 'dir-name', info);
     var textEl = el('p', 'dir-text', info);
 
     var idx = 0;
 
-    // ---- pinch/double-tap zoom, scoped to whichever photo is currently
-    // showing. Swiping to a different photo always resets it — each photo
-    // starts flat (no zoom carried over), which keeps this simple and
-    // matches what people expect from a photo carousel. ----
-    var zoomImg = null;  // the <img> currently in "zoomed" mode, or null
-    var zoomBox = null;  // its .dir-photo container (for bounds/sizing)
+    var zoomImg = null;
+    var zoomBox = null;
     var zoomView = { scale: 1, baseScale: 1, minScale: 1, maxScale: 4, tx: 0, ty: 0, imgW: 0, imgH: 0 };
 
     function currentPhotoImg() {
@@ -234,10 +175,6 @@ const DIRECTORY_DATA = [
       return !!zoomImg && zoomView.scale > zoomView.baseScale + 0.01;
     }
 
-    // Switches an <img> from its normal CSS object-fit:cover display into
-    // JS-driven transform mode — same "cover" math as the satellite map and
-    // POV photo viewers use — so it can be scaled/panned. Starts out exactly
-    // where object-fit:cover already had it, so there's no visual jump.
     function engageZoom(img) {
       if (!img || !img.naturalWidth || zoomImg === img) return;
       var box = img.closest('.dir-photo');
@@ -264,7 +201,7 @@ const DIRECTORY_DATA = [
 
       zoomImg = img;
       zoomBox = box;
-      box.classList.add('dir-photo-zoomed'); // hands touch-action fully to us — see style.css
+      box.classList.add('dir-photo-zoomed');
       applyZoomTransform(false);
     }
 
@@ -293,8 +230,6 @@ const DIRECTORY_DATA = [
       }
     }
 
-    // Back to plain object-fit:cover — clearing the inline styles
-    // engageZoom set is enough, the CSS class takes back over.
     function resetZoom() {
       if (!zoomImg) return;
       zoomImg.classList.remove('dir-photo-img-zoomanim');
@@ -316,7 +251,6 @@ const DIRECTORY_DATA = [
       dotEls.forEach(function (d, i) {
         d.classList.toggle('is-active', i === idx);
       });
-      // Only the visible slide should be reachable by screen readers / tab.
       Array.prototype.forEach.call(track.children, function (s, i) {
         s.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
       });
@@ -325,10 +259,8 @@ const DIRECTORY_DATA = [
       textEl.textContent = (item && item.text) ? item.text : 'Insert text about the building — what is inside and what it is for.';
     }
 
-    // Modulo keeps the index in range forever, so it wraps around at both
-    // ends and can never run off the array.
     function go(i) {
-      resetZoom(); // each photo starts flat when you swipe/tap to it
+      resetZoom();
       var n = items.length;
       idx = ((i % n) + n) % n;
       render();
@@ -337,11 +269,6 @@ const DIRECTORY_DATA = [
     prev.addEventListener('click', function () { go(idx - 1); });
     next.addEventListener('click', function () { go(idx + 1); });
 
-    // ---- gestures on the photo stage: single-finger swipe between photos
-    // (same idea as before), single-finger pan once zoomed in, two-finger
-    // pinch to zoom, double-tap to toggle zoom. Pointer events (not touch
-    // events) so pinch reliably reaches this instead of falling through to
-    // the browser's own page-zoom — see touch-action in style.css. ----
     var pointers = new Map();
     var pinch = null;
     var dragLast = null;
@@ -429,9 +356,6 @@ const DIRECTORY_DATA = [
         dragLast = null;
         pinch = null;
 
-        // A pinch that let go without ending up zoomed in — snap back to a
-        // plain, un-transformed photo instead of leaving it sitting exactly
-        // at 1x in "zoomed mode".
         if (zoomImg && !isZoomActive()) {
           zoomView.scale = zoomView.baseScale;
           zoomClampToBounds();
@@ -452,8 +376,6 @@ const DIRECTORY_DATA = [
     viewport.addEventListener('pointerup', endPointer);
     viewport.addEventListener('pointercancel', endPointer);
 
-    // Double-tap (or double-click, on desktop) toggles zoom, centered on
-    // wherever was tapped.
     viewport.addEventListener('pointerup', function (e) {
       var img = currentPhotoImg();
       if (!img || !img.naturalWidth) return;
@@ -485,7 +407,6 @@ const DIRECTORY_DATA = [
       }
     });
 
-    // Desktop convenience: wheel to zoom, anchored at the cursor.
     viewport.addEventListener('wheel', function (e) {
       var img = currentPhotoImg();
       if (!img || !img.naturalWidth) return;
@@ -510,7 +431,7 @@ const DIRECTORY_DATA = [
 
   function initDirectory() {
     var host = document.getElementById('directory-content');
-    if (!host || host._built) return; // build once, never double-render
+    if (!host || host._built) return;
     host._built = true;
 
     if (!Array.isArray(DIRECTORY_DATA) || DIRECTORY_DATA.length === 0) {

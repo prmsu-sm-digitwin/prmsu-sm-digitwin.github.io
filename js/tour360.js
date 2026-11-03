@@ -1,15 +1,3 @@
-// =============================================================
-//  js/tour360.js  —  Interim 360° campus tour (Street-View style)
-//
-//  The Campus Walkthrough page: equirectangular photos wrapped on the
-//  inside of a sphere; tap or hold the arrows to step to the next / previous photo.
-//
-//  Data:   data/tour360.json  (stops in walking order, per-stop title and
-//          "fwd" = where in the photo the next stop lies, 0..1 across the
-//          width).  Photos: images/360/<RouteFolder>/pNN.webp (listed in data/tour360.json).
-//
-//  Not Street View / not photogrammetry: you jump between fixed photo spots.
-// =============================================================
 (function () {
   'use strict';
 
@@ -17,15 +5,9 @@
   var SPHERE_R = 500;
   var TAU = Math.PI * 2;
 
-  // Where a point at horizontal photo position u (0..1) sits, as a yaw angle.
-  // (Calibrated against the sphere mapping used below: u=0.75 faces yaw 0.)
   function uToYaw(u) { return Math.PI / 2 + u * TAU; }
 
   var data = null, stops = [];
-  // Arrow direction for a stop = its own "fwd" + optional bulk offsets from data/tour360.json:
-  //   "fwdOffset": 0.01                         -> added to EVERY stop
-  //   "folderOffsets": {"MainGate_to_InnerGate": -0.01}  -> added to every stop whose photo is in that folder
-  // (0.01 is about 3.6 degrees; a bigger number turns the arrow right, a smaller one left.)
   function fwdOf(st) {
     var u = st.fwd || 0;
     if (data) {
@@ -43,15 +25,14 @@
   var stage, canvas, renderer, scene, camera, sphere, mat;
   var btnBack, fadeEl, toastEl, loadingEl;
   var arrowFwd, arrowBack, raycaster;
-  var texCache = {};            // file -> THREE.Texture
-  var texOrder = [];            // LRU of cached files
+  var texCache = {};
+  var texOrder = [];
   var loadToken = 0, fadeTimer = null, travelDir = 1;
   var running = false, rafId = null, dirty = true;
   var inited = false, autoTimer = null, toastTimer = null;
   var stepBusy = false, holdTimer = null, holdIv = null, holdFired = false;
   var pointers = {}, lastPinch = 0, dragMoved = 0, downX = 0, downY = 0, downTime = 0;
 
-  // ── Public hooks (exposed as window.CampusWalkthrough at the bottom) ──
   function tourEnter() {
     if (typeof THREE === 'undefined') return;
     if (!inited) init();
@@ -67,7 +48,6 @@
     stopAuto();
   }
 
-  // ── Setup ──
   function init() {
     stage = document.getElementById('tour-stage');
     if (!stage) return;
@@ -78,7 +58,6 @@
       '<div class="tour-hint" id="tour-hint">Drag to look around · tap or hold the arrows to walk</div>' +
       '<div class="tour-toast" id="tour-toast"></div>' +
       '<div class="tour-topleft">' +
-        '<div class="tour-hud" id="tour-hud" title="Tap for details"></div>' +
         '<button class="tour-places-btn" id="tour-places-btn" type="button" aria-label="Places" title="Places">' +
         '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="3.6" cy="6" r="1" fill="currentColor"/><circle cx="3.6" cy="12" r="1" fill="currentColor"/><circle cx="3.6" cy="18" r="1" fill="currentColor"/></svg></button>' +
       '</div>' +
@@ -88,7 +67,6 @@
 
     canvas   = document.getElementById('tour-canvas');
     btnBack  = document.getElementById('tour-back');
-    document.getElementById('tour-hud').addEventListener('click', function () { hudDetail = !hudDetail; updateHud(); });
     document.getElementById('tour-places-btn').addEventListener('click', function (e) { e.stopPropagation(); togglePlaces(); });
     fadeEl   = document.getElementById('tour-fade');
     toastEl  = document.getElementById('tour-toast');
@@ -108,7 +86,7 @@
     camera.rotation.order = 'YXZ';
 
     var geo = new THREE.SphereGeometry(SPHERE_R, 64, 48);
-    geo.scale(-1, 1, 1);                       // view the texture from inside
+    geo.scale(-1, 1, 1);
     mat = new THREE.MeshBasicMaterial({ color: 0x222222 });
     sphere = new THREE.Mesh(geo, mat);
     scene.add(sphere);
@@ -127,30 +105,19 @@
         data = d; stops = d.stops || [];
         resolveLinks();
         buildPlaces(d.places || []);
-        try { buildOffline(); } catch (err) { console.warn('[tour] offline panel unavailable', err); }   // never block the tour
+        try { buildOffline(); } catch (err) { console.warn('[tour] offline panel unavailable', err); }
         loadingEl.classList.add('tour-hidden');
         showStop(0, 'init');
       })
       .catch(function () { loadingEl.textContent = 'Could not load the tour data.'; });
   }
 
-  // ── Route graph (Street-View style) ──
-  // Stops are walked in list order, but a stop can also:
-  //   "end": true        -> the documented path stops here: no forward arrow
-  //   "id": "name"       -> a name other stops can point to
-  //   "next": "name"     -> where the Forward arrow goes (default: the next stop in the list)
-  //   "prev": "name"     -> where the Back arrow goes (default: the stop before it in the list)
-  //   "links": [{"to": "name", "u": 0.3}]  -> an extra forward arrow (a fork), pointing at
-  //                         horizontal photo position u (0..1) and leading to stop "name"
   var idToIdx = {};
-  var linkArrows = [];                       // pooled arrow meshes for fork links
+  var linkArrows = [];
   function resolveLinks() {
     idToIdx = {};
     stops.forEach(function (s, i) { if (s.id) idToIdx[s.id] = i; });
   }
-  // ── Places (teleport) ──
-  // data.places = [{name, to: stop id, face: u}] -> the list button (top-left) jumps straight to that
-  // stop, already turned to face the building (face = horizontal photo position 0..1).
   var placesEl = null;
   function buildPlaces(list) {
     var box = document.getElementById('tour-places-list');
@@ -177,14 +144,8 @@
   function closePlaces() { if (placesEl) placesEl.classList.remove('open'); }
 
 
-  // ── Offline download ──
-  // Photos are normally saved on the phone only as they are visited. This panel (download button
-  // next to the Places button; also offered once on the first visit) saves ALL the tour photos in
-  // the photo cache so the whole walkthrough works with no internet. It is opt-in: it shows the
-  // size, checks free space, can be resumed after an interruption (already-saved photos are
-  // skipped) and the saved photos can be removed again.
-  var PHOTO_CACHE_NAME = 'prmsu-photos-v6';      // must match PHOTO_CACHE in service-worker.js
-  var AVG_PHOTO_MB = 0.62;                        // average size of one tour photo (about 626 MB / 1010)
+  var PHOTO_CACHE_NAME = 'prmsu-photos-v6';
+  var AVG_PHOTO_MB = 0.62;
   var OFFLINE_ASKED_KEY = 'tour360-offline-asked';
   var offlineEl = null, offlineSavedSet = {}, offlineBusy = false, offlineCancel = false, wakeLock = null;
 
@@ -231,7 +192,6 @@
     });
     document.getElementById('tour-offline-remove').addEventListener('click', function (e) { e.stopPropagation(); removeOffline(); });
 
-    // Offer it once, on the very first visit (never again after "Later" or a download).
     var asked = false;
     try { asked = !!localStorage.getItem(OFFLINE_ASKED_KEY); } catch (err) {}
     refreshOffline().then(function (state) {
@@ -364,7 +324,7 @@
   function nextIdx(i) {
     var s = stops[i];
     if (!s || s.end || i >= stops.length - 1) return -1;
-    if (s.next != null && idToIdx[s.next] != null) return idToIdx[s.next];   // "next": id -> skip a side branch listed in between
+    if (s.next != null && idToIdx[s.next] != null) return idToIdx[s.next];
     return i + 1;
   }
   function prevIdx(i) {
@@ -381,7 +341,6 @@
     return out;
   }
 
-  // Flat chevron lying on the ground, rotated by a parent group.
   function makeArrow(opacity) {
     var c = document.createElement('canvas'); c.width = c.height = 256;
     var g = c.getContext('2d');
@@ -397,8 +356,6 @@
     var mesh = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 5.2), m);
     mesh.rotation.x = -Math.PI / 2;
     mesh.renderOrder = 5;
-    // The arrow sits at (0,-5.5,-11) from the camera. The pivot lets the chevron turn on the spot
-    // (see "aim" below) without moving the circle off the middle of the path.
     var pivot = new THREE.Group();
     pivot.position.set(0, -5.5, -11);
     pivot.add(mesh);
@@ -407,20 +364,13 @@
     return { group: group, mesh: mesh, pivot: pivot };
   }
 
-  // ── Texture cache (keep a handful in memory) ──
-  // Why steps used to feel slow: every photo is 4096x2048, so each step meant
-  // decoding a ~1.5 MB JPEG on the main thread AND uploading a 32 MB texture to
-  // the GPU at the moment you arrived. Now (a) phones get a 3072-wide copy that is
-  // decoded off the main thread (createImageBitmap), (b) the next few stops are
-  // fetched ahead, and (c) each is uploaded to the GPU as soon as it arrives, so
-  // showing a stop is just a swap.
   var SMALL_DEVICE = (function () {
     try { return matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory && navigator.deviceMemory <= 4); }
     catch (e) { return false; }
   })();
   var TEX_W = SMALL_DEVICE ? 3072 : 4096;
   var MAX_KEEP = SMALL_DEVICE ? 7 : 10;
-  var pending = {};             // file -> in-flight Promise (so a photo is never fetched twice)
+  var pending = {};
 
   function finishTex(t, file) {
     t.encoding = THREE.sRGBEncoding;
@@ -441,11 +391,11 @@
       return createImageBitmap(blob, { imageOrientation: 'flipY', resizeWidth: w, resizeHeight: Math.round(w / 2), resizeQuality: 'medium' });
     }).then(function (bmp) {
       var t = new THREE.Texture(bmp);
-      t.flipY = false;                       // the bitmap is already flipped
+      t.flipY = false;
       return t;
     });
   }
-  function loaderTex(file) {                 // fallback for browsers without the bitmap path
+  function loaderTex(file) {
     return new Promise(function (resolve, reject) {
       new THREE.TextureLoader().load(file, resolve, undefined, function () { reject(new Error('load ' + file)); });
     });
@@ -472,24 +422,17 @@
     while (texOrder.length > MAX_KEEP && guard-- > 0) {
       var f = texOrder.shift();
       var t = texCache[f];
-      if (t && mat && mat.map === t) texOrder.push(f);          // on screen — keep
+      if (t && mat && mat.map === t) texOrder.push(f);
       else if (t) { t.dispose(); delete texCache[f]; }
     }
   }
   function preload(i) {
     if (i < 0 || i >= stops.length) return;
     loadTex(stops[i].file).then(function (t) {
-      // Upload to the GPU now (while idle), not at the moment you step onto it.
       try { if (renderer && renderer.initTexture) renderer.initTexture(t); } catch (e) {}
     }).catch(function () {});
   }
 
-  // ── Warm the route ahead of you in the background ──
-  // Once a stop is on screen, quietly download the photos around it (a few behind,
-  // plenty ahead), a couple at a time and only while nothing you asked for is
-  // loading. The service worker keeps them, so walking the route never waits on the
-  // network, and they stay available offline. A moving window (not the whole route)
-  // keeps data use sensible now that the tour has hundreds of stops. Skipped on "Data Saver".
   var WARM_BEHIND = 6, WARM_AHEAD = 40;
   var warmQueue = [], warmSeen = {}, warmActive = 0, warmFails = 0, warmTimer = null;
   function warmRoute() {
@@ -497,12 +440,12 @@
     try { if (navigator.connection && navigator.connection.saveData) return; } catch (e) {}
     var lo = Math.max(0, idx - WARM_BEHIND), hi = Math.min(stops.length - 1, idx + WARM_AHEAD);
     var add = [];
-    for (var i = idx; i <= hi; i++) add.push(i);                       // ahead of you first
+    for (var i = idx; i <= hi; i++) add.push(i);
     for (var j = idx - 1; j >= lo; j--) add.push(j);
     warmQueue = add.map(function (n) { return stops[n].file; }).filter(function (f) { return !warmSeen[f]; });
     if (!warmTimer) warmTimer = setTimeout(warmPump, 800);
   }
-  function warmOne(file) {              // own function so each download keeps ITS file name
+  function warmOne(file) {
     caches.match(file).then(function (hit) {
       if (hit) return;
       return fetch(file).then(function (r) { if (!r.ok) throw new Error('http'); return r.arrayBuffer(); });
@@ -511,9 +454,9 @@
   }
   function warmPump() {
     warmTimer = null;
-    if (warmFails >= 3) return;                                        // offline / blocked: stop trying
+    if (warmFails >= 3) return;
     while (warmActive < 2 && warmQueue.length) {
-      if (Object.keys(pending).length) { warmTimer = setTimeout(warmPump, 500); return; }   // your photo first
+      if (Object.keys(pending).length) { warmTimer = setTimeout(warmPump, 500); return; }
       var file = warmQueue.shift();
       if (warmSeen[file]) continue;
       warmSeen[file] = true; warmActive++;
@@ -521,15 +464,12 @@
     }
   }
 
-  // ── Navigation ──
   function showStop(i, how, faceU) {
     if (!stops.length) return;
     i = Math.max(0, Math.min(stops.length - 1, i));
     var token = ++loadToken;
     stepBusy = true;
     travelDir = (how === 'back') ? -1 : 1;
-    // Keep the current photo on screen while the next one loads; only dim a little if it is really slow
-    // (a fade on every step is what flashed dark while holding an arrow).
     clearTimeout(fadeTimer);
     fadeTimer = setTimeout(function () { fadeEl.classList.add('on'); }, 450);
     loadTex(stops[i].file).then(function (tex) {
@@ -537,7 +477,6 @@
       mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true;
       idx = i;
       var fy = uToYaw(fwdOf(stops[i]));
-      // Face the way you're travelling.
       yaw = (how === 'back') ? (stops[i].back != null ? uToYaw(stops[i].back) : fy + Math.PI) : (faceU != null ? uToYaw(faceU + (fwdOf(stops[i]) - (stops[i].fwd || 0))) : fy);
       if (how === 'init') pitch = -0.05;
       if (how === 'tp') pitch = -0.03;
@@ -546,7 +485,7 @@
       clearTimeout(fadeTimer); fadeEl.classList.remove('on');
       stepBusy = false;
       dirty = true;
-      var d = travelDir;                                   // fetch ahead in the direction you are walking
+      var d = travelDir;
       preload(i + d); preload(i + 2 * d); preload(i + 3 * d); preload(i + 4 * d); preload(i - d);
       linksOf(i).forEach(function (l) { preload(l.to); });
       preload(prevIdx(i));
@@ -560,35 +499,17 @@
     });
   }
   function next() { var n = nextIdx(idx); if (n >= 0) showStop(n, 'fwd'); }
-  // Back along the route keeps you facing backwards; but when Back returns from a side branch to a fork
-  // (the stop before isn't the next one in the list, e.g. dorm path -> fork), face the fork's forward way.
   function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, (p === idx - 1 || (stops[p].next != null && idToIdx[stops[p].next] === idx)) ? 'back' : 'jump'); }
 
-  // Stop counter (top-left). Tap it to show the photo file + the "fwd" value, which is handy for
-  // spotting a stop whose photo faces the wrong way: note its number, then fix its "fwd" in data/tour360.json.
-  var hudDetail = false;
-  function updateHud() {
-    var el = document.getElementById('tour-hud');
-    if (!el || !stops.length) return;
-    var s = stops[idx];
-    var line = 'Stop ' + (idx + 1) + ' / ' + stops.length;
-    if (hudDetail) {
-      var f = String(s.file || '').replace(/^images\/360\//, '');
-      line += '<small>' + f + '<br>fwd ' + (s.fwd != null ? s.fwd : 0) + (fwdOf(s) !== (s.fwd || 0) ? ' (+' + Math.round((fwdOf(s) - (s.fwd || 0)) * 1000) / 1000 + ' offset)' : '') + (s.title ? ' · ' + s.title : '') + (s.aim != null ? ' · aim ' + s.aim : '') + '</small>';
-    }
-    el.innerHTML = line;
-    el.classList.toggle('tour-hud-open', hudDetail);
-  }
+  function updateHud() {}
   function updateArrows() {
     var s = stops[idx], fy = uToYaw(fwdOf(s));
     var hasNext = nextIdx(idx) >= 0, hasPrev = prevIdx(idx) >= 0;
     arrowFwd.group.rotation.y  = -fy;
-    // Optional "aim" (u, 0..1): at a bend the circle stays at "fwd" (middle of the path where you stand)
-    // but the chevron points along the road ahead.
     arrowFwd.pivot.rotation.y = (s.aim != null) ? -(uToYaw(s.aim + (fwdOf(s) - (s.fwd || 0))) - fy) : 0;
-    arrowBack.group.rotation.y = -(s.back != null ? uToYaw(s.back) : fy + Math.PI);   // optional "back": u for forks
-    arrowFwd.group.visible  = hasNext;          // no arrow at the end of the documented path
-    arrowBack.group.visible = hasPrev && !s.noback;   // optional "noback": true hides the Back arrow here
+    arrowBack.group.rotation.y = -(s.back != null ? uToYaw(s.back) : fy + Math.PI);
+    arrowFwd.group.visible  = hasNext;
+    arrowBack.group.visible = hasPrev && !s.noback;
     var links = linksOf(idx);
     while (linkArrows.length < links.length) { var a = makeArrow(1.0); linkArrows.push(a); scene.add(a.group); }
     linkArrows.forEach(function (a, k) {
@@ -606,14 +527,12 @@
     toastTimer = setTimeout(function () { toastEl.classList.remove('tour-show'); }, 3200);
   }
 
-  // ── Input: drag to look, pinch / wheel to zoom, tap an arrow to move ──
   function bindEvents() {
     canvas.addEventListener('pointerdown', onDown);
     canvas.addEventListener('pointermove', onMove);
     canvas.addEventListener('pointerup', onUp);
     canvas.addEventListener('pointercancel', onUp);
     canvas.addEventListener('wheel', function (e) { e.preventDefault(); setFov(fov + e.deltaY * 0.04); }, { passive: false });
-    // Leaves the walkthrough (same as the phone's back button) -> back to where you came from, i.e. home.
     btnBack.addEventListener('click', function () { stopAuto(); if (typeof goBack === 'function') goBack(); else if (typeof goTo === 'function') goTo('main'); });
     window.addEventListener('resize', resize);
     if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
@@ -642,7 +561,7 @@
     }
     dragMoved += Math.abs(dx) + Math.abs(dy);
     if (dragMoved > 14) stopHold();
-    var sens = 1.5 * (fov * Math.PI / 180) / Math.max(200, stage.clientHeight);  // 1.5 = look speed (1 = original)
+    var sens = 1.5 * (fov * Math.PI / 180) / Math.max(200, stage.clientHeight);
     yaw   -= dx * sens;
     pitch += dy * sens;
     clampPitch();
@@ -666,7 +585,6 @@
   function clampPitch() { pitch = Math.max(-1.25, Math.min(1.3, pitch)); }
   function hideHint() { var h = document.getElementById('tour-hint'); if (h) h.classList.add('tour-hidden'); }
 
-  // Hold an arrow to keep walking in that direction (tap still moves one step).
   function stopHold() {
     if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
     if (holdIv) { clearInterval(holdIv); holdIv = null; }
@@ -722,7 +640,6 @@
     }
   }
 
-  // ── Render loop ──
   function resize() {
     if (!renderer || !stage) return;
     var w = stage.clientWidth, h = stage.clientHeight;
@@ -746,7 +663,6 @@
     renderer.render(scene, camera);
   }
 
-  // ── Page hooks (script.js calls these when the Walkthrough page opens / closes) ──
   window.CampusWalkthrough = {
     onEnter: tourEnter,
     onLeave: tourLeave

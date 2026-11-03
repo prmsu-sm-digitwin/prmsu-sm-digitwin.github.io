@@ -1,28 +1,14 @@
-// =============================================================
-//  js/gps.js  —  GPS blue dot on the 3D map
-//
-//  Functions called by ui.js:
-//    setGPSEnabled(bool)    — start/stop watching position
-//
-//  Functions called by main.js at startup:
-//    initGPS(campusData)    — stores origin + bounds for conversion
-//
-//  Calls into main.js:
-//    updateGPSMarker(x, z)  — moves the blue sphere in the scene
-// =============================================================
 
 
-// ── State ────────────────────────────────────────────────────
-let _origin = null;   // { lat, lng }  — campus (0,0) point
-let _bounds = null;   // { minX, maxX, minZ, maxZ }
-let _watchId = null;  // navigator.geolocation watch handle
-let _kf = null;       // smoothing filter state { x, z, p, t }
-const GPS_MAX_ACC = 60;      // ignore fixes worse than this (meters), once we have a decent one
-const GPS_MIN_ACC = 5;       // never trust a fix more than this precise (phones over-report)
-const GPS_WALK_Q  = 4;       // process noise (m^2 per second) = how fast you may really move
+let _origin = null;
+let _bounds = null;
+let _watchId = null;
+let _kf = null;
+const GPS_MAX_ACC = 60;
+const GPS_MIN_ACC = 5;
+const GPS_WALK_Q  = 4;
 
 
-// ── Init (called by main.js after campus.json loads) ─────────
 
 function initGPS(campusData) {
   _origin = campusData.origin;
@@ -31,7 +17,6 @@ function initGPS(campusData) {
 }
 
 
-// ── Enable / Disable ─────────────────────────────────────────
 
 function setGPSEnabled(enabled) {
   if (enabled) {
@@ -39,7 +24,6 @@ function setGPSEnabled(enabled) {
   } else {
     stopWatching();
     _kf = null;
-    // Hide the marker by moving it off-screen
     if (typeof updateGPSMarker === 'function') {
       updateGPSMarker(null, null);
     }
@@ -51,7 +35,7 @@ function startWatching() {
     console.warn('[gps] Geolocation not supported on this device.');
     return;
   }
-  if (_watchId !== null) return;   // already watching
+  if (_watchId !== null) return;
 
   _watchId = navigator.geolocation.watchPosition(
     onPosition,
@@ -71,7 +55,6 @@ function stopWatching() {
 }
 
 
-// ── Position Handler ─────────────────────────────────────────
 
 function onPosition(pos) {
   const lat = pos.coords.latitude;
@@ -80,10 +63,8 @@ function onPosition(pos) {
   const acc = Math.max(GPS_MIN_ACC, pos.coords.accuracy || 20);
   const raw = latLngToXZ(lat, lng);
 
-  // Drop very poor fixes once we already have a position (they cause the big jumps).
   if (_kf && acc > GPS_MAX_ACC) return;
 
-  // Simple 1D Kalman filter per axis: trust accurate fixes more, wobble less when standing still.
   const now = pos.timestamp || Date.now();
   if (!_kf) {
     _kf = { x: raw.x, z: raw.z, p: acc * acc, t: now };
@@ -100,11 +81,9 @@ function onPosition(pos) {
 
   console.log(`[gps] lat=${lat.toFixed(6)} lng=${lng.toFixed(6)} → x=${x.toFixed(1)} z=${z.toFixed(1)}`);
 
-  // Check if user is actually inside campus before clamping
   const isOnCampus = x >= _bounds.minX && x <= _bounds.maxX &&
                      z >= _bounds.minZ && z <= _bounds.maxZ;
 
-  // Always show blue dot — clamp so it stays visible even if user is outside campus
   const cx = clamp(x, _bounds.minX, _bounds.maxX);
   const cz = clamp(z, _bounds.minZ, _bounds.maxZ);
 
@@ -114,8 +93,6 @@ function onPosition(pos) {
 }
 
 
-// ── GPS Toast ────────────────────────────────────────────────
-// Shows a short-lived popup on the map page.
 
 let _toastTimeout = null;
 
@@ -156,20 +133,16 @@ function showGPSToast(message) {
 }
 
 function onError(err) {
-  // Common codes: 1=PERMISSION_DENIED, 2=UNAVAILABLE, 3=TIMEOUT
   const messages = {
     1: 'Location permission denied. Please allow location access.',
     2: 'Location unavailable.',
     3: 'Location request timed out.'
   };
   console.warn('[gps] Error', err.code, '—', messages[err.code] || err.message);
-  if (err.code === 1) showGPSToast(messages[1]);          // timeouts are routine; only tell the user about permission
+  if (err.code === 1) showGPSToast(messages[1]);
 }
 
 
-// ── Coordinate Conversion ────────────────────────────────────
-// Equirectangular projection — same formula used to build campus.json positions
-// x = east in meters from origin, z = north in meters (negative = north on map)
 
 function latLngToXZ(lat, lng) {
   if (!_origin) {
@@ -177,19 +150,18 @@ function latLngToXZ(lat, lng) {
     return { x: 0, z: 0 };
   }
 
-  const R = 6371000;  // Earth radius in meters
+  const R = 6371000;
   const dLat = (lat - _origin.lat) * (Math.PI / 180);
   const dLng = (lng - _origin.lng) * (Math.PI / 180);
   const avgLat = (_origin.lat * Math.PI) / 180;
 
-  const x =  dLng * R * Math.cos(avgLat);  // east = positive x
-  const z = -dLat * R;                      // north = negative z (Three.js convention)
+  const x =  dLng * R * Math.cos(avgLat);
+  const z = -dLat * R;
 
   return { x, z };
 }
 
 
-// ── Utility ──────────────────────────────────────────────────
 
 function clamp(val, min, max) {
   return Math.max(min, Math.min(max, val));

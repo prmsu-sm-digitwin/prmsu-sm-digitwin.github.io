@@ -1,12 +1,12 @@
 let scene, camera, renderer, raycaster, mouse;
 let campusData = null;
-let buildingMeshes = [];       // { mesh, data }
+let buildingMeshes = [];
 let pathLine = null;
-let waypointMap = {};          // id → waypoint object (for pathfinding + gps)
+let waypointMap = {};
 let gpsMarker = null;
-let youHereOn = true;            // 'You are here' label: shown until a route is started (Navigate Here)
-let gpsTarget = null;            // smoothed GPS position the dot glides toward (see animate)
-let currentGPSPosition = null;   // { x, z } in Three.js scene coords — updated by gps.js
+let youHereOn = true;
+let gpsTarget = null;
+let currentGPSPosition = null;
 
 window.addEventListener('DOMContentLoaded', () => {
   initScene();
@@ -15,14 +15,12 @@ window.addEventListener('DOMContentLoaded', () => {
   animate();
 });
 
-// Three.js scene setup
 function initScene() {
   const canvas = document.getElementById('three-canvas');
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x7cb87a); // ground green — nothing blue shows past the map edge (first-person view swaps in a sky)
+  scene.background = new THREE.Color(0x7cb87a);
 
-  // Camera: tilted top-down (the OSM-style view)
   const aspect = canvas.clientWidth / canvas.clientHeight || window.innerWidth / window.innerHeight;
   camera = new THREE.PerspectiveCamera(45, aspect, 1, 5000);
 
@@ -34,7 +32,6 @@ function initScene() {
   renderer.setSize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
   renderer.shadowMap.enabled = true;
 
-  // Lighting
   const ambient = new THREE.AmbientLight(0xffffff, 0.7);
   scene.add(ambient);
   const sun = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -54,14 +51,12 @@ function onResize() {
   renderer.setSize(w, h);
 }
 
-//load campus.json and build scene
 function loadCampus() {
   fetch('data/campus.json')
     .then(r => r.json())
     .then(data => {
       campusData = data;
 
-      // Build waypoint lookup map (used by pathfinding.js + gps.js)
       waypointMap = {};
       data.waypoints.forEach(wp => { waypointMap[wp.id] = wp; });
 
@@ -69,22 +64,16 @@ function loadCampus() {
       buildRoads(data.waypoints);
       (data.ovals || []).forEach(buildOval);
       buildBuildings(data.buildings);
-      if (window.NavFP) NavFP.onCampusLoaded(data);   // building name tags + first-person walk graph (js/navfp.js)
+      if (window.NavFP) NavFP.onCampusLoaded(data);
       positionCamera(data.camera);
 
-      // GPS blue dot (gps.js)
       if (typeof initGPS === 'function') initGPS(data);
 
-      // Notify ui.js that the scene is ready
       if (typeof onSceneReady === 'function') onSceneReady(data);
     })
     .catch(err => console.error('Failed to load campus.json:', err));
 }
 
-// Draws a running-track oval procedurally (stadium shape: two straight
-// sides + two semicircular ends), the same way roads/ground are drawn from
-// data instead of a modeled/GLB asset. `oval` comes from campusData.ovals:
-// { center:{x,z}, majorAxis, minorAxis, trackWidth, rotation (degrees) }.
 function buildOval(oval) {
   const { center, majorAxis, minorAxis, trackWidth, rotation } = oval;
   const radius = minorAxis / 2;
@@ -103,9 +92,6 @@ function buildOval(oval) {
 
   const group = new THREE.Group();
 
-  // Outer track ring (reddish rubberized-track color by default — set
-  // trackColor/fieldColor on the oval in campus.json, or via the Track
-  // color / Field color fields in the campus editor, to override).
   const trackColor = parseInt((oval.trackColor || '#b5651d').replace('#', ''), 16);
   const trackMat = new THREE.MeshLambertMaterial({ color: trackColor });
   const trackMesh = new THREE.Mesh(
@@ -113,13 +99,10 @@ function buildOval(oval) {
     trackMat
   );
   trackMesh.rotation.x = -Math.PI / 2;
-  trackMesh.position.y = 0.15; // was 0.03 — too close to the ground plane,
-  // caused z-fighting/flicker at typical camera distances (near:far is 1:5000,
-  // which leaves little depth-buffer precision to spare for gaps that small)
+  trackMesh.position.y = 0.15;
   trackMesh.receiveShadow = true;
   group.add(trackMesh);
 
-  // Inner infield (green), inset by the track width so the ring still shows
   const innerR = Math.max(0.1, radius - trackWidth);
   const innerHalfStraight = Math.max(0, halfStraight - trackWidth);
   const fieldColor = parseInt((oval.fieldColor || '#4caf50').replace('#', ''), 16);
@@ -129,8 +112,7 @@ function buildOval(oval) {
     fieldMat
   );
   fieldMesh.rotation.x = -Math.PI / 2;
-  fieldMesh.position.y = 0.25; // was 0.05 — same z-fighting fix, kept clearly
-  // above the track ring so the ring is never obscured
+  fieldMesh.position.y = 0.25;
   fieldMesh.receiveShadow = true;
   group.add(fieldMesh);
 
@@ -157,9 +139,6 @@ function buildGround(g) {
   ground.receiveShadow = true;
   scene.add(ground);
 
-  // Huge same-colour plane just under the map so no empty/blue background can
-  // ever show past the edge of the real ground, however far the view tilts or
-  // the first-person camera looks.
   const backing = new THREE.Mesh(
     new THREE.PlaneGeometry(9000, 9000),
     new THREE.MeshLambertMaterial({ color: g.color || 0x7cb87a })
@@ -169,14 +148,11 @@ function buildGround(g) {
   scene.add(backing);
 }
 
-// All walkable routes are one style now: a single gray strip called
-// "Pathways" (no more paved/unpaved split, no centre dashes). Per the thesis
-// adviser. campus.json's old "pavedEdges" list is ignored.
 const PATH_WIDTH = 5;
-const PATH_Y     = 0.2;   // strip centre; strip is 0.3 tall so its top sits at 0.35
+const PATH_Y     = 0.2;
 
 function buildRoads(waypoints) {
-  const mat = new THREE.MeshLambertMaterial({ color: 0x9a9a9a }); // gray
+  const mat = new THREE.MeshLambertMaterial({ color: 0x9a9a9a });
 
   const drawn = new Set();
   waypoints.forEach(wp => {
@@ -191,8 +167,6 @@ function buildRoads(waypoints) {
     });
   });
 
-  // Plug the seams where 2+ strips meet at an angle (bends, forks): a flat
-  // disc at every junction, just above the strip tops so nothing z-fights.
   waypoints.forEach(wp => {
     if (wp.neighbors.length < 2) return;
     const joint = new THREE.Mesh(new THREE.CircleGeometry(PATH_WIDTH / 2, 16), mat);
@@ -217,24 +191,14 @@ function buildRoadStrip(ax, az, bx, bz, width, mat, y) {
     mat
   );
   strip.position.set((ax+bx)/2, y, (az+bz)/2);
-  // Three.js Z is forward, X is right
   strip.rotation.y = -Math.atan2(dz, dx);
   strip.receiveShadow = true;
   scene.add(strip);
 }
 
-// ── Place Blocks (visual preview only) ───────────────────────
-// Small placeholder blocks so the team can see where extra campus places sit on
-// the NavMap (sheds, chairs, statues, gates...). They live in data/campus.json as
-// buildings with  "category": "place"  — so the campus editor can show, move,
-// resize, recolor and delete them like any building. By design they are:
-//   • NOT tappable   — never added to buildingMeshes, no userData.buildingId,
-//                      so onPointerDown's raycast can't hit them.
-//   • NOT navigable  — no entryWaypoint, left out of the search list.
-//   • NO pathway     — no waypoints / roads are created for them.
-let placeBlockMeshes = [];   // kept only so they can be removed/toggled later — NOT used for picking
+let placeBlockMeshes = [];
 
-let placeGen = 0;            // bumped on every rebuild so a slow GLB load can't add itself to a stale scene
+let placeGen = 0;
 
 function spawnPlaceBox(p) {
   const { width, depth, height } = p.size;
@@ -243,21 +207,15 @@ function spawnPlaceBox(p) {
     new THREE.BoxGeometry(width, height, depth),
     new THREE.MeshLambertMaterial({ color })
   );
-  // y offset keeps the base clear of road strips (up to y≈0.4) so nothing z-fights
   mesh.position.set(p.position.x, height / 2 + 0.5, p.position.z);
   mesh.rotation.y = THREE.MathUtils.degToRad(p.rotation || 0);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
-  mesh.name = 'place:' + (p.name || p.id);   // label for debugging only; no buildingId on purpose
+  mesh.name = 'place:' + (p.name || p.id);
   scene.add(mesh);
   placeBlockMeshes.push(mesh);
 }
 
-// The artist's place models are NOT centered on their own origin (each file keeps
-// its spot from the artist's scene), so — unlike the building scans — they are
-// re-centered here: horizontally on their bounding box, base on the ground.
-// p.glbStrip (optional) = name prefixes of parts to leave out (e.g. the tree
-// clusters that came bundled inside the statue files).
 function preparePlaceModel(root, strip) {
   if (strip && strip.length) {
     const drop = [];
@@ -283,16 +241,16 @@ function spawnPlace(p) {
   new THREE.GLTFLoader().load(
     p.glbModel,
     (gltf) => {
-      if (gen !== placeGen) return;                       // scene was rebuilt while loading
+      if (gen !== placeGen) return;
       const { obj, nativeSize } = preparePlaceModel(gltf.scene, p.glbStrip);
       const extra = p.modelScale || 1;
       const sx = nativeSize.x > 1e-6 ? (p.size.width  / nativeSize.x) * extra : extra;
       const sy = nativeSize.y > 1e-6 ? (p.size.height / nativeSize.y) * extra : extra;
       const sz = nativeSize.z > 1e-6 ? (p.size.depth  / nativeSize.z) * extra : extra;
       obj.scale.set(sx, sy, sz);
-      obj.position.set(p.position.x, 0.45 + (p.yOffset || 0), p.position.z);   // base clear of road strips (+ optional yOffset to raise/sink)
+      obj.position.set(p.position.x, 0.45 + (p.yOffset || 0), p.position.z);
       obj.rotation.y = THREE.MathUtils.degToRad(p.rotation || 0);
-      obj.name = 'place:' + (p.name || p.id);               // no buildingId on purpose -> not tappable
+      obj.name = 'place:' + (p.name || p.id);
       obj.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
       scene.add(obj);
       placeBlockMeshes.push(obj);
@@ -312,8 +270,7 @@ function buildBuildings(buildings) {
   placeGen++;
 
   buildings.forEach(bldg => {
-    if (bldg.category === 'place') { spawnPlace(bldg); return; }   // visual-only
-    // If a real mesh file exists, load the GLB. Otherwise spawn a box.
+    if (bldg.category === 'place') { spawnPlace(bldg); return; }
     if (bldg.glbModel) {
       loadGLB(bldg);
     } else {
@@ -326,7 +283,6 @@ function spawnBox(bldg) {
   const { width, depth, height } = bldg.size;
   const color = parseInt(bldg.color.replace('#',''), 16);
 
-  // Box body
   const mat = new THREE.MeshLambertMaterial({ color });
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(width, height, depth),
@@ -350,8 +306,6 @@ function spawnBox(bldg) {
 }
 
 function loadGLB(bldg) {
-  // GLTFLoader is loaded via js/vendor/GLTFLoader.js (matches r128 core).
-  // Loads Jonathan/Shane's Agisoft Metashape GLB exports.
   const loader = new THREE.GLTFLoader();
 
   loader.load(
@@ -359,10 +313,6 @@ function loadGLB(bldg) {
     (gltf) => {
       const model = gltf.scene;
 
-      // Measure the model's native size (before any position/rotation/scale
-      // is applied) so it can be fit to the building's declared
-      // width/height/depth footprint — the same footprint the campus editor's
-      // resize handles and size fields control.
       const nativeBox = new THREE.Box3().setFromObject(model);
       const nativeSize = {
         x: nativeBox.max.x - nativeBox.min.x,
@@ -370,13 +320,8 @@ function loadGLB(bldg) {
         z: nativeBox.max.z - nativeBox.min.z,
       };
 
-      // yOffset (optional, world units): raise (+) or sink (-) a model whose own
-      // origin isn't at ground level, without re-exporting it from Blender.
       model.position.set(bldg.position.x, bldg.yOffset || 0, bldg.position.z);
       model.rotation.y = THREE.MathUtils.degToRad(bldg.rotation || 0);
-      // Fit the model to the building's declared footprint per axis, then
-      // apply modelScale as an extra uniform correction on top — for a scan
-      // whose proportions are right but exported at the wrong real-world size.
       const extra = bldg.modelScale || 1;
       const sx = nativeSize.x > 1e-6 ? (bldg.size.width / nativeSize.x) * extra : extra;
       const sy = nativeSize.y > 1e-6 ? (bldg.size.height / nativeSize.y) * extra : extra;
@@ -384,11 +329,6 @@ function loadGLB(bldg) {
       model.scale.set(sx, sy, sz);
       model.userData = { buildingId: bldg.id };
 
-      // Optional per-building color override: some scans exported with no
-      // baked texture and a near-black (or otherwise wrong) baseColorFactor
-      // render solid black. Rather than re-exporting from Blender, set
-      // glbTint:true (and pick a Color in the campus editor) to replace the
-      // model's own material with a flat color instead.
       const tintColor = bldg.glbTint ? parseInt((bldg.color || '#4a90d9').replace('#', ''), 16) : null;
 
       model.traverse(child => {
@@ -409,7 +349,7 @@ function loadGLB(bldg) {
     undefined,
     (err) => {
       console.error(`Failed to load GLB for ${bldg.id} (${bldg.glbModel}):`, err);
-      spawnBox(bldg); // fall back to graybox if the model fails to load
+      spawnBox(bldg);
     }
   );
 }
@@ -421,9 +361,7 @@ function darkenColor(hex, factor) {
   return (r << 16) | (g << 8) | b;
 }
 
-// camOffset = camera.position - camera.lookAt, stored on first load.
-// Every pan/zoom preserves this offset so the tilt angle never resets.
-let camOffset = { x: -200, y: 220, z: 200 }; // safe default; overwritten by positionCamera
+let camOffset = { x: -200, y: 220, z: 200 };
 
 function positionCamera(cam) {
   camera.position.set(cam.position.x, cam.position.y, cam.position.z);
@@ -449,7 +387,6 @@ function onPointerDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
   const meshes = buildingMeshes.map(b => b.mesh);
-  // recursive: true so hits register on meshes inside a loaded GLTF group, not just single boxes
   const hits = raycaster.intersectObjects(meshes, true);
 
   if (hits.length > 0) {
@@ -464,7 +401,6 @@ function onPointerDown(e) {
   }
 }
 
-// Sets emissive highlight on a mesh, or every emissive-capable mesh inside a GLTF group
 function setEmissive(meshObj, hex) {
   if (meshObj.isMesh && meshObj.material && meshObj.material.emissive !== undefined) {
     meshObj.material.emissive.setHex(hex);
@@ -480,12 +416,10 @@ function setEmissive(meshObj, hex) {
 function selectBuilding(bldg) {
   selectedBuilding = bldg;
 
-  // Highlight selected building (slight emissive) — works for boxes and loaded GLB models
   buildingMeshes.forEach(b => {
     setEmissive(b.mesh, b.data.id === bldg.id ? 0x444444 : 0x000000);
   });
 
-  // Tell ui.js to show the info panel
   if (typeof showBuildingInfo === 'function') showBuildingInfo(bldg);
 }
 
@@ -495,10 +429,8 @@ function deselectBuilding() {
     setEmissive(b.mesh, 0x000000);
   });
   if (typeof hideBuildingInfo === 'function') hideBuildingInfo();
-  //  Do NOT clearPath() here — path must persist while user pans the map
 }
 
-// Waypoint ids reachable from main_gate through 'neighbors' (cached; the graph never changes at runtime).
 let _linkedSet = null;
 function connectedToMainNetwork() {
   if (_linkedSet) return _linkedSet;
@@ -515,12 +447,9 @@ function connectedToMainNetwork() {
 function navigateTo(targetBuildingId) {
   if (!campusData) return;
 
-  // Origin: nearest waypoint to user's GPS position or main_gate as fallback
   let originWpId = 'main_gate';
   if (currentGPSPosition) {
     let bestId = null, bestDist = Infinity;
-    // Only waypoints that are actually linked to the main path network can start a route
-    // (a cut-off waypoint pair, e.g. a building entry nobody connected, would give "no path").
     const linked = connectedToMainNetwork();
     Object.values(waypointMap).forEach(wp => {
       if (!linked.has(wp.id)) return;
@@ -541,23 +470,19 @@ function navigateTo(targetBuildingId) {
   if (!pathIds || pathIds.length === 0) { if (typeof showGPSToast === 'function') showGPSToast('No route to this place yet.'); return; }
 
   drawPath(pathIds, currentGPSPosition);
-  youHereOn = false;               // route started -> drop the 'You are here' label
+  youHereOn = false;
 
   if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg);
 }
 
-// Route is drawn twice: a solid orange LINE (map / top view, as before) and a
-// row of flat ARROWHEADS lying on the pathway (first-person view, per the
-// adviser). Only the one that fits the current view is visible.
 let routeLineGroup = null, routeArrowGroup = null;
-let activeRouteIds = null;           // waypoint ids of the current route (first-person start uses it)
+let activeRouteIds = null;
 
 function setRouteStyle(firstPerson) {
   if (routeLineGroup)  routeLineGroup.visible  = !firstPerson;
   if (routeArrowGroup) routeArrowGroup.visible =  firstPerson;
 }
 
-// One chevron, pointing +x, lying flat (y=0). Shared by every arrow.
 const ARROW_GEO = (function () {
   const g = new THREE.BufferGeometry();
   const v = new Float32Array([
@@ -585,7 +510,7 @@ function addArrowsAlong(group, ax, az, bx, bz, startOffset, spacing, arrowMat, h
     group.add(halo); group.add(arrow);
     d += spacing;
   }
-  return d - len;          // carry-over so spacing continues across segments
+  return d - len;
 }
 
 function drawPath(waypointIds, fromPos) {
@@ -595,16 +520,14 @@ function drawPath(waypointIds, fromPos) {
   routeLineGroup  = new THREE.Group(); routeLineGroup.userData.isPathDot  = true;
   routeArrowGroup = new THREE.Group(); routeArrowGroup.userData.isPathDot = true;
 
-  // Flat box strips instead of THREE.Line — linewidth is ignored on iOS/WebGL.
-  const pathMat  = new THREE.MeshBasicMaterial({ color: 0xf39c12 }); // orange
+  const pathMat  = new THREE.MeshBasicMaterial({ color: 0xf39c12 });
   const arrowMat = new THREE.MeshBasicMaterial({ color: 0xf39c12, side: THREE.DoubleSide });
   const haloMat  = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
   const stripW   = 3.5;
   const SPACING  = 6;
 
-  let carry = 0;           // distance into the next arrow slot
+  let carry = 0;
 
-  // If user is on campus, draw a connector from the GPS dot to the first waypoint
   if (fromPos && waypointIds.length > 0) {
     const firstWp = waypointMap[waypointIds[0]];
     if (firstWp) {
@@ -655,7 +578,6 @@ function drawPath(waypointIds, fromPos) {
 }
 
 function clearPath() {
-  // Remove all path meshes (strips, dots, pin)
   const toRemove = [];
   scene.traverse(obj => { if (obj.userData.isPathDot) toRemove.push(obj); });
   toRemove.forEach(obj => {
@@ -669,19 +591,15 @@ function clearPath() {
   if (typeof hidePathInfo === 'function') hidePathInfo();
 }
 
-// GPS blue dot (called from gps.js)
 function updateGPSMarker(x, z, isOnCampus) {
-  // null means GPS was turned off — just hide the marker
   if (x === null || z === null) {
     if (gpsMarker) gpsMarker.visible = false;
     currentGPSPosition = null;
     gpsTarget = null;
     return;
   }
-  // Only use as nav origin when actually inside campus bounds (not clamped)
   currentGPSPosition = isOnCampus ? { x, z } : null;
   if (!gpsMarker) {
-    // Red sphere — bigger and more visible than the old small blue dot
     gpsMarker = new THREE.Mesh(
       new THREE.SphereGeometry(4, 16, 16),
       new THREE.MeshBasicMaterial({ color: 0xe74c3c })
@@ -689,15 +607,11 @@ function updateGPSMarker(x, z, isOnCampus) {
     gpsMarker.userData.isGPS = true;
     scene.add(gpsMarker);
   }
-  // Off campus: hide it instead of showing it clamped to the bounding-box edge —
-  // the ground is an irregular quad, not a rectangle, so a clamped position can
-  // land outside the visible green area and look like it's floating off the map.
   if (!isOnCampus) {
     gpsMarker.visible = false;
     return;
   }
   gpsMarker.visible = !(window.NavFP && NavFP.active);
-  // Glide toward the new (already smoothed) fix in animate() instead of teleporting.
   var first = !gpsTarget;
   gpsTarget = { x: x, z: z };
   if (first) gpsMarker.position.set(x, 4, z);
@@ -715,10 +629,9 @@ function initControls() {
     panStart(e);
   });
   canvas.addEventListener('pointermove', panMove);
-  canvas.addEventListener('contextmenu', e => e.preventDefault()); // right-drag rotates, so no browser menu
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
   canvas.addEventListener('pointerup', e => {
     panEnd();
-    // Only do building hit-test on a real tap (not the end of a drag)
     const dx = Math.abs(e.clientX - _tapX);
     const dy = Math.abs(e.clientY - _tapY);
     if (e.button !== 2 && dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
@@ -727,26 +640,19 @@ function initControls() {
   });
   canvas.addEventListener('pointercancel', panEnd);
 
-  // Touch events for mobile pinch-zoom
   canvas.addEventListener('touchstart',  onTouchStart, { passive: false });
   canvas.addEventListener('touchmove',   onTouchMove,  { passive: false });
   canvas.addEventListener('touchend',    onTouchEnd);
 
-  // Mouse wheel zoom
   canvas.addEventListener('wheel', onWheel, { passive: false });
 }
 
-// Pan state
 const pan = { active: false, lastX: 0, lastY: 0, mode: 'pan' };
-// what the camera orbits around / pans over
 const lookTarget = { x: 700, y: 0, z: -80 };
 
 function panStart(e) {
   if (window.NavFP && NavFP.active) { NavFP.pointerDown(e); return; }
   pan.active = true;
-  // Shift+drag rotates instead of panning — a one-pointer stand-in for the
-  // two-finger rotate gesture below, so rotation is also testable with a mouse.
-  // On a laptop/desktop the right mouse button rotates too (left = pan, right = rotate).
   pan.mode = (e.shiftKey || e.button === 2) ? 'rotate' : 'pan';
   pan.lastX = e.clientX ?? (e.touches?.[0]?.clientX ?? 0);
   pan.lastY = e.clientY ?? (e.touches?.[0]?.clientY ?? 0);
@@ -767,19 +673,11 @@ function panMove(e) {
     return;
   }
 
-  // Pan direction has to rotate along with the camera's current azimuth, not
-  // stay locked to the world's raw X/Z axes. The old dx-→x, dy-→z mapping only
-  // looked right at the one fixed angle the app used to be locked to before
-  // rotation existed; at other azimuths (most noticeably near top-down) it
-  // makes vertical drags pan sideways and vice versa. Rotating the drag by
-  // the camera's azimuth (phi) keeps "drag right = ground slides right" and
-  // "drag down = ground slides down" true from whatever angle you're viewing.
   const phi = Math.atan2(camOffset.z, camOffset.x);
   const speed = camOffset.y * 0.002;
   lookTarget.x -= (Math.sin(phi) * dx + Math.cos(phi) * dy * 0.6) * speed;
   lookTarget.z -= (-Math.cos(phi) * dx + Math.sin(phi) * dy * 0.6) * speed;
 
-  // Clamp to campus bounds
   const b = campusData.bounds;
   lookTarget.x = Math.max(b.minX, Math.min(b.maxX, lookTarget.x));
   lookTarget.z = Math.max(b.minZ, Math.min(b.maxZ, lookTarget.z));
@@ -789,7 +687,6 @@ function panMove(e) {
 
 function panEnd() { pan.active = false; if (window.NavFP) NavFP.pointerUp(); }
 
-// Zoom + rotate state (two-finger gesture does both at once, like most map apps)
 let pinchStartDist    = null;
 let pinchStartY       = null;
 let twoFingerLastX    = null;
@@ -806,7 +703,7 @@ function onTouchStart(e) {
     twoFingerLastX    = mid.x;
     twoFingerLastY    = mid.y;
     twoFingerLastDist = pinchStartDist;
-    pan.active = false; // cancel single-finger pan during a two-finger gesture
+    pan.active = false;
   }
 }
 
@@ -820,12 +717,6 @@ function onTouchMove(e) {
       zoomCamera(pinchStartY * scale);
     }
 
-    // Dragging both fingers together (not apart/together, which is the pinch above)
-    // rotates the view: sideways = spin around lookTarget, up/down = tilt the angle.
-    // Gated below so a plain pinch doesn't also spin the camera — it's basically
-    // impossible to hold two fingers at a perfectly fixed distance while pinching,
-    // and that tiny natural wobble was accumulating frame after frame into a real,
-    // unwanted rotation.
     const mid = getTouchMidpoint(e.touches);
     if (twoFingerLastX !== null) {
       const dx = mid.x - twoFingerLastX;
@@ -833,10 +724,6 @@ function onTouchMove(e) {
       const midMove  = Math.sqrt(dx * dx + dy * dy);
       const distMove = Math.abs(dist - twoFingerLastDist);
 
-      // Only treat it as a rotate/tilt once the fingers are clearly sliding
-      // together and not just pinching: midpoint movement has to both clear a
-      // small dead zone AND outweigh however much the pinch distance changed
-      // this same frame.
       if (midMove > 4 && midMove > distMove * 1.5) {
         rotateCamera(-dx * ROTATE_SPEED, dy * TILT_SPEED);
       }
@@ -874,14 +761,11 @@ function getTouchMidpoint(touches) {
   };
 }
 
-// Zoom limits (thesis adviser): can't get so close the map is just a blob, or so
-// far the campus becomes a speck.
 const ZOOM_MIN = 70;
 const ZOOM_MAX = 330;
 
 function zoomCamera(newY) {
   const clampedY = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, newY));
-  // Scale the whole offset so the tilt angle is preserved at every zoom level
   const scale = clampedY / camOffset.y;
   camOffset.x *= scale;
   camOffset.y  = clampedY;
@@ -889,20 +773,15 @@ function zoomCamera(newY) {
   updateCameraFromTarget();
 }
 
-// Requested by the thesis coordinator (2026-08-29): Navigate Now's camera can now
-// orbit around lookTarget instead of being locked to one fixed top-down angle.
-// camOffset is treated as a spherical vector (radius r, elevation theta, azimuth phi)
-// so rotating only ever changes direction, never magnitude — zoom (above) still
-// controls distance/height independently.
-const MIN_ELEVATION = THREE.MathUtils.degToRad(25); // floor: camera can never graze/dip into the ground plane
-const MAX_ELEVATION = THREE.MathUtils.degToRad(85); // ceiling: never flips to a straight-down, disorienting view
-const ROTATE_SPEED = 0.006;  // radians per pixel of horizontal drag
-const TILT_SPEED   = 0.004;  // radians per pixel of vertical drag
+const MIN_ELEVATION = THREE.MathUtils.degToRad(25);
+const MAX_ELEVATION = THREE.MathUtils.degToRad(85);
+const ROTATE_SPEED = 0.006;
+const TILT_SPEED   = 0.004;
 
 function rotateCamera(deltaAzimuth, deltaElevation) {
   const r = Math.sqrt(camOffset.x ** 2 + camOffset.y ** 2 + camOffset.z ** 2);
-  let theta = Math.asin(camOffset.y / r);              // elevation above the horizontal plane
-  let phi   = Math.atan2(camOffset.z, camOffset.x);    // azimuth around the vertical (Y) axis
+  let theta = Math.asin(camOffset.y / r);
+  let phi   = Math.atan2(camOffset.z, camOffset.x);
 
   phi   += deltaAzimuth;
   theta = Math.max(MIN_ELEVATION, Math.min(MAX_ELEVATION, theta + deltaElevation));
@@ -923,17 +802,15 @@ function updateCameraFromTarget() {
   camera.lookAt(lookTarget.x, lookTarget.y, lookTarget.z);
 }
 
-// Only render when map page is visible  prevents sky-blue canvas bleeding
-// through on other pages (iOS treats opacity:0 layers differently from display:none)
 function animate() {
   requestAnimationFrame(animate);
   const mapPage = document.getElementById('page-map');
   if (mapPage && mapPage.classList.contains('active')) {
-    if (window.NavFP) NavFP.frame();   // first-person movement + name-tag layout (js/navfp.js)
+    if (window.NavFP) NavFP.frame();
     if (gpsMarker && gpsTarget && gpsMarker.visible) {
       var gdx = gpsTarget.x - gpsMarker.position.x, gdz = gpsTarget.z - gpsMarker.position.z;
       var gd = Math.hypot(gdx, gdz);
-      if (gd > 80) gpsMarker.position.set(gpsTarget.x, 4, gpsTarget.z);       // big jump: snap
+      if (gd > 80) gpsMarker.position.set(gpsTarget.x, 4, gpsTarget.z);
       else if (gd > 0.05) gpsMarker.position.set(gpsMarker.position.x + gdx * 0.08, 4, gpsMarker.position.z + gdz * 0.08);
     }
     renderer.render(scene, camera);
@@ -943,7 +820,6 @@ function animate() {
   }
 }
 
-// "You are here" label: over the GPS dot when we have one, else over the Main Gate (the default route start).
 let _yhEl = null, _yhV = null;
 function layoutYouHere() {
   if (!_yhEl) _yhEl = document.getElementById('you-are-here');
@@ -962,10 +838,3 @@ function layoutYouHere() {
 function zoomIn()  { zoomCamera(camera ? camera.position.y - 40 : 220); }
 function zoomOut() { zoomCamera(camera ? camera.position.y + 40 : 220); }
 
-// public API (called by ui.js / pathfinding.js / gps.js) 
-// navigateTo(buildingId)   — draw A* path to building
-// clearPath()              — remove path line
-// updateGPSMarker(x, z)   — move blue dot
-// selectBuilding(bldg)     — highlight + show info
-// deselectBuilding()       — clear selection
-// zoomIn() / zoomOut()     — called by map-ctrl-btn buttons

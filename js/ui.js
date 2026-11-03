@@ -1,40 +1,21 @@
-//  js/ui.js  —  PRMSU SM Digital Twin  (integrated with Jonathan's script.js)
-//
-//  Jonathan's script.js handles:  goTo, goBack, history, openSidebar,
-//    closeSidebar, sidebarGoTo, sheetToggle, openVmq, closeVmq
-//
-//  This file handles:
-//    - Building info panel (showBuildingInfo / hideBuildingInfo)
-//    - Path info bar (showPathInfo / hidePathInfo / clearNavigation)
-//    - GPS toggle button
-//    - Building sheet list (populated from campus.json)
-//    - Hook into goTo for Three.js canvas resize
 
 
 
-let selectedBuilding = null;   // building object currently shown in panel
-let gpsEnabled       = false;  // GPS on/off
-let campusBuildings  = [];     // filled by onSceneReady() from main.js
+let selectedBuilding = null;
+let gpsEnabled       = false;
+let campusBuildings  = [];
 
 
-// When the user navigates TO the map page, the canvas needs a resize
-// signal because it was hidden (zero-size) while inactive
-// script.js already wraps goTo once we chain onto it here.
 (function () {
-  // Runs every time a page becomes visible, whether it was reached through goTo()
-  // (home buttons, back button) or through the sidebar drawer (script.js sidebarGoTo).
   window.onPageEntered = function (pageId) {
     var canvas = document.getElementById('three-canvas');
     if (canvas) canvas.style.display = pageId === 'map' ? 'block' : 'none';
     if (pageId === 'map') {
-      // Give the DOM 1 frame to layout before firing resize
       setTimeout(function () {
         if (typeof onResize === 'function') onResize();
       }, 80);
     }
     if (pageId === 'devzones') {
-      // Same idea: the page was hidden (zero-size) until now, so the "fit
-      // whole map to screen" math needs a frame to see real dimensions.
       setTimeout(function () {
         if (typeof fitDevzonesMap === 'function') fitDevzonesMap();
       }, 80);
@@ -61,9 +42,6 @@ function showBuildingInfo(bldg) {
     badge.className   = 'category-badge ' + (bldg.category || 'facility');
   }
 
-  // Buildings with no entryWaypoint (housing / other unconnected "model
-  // only" buildings) have no route into the pathway graph, so the
-  // Navigate Here button is hidden rather than offered and failing silently.
   if (bldg.entryWaypoint) {
     show('navigate-btn');
   } else {
@@ -73,19 +51,16 @@ function showBuildingInfo(bldg) {
   show('building-panel');
 }
 
-// Called by main.js when user taps empty space  or by closePanel()
 function hideBuildingInfo() {
   selectedBuilding = null;
   hide('building-panel');
 }
 
-// Called by the ✕ button on the panel
 function closePanel() {
   hideBuildingInfo();
 }
 
 
-// Called by the "Navigate Here" button
 function navigateToSelected() {
   if (!selectedBuilding) {
     console.warn('[ui] No building selected');
@@ -102,23 +77,20 @@ function navigateToSelected() {
   }
 }
 
-// Called by main.js after A* draws the path
 function showPathInfo(pathIds, targetBldg) {
   setText('path-destination', (targetBldg && targetBldg.name) ? targetBldg.name : 'Destination');
   setText('path-steps', '');
   show('path-bar');
 }
 
-// Called by main.js / clearPath() when path is removed
 function hidePathInfo() {
   setText('path-destination', '—');
   setText('path-steps', '');
   hide('path-bar');
 }
 
-// Called by the ✕ Clear button on the path bar
 function clearNavigation() {
-  if (typeof youHereOn !== 'undefined') youHereOn = true;   // label comes back once the route is cleared
+  if (typeof youHereOn !== 'undefined') youHereOn = true;
   hidePathInfo();
   hideBuildingInfo();
   if (typeof clearPath === 'function') clearPath();
@@ -135,12 +107,6 @@ function toggleGPS() {
 }
 
 
-// Map legend overlay — a large centered modal showing the full LegendMap.png,
-// toggled by the legend button. Closed by default. The image inside can be
-// panned/pinch-zoomed independently of the 3D map: gestures are captured on
-// #legend-img-wrap (touch-action:none, its own pointer handlers below), which
-// sits above the map canvas in a completely separate part of the DOM, so
-// nothing here ever reaches the map's own pan/zoom listeners on #three-canvas.
 let legendOpen = false;
 function toggleLegend() {
   legendOpen = !legendOpen;
@@ -151,12 +117,11 @@ function toggleLegend() {
   if (legendOpen) resetLegendView();
 }
 
-// ── Legend image pan / pinch-zoom (isolated from the 3D map) ──
 const legendView = { scale: 1, minScale: 1, maxScale: 4, tx: 0, ty: 0 };
-const legendPointers = new Map();   // pointerId -> {x, y} in wrap-local coords
-let legendPinch = null;             // {startDist, startScale, anchorX, anchorY}
-let legendDragLast = null;          // {x, y} for single-pointer pan
-let legendLastTap = null;           // {t, x, y} for double-tap-to-zoom
+const legendPointers = new Map();
+let legendPinch = null;
+let legendDragLast = null;
+let legendLastTap = null;
 
 function resetLegendView() {
   legendView.scale = 1;
@@ -190,7 +155,6 @@ function legendLocalPoint(wrap, clientX, clientY) {
 
 function legendZoomAt(wrap, localX, localY, newScale) {
   newScale = Math.min(legendView.maxScale, Math.max(legendView.minScale, newScale));
-  // Keep the image point under (localX, localY) fixed while the scale changes.
   const imgX = (localX - legendView.tx) / legendView.scale;
   const imgY = (localY - legendView.ty) / legendView.scale;
   legendView.scale = newScale;
@@ -260,7 +224,6 @@ function initLegendViewer() {
     if (legendPointers.size === 0) wrap.classList.remove('dragging');
 
     if (legendPointers.size === 1) {
-      // Dropped from a pinch to a single finger — re-baseline so it doesn't jump.
       const [remaining] = [...legendPointers.values()];
       legendDragLast = remaining;
       legendPinch = null;
@@ -272,7 +235,6 @@ function initLegendViewer() {
   wrap.addEventListener('pointerup', endPointer);
   wrap.addEventListener('pointercancel', endPointer);
 
-  // Desktop convenience: wheel to zoom, anchored at the cursor.
   wrap.addEventListener('wheel', e => {
     e.preventDefault();
     const p = legendLocalPoint(wrap, e.clientX, e.clientY);
@@ -281,7 +243,6 @@ function initLegendViewer() {
     applyLegendTransform(false);
   }, { passive: false });
 
-  // Double-click / double-tap to toggle between fit and ~2.4x zoom.
   wrap.addEventListener('pointerup', e => {
     const now = Date.now();
     const p = legendLocalPoint(wrap, e.clientX, e.clientY);
@@ -303,34 +264,12 @@ function initLegendViewer() {
 initLegendViewer();
 
 
-// ── Development Zones — full-bleed pannable/pinch-zoomable satellite map ──
-// Same gesture handling as the legend viewer above (pointer-based pan, pinch
-// to zoom, wheel to zoom, double-tap to toggle zoom), but this map fills the
-// whole page instead of a fixed modal box, so instead of always resetting to
-// scale=1 at the top-left, the "resting" state is "zoomed/cropped to fill the
-// screen, centered" (baseScale below, see fitDevzonesMap) — the equivalent of
-// object-fit:cover, except driven by JS so it can be panned/zoomed from
-// there. Markers get layered on top of this in a later pass; #devzones-markers
-// already exists in the DOM (see index.html) so that pass doesn't need to
-// touch this file's structure.
 const devzonesView = { scale: 1, baseScale: 1, minScale: 1, maxScale: 6, tx: 0, ty: 0, imgW: 0, imgH: 0 };
 const devzonesPointers = new Map();
 let devzonesPinch = null;
 let devzonesDragLast = null;
 let devzonesLastTap = null;
 
-// Recomputes the starting view and resets to it. Called once the image has
-// its real pixel size (onload) and again whenever the page becomes
-// visible/resizes, since the wrap has zero size while its page is hidden and
-// the fit math needs real dimensions.
-//
-// This is "cover", not "contain": the satellite photo is landscape (wide)
-// but phones are portrait, so showing the *whole* image would leave black
-// bars above and below it. Google Maps never opens showing blank margins —
-// it opens already zoomed in, filling the screen edge to edge. Math.max
-// (instead of Math.min) picks the larger of the two ratios, so the map
-// scales up until it fills the taller dimension completely, cropping
-// whatever's left over on the sides — same as CSS object-fit:cover.
 function fitDevzonesMap() {
   const wrap = document.getElementById('devzones-map-wrap');
   const img = document.getElementById('devzones-map-img');
@@ -340,13 +279,10 @@ function fitDevzonesMap() {
   devzonesView.imgH = img.naturalHeight;
 
   const wrapW = wrap.clientWidth, wrapH = wrap.clientHeight;
-  if (!wrapW || !wrapH) return; // still hidden — try again once it's shown
+  if (!wrapW || !wrapH) return;
 
   const fit = Math.max(wrapW / devzonesView.imgW, wrapH / devzonesView.imgH);
   devzonesView.baseScale = fit;
-  // Zooming out is allowed down to the "whole map visible" size (contain). Any
-  // leftover space around the map is filled by a blurred copy of the same
-  // satellite image (see .devzones-map-wrap::before) so no black shows.
   devzonesView.minScale = Math.min(wrapW / devzonesView.imgW, wrapH / devzonesView.imgH);
   devzonesView.maxScale = fit * 6;
   wrap.style.setProperty('--dz-bg', 'url("' + img.getAttribute('src') + '")');
@@ -365,15 +301,8 @@ function applyDevzonesTransform(animated) {
   img.style.height = devzonesView.imgH + 'px';
   const t = 'translate(' + devzonesView.tx + 'px, ' + devzonesView.ty + 'px) scale(' + devzonesView.scale + ')';
   img.style.transform = t;
-  // Markers live in image-pixel coordinates too, so they ride along with
-  // exactly the same transform and stay pinned to the spot on the map they
-  // mark, at any pan/zoom level.
   if (markers) {
     markers.style.transform = t;
-    // ...but the pins themselves should look the same size no matter how
-    // zoomed-in the map is, not grow with it. Each pin gets its own inverse
-    // scale to cancel out the container's — same trick map apps use for
-    // markers on a zoomable tile layer.
     const invScale = 1 / devzonesView.scale;
     Array.prototype.forEach.call(markers.children, function (pin) {
       pin.style.transform = 'translate(-50%, -100%) scale(' + invScale + ')';
@@ -382,11 +311,6 @@ function applyDevzonesTransform(animated) {
   }
 }
 
-// Keeps the map from being panned past its own edges — but only on axes
-// where it's actually bigger than the viewport at the current zoom. On an
-// axis where the (possibly letterboxed) image is smaller than the wrap, it
-// stays centered instead of pinned to an edge — same idea as object-fit,
-// just applied per-axis so a non-matching aspect ratio still looks right.
 function devzonesClampToBounds() {
   const wrap = document.getElementById('devzones-map-wrap');
   if (!wrap) return;
@@ -415,7 +339,6 @@ function devzonesLocalPoint(wrap, clientX, clientY) {
 
 function devzonesZoomAt(wrap, localX, localY, newScale) {
   newScale = Math.min(devzonesView.maxScale, Math.max(devzonesView.minScale, newScale));
-  // Keep the map point under (localX, localY) fixed while the scale changes.
   const imgX = (localX - devzonesView.tx) / devzonesView.scale;
   const imgY = (localY - devzonesView.ty) / devzonesView.scale;
   devzonesView.scale = newScale;
@@ -424,15 +347,6 @@ function devzonesZoomAt(wrap, localX, localY, newScale) {
   devzonesClampToBounds();
 }
 
-// Each zone's x/y is a pixel position in the *original* satellite map image
-// (DEV_ZONES_SATMAP.jpg, 1327×703) — the same pixel space #devzones-markers is
-// transformed in, so a marker just needs its left/top set once and it rides
-// along with every pan/zoom for free (see applyDevzonesTransform).
-//
-// The zones live in data/devzones.json (edit them with devzones-editor.html:
-// drop a pin, type a label, pick a photo). Any number of zones works — pins,
-// labels and photos are all built from that file. The list below is only a
-// last-resort fallback if the file can't be loaded.
 let DEVZONES_DATA = [
   { id: 'mango_greenhouse', label: 'Mango Greenhouse Farm', photo: 'images/devzones/mangogreenhouse_dz.jpg', x: 711.5, y: 272.2 },
   { id: 'stadium',          label: 'Stadium',                photo: 'images/devzones/oval_dz.jpg',              x: 1042.5, y: 248.1 },
@@ -453,8 +367,6 @@ function loadDevzonesData() {
     .catch(function (e) { console.warn('devzones.json not loaded, using built-in list:', e); devzonesLoaded = true; });
 }
 
-// Builds the marker pins (guarded by _built). Each pin = the map-pin icon
-// plus its label floating above it.
 function buildDevzonesMarkers() {
   const host = document.getElementById('devzones-markers');
   if (!host || host._built) return;
@@ -485,10 +397,6 @@ function buildDevzonesMarkers() {
   applyDevzonesTransform(false);
 }
 
-// With many pins, labels can pile on top of each other when zoomed out. Pins
-// are always shown; a label is hidden only if an earlier zone's label already
-// covers its spot, and reappears as you zoom in. Overlap only changes when the
-// zoom changes (panning moves everything together), so this runs on zoom only.
 let devzonesLabelScale = -1;
 function layoutDevzonesLabels() {
   const host = document.getElementById('devzones-markers');
@@ -507,23 +415,6 @@ function layoutDevzonesLabels() {
   });
 }
 
-// ── Full-screen POV photo — pannable/zoomable, with a cheap "looking
-// around" 3D tilt ──
-// Just the zone's photo for now; the plan is to swap the <img> for an
-// actual 3D model preview once those exist, without needing to touch this
-// open/close/pan/zoom logic. The photo starts "cover"-fit (fills the
-// screen, same idea as the satellite map) and can be dragged/pinched from
-// there — same gesture engine as devzonesView above, duplicated with a
-// "pov" prefix instead of shared, since the two run on different elements
-// and don't need to interact.
-//
-// The 3D-ish part: .devzones-pov-tilt (a separate layer wrapping the image,
-// see index.html/style.css) gets a small rotateX/rotateY based on how far
-// off-center the pan currently is — panned to the left edge of the photo
-// tilts one way, the right edge the other, snapping back to flat when
-// centered. It's not a real look-around (that needs an actual panorama or
-// 3D model), just a flat photo with a perspective lean, but it reads as
-// "leaning into the scene" rather than a static crop.
 const povView = { scale: 1, baseScale: 1, minScale: 1, maxScale: 6, tx: 0, ty: 0, imgW: 0, imgH: 0, tiltX: 0, tiltY: 0 };
 const povPointers = new Map();
 let povPinch = null;
@@ -531,25 +422,15 @@ let povDragLast = null;
 let povLastTap = null;
 let povViewerInited = false;
 
-// Must match .devzones-pov-stage's CSS `perspective` — the tilt-cover math
-// below needs the same number CSS is actually using to project it.
 const POV_PERSPECTIVE_PX = 850;
 
-// Rotating a flat plane in 3D shrinks its projected footprint on the far
-// side (perspective foreshortening) — that's exactly what let the black
-// page background show through at the corners when the photo tilts. This
-// works out how much to scale the plane up, *before* it rotates, so its
-// foreshortened far edge still reaches exactly as far as it did flat —
-// derived from the actual angle in use and the perspective distance above,
-// so it costs nothing extra when centered (deg = 0 → scale 1) and only
-// zooms in slightly at the extremes of a pan, right when it's needed.
 function povTiltCoverScale(deg, half) {
   var theta = Math.abs(deg) * Math.PI / 180;
   if (theta < 0.0001 || half <= 0) return 1;
   var denom = Math.cos(theta) * POV_PERSPECTIVE_PX - half * Math.sin(theta);
-  if (denom <= 0) return 3; // degenerate (huge screen / steep angle) — clamp rather than blow up
+  if (denom <= 0) return 3;
   var s = POV_PERSPECTIVE_PX / denom;
-  return Math.min(s * 1.08, 3); // small safety margin for the X+Y-tilted-at-once case, hard-capped
+  return Math.min(s * 1.08, 3);
 }
 
 function fitPovImage() {
@@ -585,12 +466,7 @@ function applyPovTransform(animated) {
   img.style.transform = 'translate(' + povView.tx + 'px, ' + povView.ty + 'px) scale(' + povView.scale + ')';
 
   if (tilt) {
-    // .devzones-pov-tilt always transitions (see its CSS) rather than being
-    // gated like .devzones-pov-img.animated — it updates every pointermove
-    // during a drag, and letting it ease continuously (instead of jumping
-    // frame-to-frame) is what gives the lean its "settling into place" feel
-    // even while the pan itself tracks the finger exactly.
-    var maxTiltDeg = 14; // noticeable lean, still short of a fairground ride
+    var maxTiltDeg = 14;
     var rotY = -povView.tiltX * maxTiltDeg;
     var rotX = povView.tiltY * maxTiltDeg;
 
@@ -602,17 +478,11 @@ function applyPovTransform(animated) {
       1
     );
 
-    // scale() goes innermost (rightmost) so the plane is enlarged *before*
-    // it rotates — matching what povTiltCoverScale actually solved for.
     tilt.style.transform =
       'rotateY(' + rotY.toFixed(2) + 'deg) rotateX(' + rotX.toFixed(2) + 'deg) scale(' + coverScale.toFixed(4) + ')';
   }
 }
 
-// Same per-axis "clamp to edges, or center if it doesn't need panning" idea
-// as devzonesClampToBounds — plus, while it's at it, works out tiltX/tiltY
-// (-1..1, 0 = centered) from exactly the same bounds, since that's already
-// the "how far can this axis pan, and where are we in that range" math.
 function povClampToBounds() {
   const stage = document.getElementById('devzones-pov-stage');
   if (!stage) return;
@@ -655,8 +525,6 @@ function povZoomAt(stage, localX, localY, newScale) {
   povClampToBounds();
 }
 
-// Bound once — the stage element itself never changes, only which photo is
-// loaded into it, so there's nothing to re-bind on each openDevzonePOV call.
 function initPovViewer() {
   if (povViewerInited) return;
   povViewerInited = true;
@@ -744,7 +612,6 @@ function initPovViewer() {
     applyPovTransform(false);
   }, { passive: false });
 
-  // Double-click / double-tap to toggle between fit and ~2.4x the fit scale.
   stage.addEventListener('pointerup', e => {
     const now = Date.now();
     const p = povLocalPoint(stage, e.clientX, e.clientY);
@@ -775,8 +642,6 @@ function openDevzonePOV(zone) {
 
   initPovViewer();
 
-  // Fresh gesture state for the new photo — stray pointers from whatever
-  // was happening on the satellite map shouldn't leak in here.
   povPointers.clear();
   povPinch = null;
   povDragLast = null;
@@ -785,9 +650,6 @@ function openDevzonePOV(zone) {
   label.textContent = zone.label;
   pov.classList.add('is-open');
 
-  // Setting .src resets img.complete immediately, so this "already loaded"
-  // check right after is safe — it only fires true for a cached repeat view
-  // of the same photo. Otherwise the load listener picks it up once it's in.
   img.classList.remove('animated');
   img.onload = function () { fitPovImage(); };
   img.src = zone.photo;
@@ -812,18 +674,11 @@ function initDevzonesViewer() {
     img.addEventListener('load', function () { fitDevzonesMap(); });
   }
   window.addEventListener('resize', function () {
-    // Only refit while the page is actually visible — refitting a hidden
-    // (zero-size) page would just zero out the view.
     var page = document.getElementById('page-devzones');
     if (page && page.classList.contains('active')) fitDevzonesMap();
   });
 
   wrap.addEventListener('pointerdown', e => {
-    // A tap on a marker pin should open its POV photo, not start a pan —
-    // if we captured the pointer here regardless of target, the marker's
-    // own click event would never fire (the wrap would swallow the
-    // matching pointerup). Bail out before touching gesture state so the
-    // button gets a normal, uninterrupted click.
     if (e.target.closest && e.target.closest('.devzones-marker')) return;
 
     wrap.setPointerCapture(e.pointerId);
@@ -893,7 +748,6 @@ function initDevzonesViewer() {
   wrap.addEventListener('pointerup', endPointer);
   wrap.addEventListener('pointercancel', endPointer);
 
-  // Desktop convenience: wheel to zoom, anchored at the cursor.
   wrap.addEventListener('wheel', e => {
     e.preventDefault();
     const p = devzonesLocalPoint(wrap, e.clientX, e.clientY);
@@ -902,7 +756,6 @@ function initDevzonesViewer() {
     applyDevzonesTransform(false);
   }, { passive: false });
 
-  // Double-click / double-tap to toggle between fit and ~2.4x the fit scale.
   wrap.addEventListener('pointerup', e => {
     const now = Date.now();
     const p = devzonesLocalPoint(wrap, e.clientX, e.clientY);
@@ -927,9 +780,6 @@ function initDevzonesViewer() {
 initDevzonesViewer();
 
 
-// Live-filters the building sheet as the user types in the search bar.
-// Reuses the same renderer populateBuildingSheet() already uses for the
-// full list — an empty query just re-shows everything.
 function filterBuildingSheet(query) {
   if (!campusData || !campusData.buildings) return;
   const q = query.trim().toLowerCase();
@@ -940,7 +790,6 @@ function filterBuildingSheet(query) {
   populateBuildingSheet(filtered);
 }
 
-// Called by onSceneReady() with the full campus data object
 function populateBuildingSheet(buildings) {
   const container = document.getElementById('building-sheet-list');
   if (!container) return;
@@ -951,7 +800,6 @@ function populateBuildingSheet(buildings) {
     return;
   }
 
-  // Group by category
   const groups = {};
   buildings.forEach(b => {
     const cat = b.category || 'Other';
@@ -959,7 +807,6 @@ function populateBuildingSheet(buildings) {
     groups[cat].push(b);
   });
 
-  // Category display names
   const catLabels = {
     academic:       'Academic Buildings',
     administration: 'Administration',
@@ -992,10 +839,8 @@ function populateBuildingSheet(buildings) {
         <div class="building-arrow">›</div>
       `;
       item.addEventListener('click', () => {
-        // Close the sheet and show the building panel
         if (typeof sheetToggle === 'function') sheetToggle();
         showBuildingInfo(b);
-        //  highlight the mesh in Three.js
         if (typeof selectBuilding === 'function') selectBuilding(b);
       });
       container.appendChild(item);
@@ -1006,16 +851,11 @@ function populateBuildingSheet(buildings) {
 }
 
 
-// Called by main.js after campus.json loads at scene is built 
 
 function onSceneReady(data) {
-  // Housing buildings are intentionally excluded from the search / building
-  // sheet list — they are unconnected private-property markers, tappable in
-  // the 3D view only (see showBuildingInfo via raycast pick in main.js).
   campusBuildings = data.buildings.filter(b => b.category !== 'housing' && b.category !== 'place');
   populateBuildingSheet(campusBuildings);
 
-  // Auto-start GPS so the blue dot appears immediately without pressing the button
   gpsEnabled = true;
   const btn = document.getElementById('gps-btn');
   if (btn) btn.classList.add('gps-active');

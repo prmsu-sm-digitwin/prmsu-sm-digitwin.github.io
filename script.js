@@ -17,33 +17,11 @@ let current = 'main';
 let sidebarOverlayOpen = false;
 let vmqOverlayOpen = false;
 
-// The Android hardware/gesture back button (and, further down, a custom
-// iOS edge-swipe gesture) both act on window.history -- not on a variable
-// we invent ourselves. The old code named its own page stack `history`,
-// which shadowed window.history and could never have been wired to the
-// real back button. Every page/overlay change below pushes a real state,
-// and the popstate listener re-renders the UI to match wherever the user
-// lands -- so backing out of a page/sidebar/modal just works, and the app
-// only exits when there's genuinely nothing left to go back to.
-// Two entries are installed at startup instead of one:
-//   entry 0 - a "root" sentinel (it also renders Home if we ever land on it)
-//   entry 1 - Home itself
-// The spare entry underneath is what makes it impossible for a back press to
-// quit the app from the middle of an inner page. Without it, any situation
-// that leaves the stack shallower than the app assumes -- a relaunch, a
-// refresh, or the browser trimming entries in an installed PWA -- means the
-// back press that should have stepped Home instead falls off the bottom and
-// closes the app. With it, back from an inner page always reaches Home first,
-// and it is the press *from Home* that closes the app.
 window.history.replaceState({ page: 'main', sidebar: false, vmq: false, root: true }, '', '#main');
 window.history.pushState({ page: 'main', sidebar: false, vmq: false }, '', '#main');
 
-// One-shot latch so the "let the app close" path below can never turn into a
-// runaway loop that walks back through the whole browser history.
 let leavingApp = false;
 
-// Used only by sidebarGoTo below, to hand one specific popstate off to a
-// pending history.pushState instead of letting the normal handler render it.
 let suppressPop = false;
 let pendingPush = null;
 
@@ -63,8 +41,6 @@ function openSidebar(fromPage) {
   });
   document.getElementById('sidebar-overlay').classList.add('open');
   sidebarOverlayOpen = true;
-  // Opening the drawer is its own history entry, so one back press (or one
-  // hardware/gesture back) closes it instead of quitting the app outright.
   window.history.pushState({ page: current, sidebar: true, vmq: false }, '', '#sidebar');
 }
 function closeSidebar(e) {
@@ -79,11 +55,6 @@ function sidebarGoTo(pageId) {
   document.getElementById('sidebar-overlay').classList.remove('open');
   sidebarOverlayOpen = false;
 
-  // sidebarContext is which page the drawer was opened FROM (set by
-  // openSidebar). If that's an inner page, not Home, the history stack right
-  // now is [...,home, thatInnerPage, sidebarMarker] -- thatInnerPage's own
-  // entry from the earlier Home->thatInnerPage navigation is still sitting
-  // there underneath the marker.
   const openedFromInner = sidebarContext !== 'main';
 
   const prevEl = document.getElementById('page-' + current);
@@ -95,48 +66,22 @@ function sidebarGoTo(pageId) {
     current = pageId;
     updateNav(pageId);
 
-    // The sidebar drawer swaps pages itself instead of going through goTo()
-    // above, so the Walkthrough prototype needs the same enter/leave hooks here.
     if (window.CampusWalkthrough) {
       if (pageId === 'walkthrough') window.CampusWalkthrough.onEnter();
       else if (leavingWalkthrough) window.CampusWalkthrough.onLeave();
     }
 
-    // Same "page just became visible" work that the goTo() wrapper in ui.js does (show the
-    // 3D canvas again, resize it, fit the Dev Zones map). Without this, opening Nav Map from
-    // the drawer after visiting another page left the canvas hidden = blank map.
     if (typeof window.onPageEntered === 'function') window.onPageEntered(pageId);
     if (pageId === 'map' && typeof window.__reinitSheet === 'function') window.__reinitSheet();
   }
 
   if (openedFromInner) {
-    // Simply replacing the marker (like the plain case below) would leave
-    // thatInnerPage's entry buried directly under the new destination, so one
-    // back press from here would resurrect THAT page instead of reaching
-    // Home -- unlike every page reached from the home screen. The drawer is a
-    // flat, global menu: picking a destination from it should always put Home
-    // directly underneath, no matter which inner page it was opened from.
-    //
-    // Fix: physically step back past both the marker and the old inner page
-    // in one jump (2 entries), landing on Home's own original entry, then (as
-    // long as we're not headed to Home itself) push the real destination
-    // fresh on top of it -- collapsing the stack back down to exactly one
-    // level deep, same as navigating there directly from the home screen.
-    // history.go() is asynchronous, so the actual bookkeeping can only happen
-    // once its popstate confirms the browser really finished moving --
-    // suppressPop hands that one popstate off to the block below instead of
-    // letting the normal handler render it (the DOM above already shows the
-    // right page, so there's nothing left to render).
     suppressPop = true;
     pendingPush = (pageId === 'main') ? null : { page: pageId, sidebar: false, vmq: false };
     window.history.go(-2);
     return;
   }
 
-  // Opened from Home: no buried entry to worry about, so this is just the
-  // simple case -- replace the "sidebar open" entry with the destination
-  // page rather than pushing a new one, so back from here goes to Home
-  // instead of popping the drawer back open.
   window.history.replaceState({ page: pageId, sidebar: false, vmq: false }, '', '#' + pageId);
 }
 
@@ -211,7 +156,7 @@ function sidebarGoTo(pageId) {
   function onMove(e) {
     if (!dragging || !panel) return;
     initSnaps();
-    var dy = startY - getY(e); // positive = drag up = expand
+    var dy = startY - getY(e);
     var newH = Math.max(0, Math.min(SNAP_FULL, startH + dy));
     panel.style.height = newH + 'px';
     if (e.cancelable) e.preventDefault();
@@ -229,10 +174,6 @@ function sidebarGoTo(pageId) {
     else snapTo('collapsed');
   };
 
-  // Used by the search input's focus handler: open the sheet if it's
-  // collapsed, but (unlike sheetToggle) never closes an already-open one —
-  // tapping back into the input to keep typing shouldn't collapse the
-  // results list out from under the keyboard.
   window.sheetEnsureOpen = function() {
     if (currentSnap === 'collapsed') snapTo('mid');
   };
@@ -262,7 +203,7 @@ function sidebarGoTo(pageId) {
       initSheet();
     }, 60);
   }
-  window.__reinitSheet = reinitSheet;   // sidebarGoTo() needs this too (it swaps pages without goTo)
+  window.__reinitSheet = reinitSheet;
 
   var _goTo = window.goTo;
   window.goTo = function(p, fromPopState) {
@@ -278,17 +219,6 @@ function sidebarGoTo(pageId) {
   });
 })();
 
-// Homepage nav buttons (Navigation Map / Campus Directory / About) use a JS-driven
-// `.is-pressed` class instead of CSS `:active` for their pressed look (see
-// style.css). Reason: tapping one of these calls goTo() synchronously,
-// which hides the button's page immediately -- so on some mobile Chrome
-// builds the matching touchend/mouseup never gets delivered while it's
-// hidden, and `:active` stays permanently matched. The next time that page
-// is shown again (e.g. via the hardware/gesture back button), the button
-// looks stuck "pressed" (pale gold fill) even though nothing is touching
-// it. `.is-pressed` is fully JS-controlled so it can't get stuck: it's
-// cleared on every touchend/touchcancel/mouseup/mouseleave, on every
-// popstate, and defensively at the top of every goTo() call too.
 function clearMainNavPress() {
   document.querySelectorAll('.main-nav-btn.is-pressed').forEach(function (b) {
     b.classList.remove('is-pressed');
@@ -318,31 +248,16 @@ function goTo(pageId, _fromPopState) {
   current = pageId;
   updateNav(pageId);
 
-  // Only push a new history entry for a real forward navigation. When this
-  // call is the popstate handler replaying a back/forward move, the browser
-  // has already moved -- pushing again here would double up the stack.
   if (!_fromPopState) {
     window.history.pushState({ page: pageId, sidebar: false, vmq: false }, '', '#' + pageId);
   }
 }
 
-// Kept for anything that still wants to call "go back" programmatically --
-// just defers to the real back button so the popstate handler below is the
-// one and only place that decides what "back" renders.
 function goBack() {
   window.history.back();
 }
 
-// Single source of truth for "what should the screen look like right now",
-// driven by whatever state the browser's history says we're on. This is what
-// makes the Android hardware/gesture back button step back through pages and
-// overlays instead of quitting the app -- and it's also what the iOS
-// edge-swipe gesture further down calls into via window.history.back().
 window.addEventListener('popstate', function (e) {
-  // Hand-off from sidebarGoTo's collapse above: this popstate is just the
-  // history.go(-2) landing back on Home confirming it actually happened --
-  // the visible page was already updated synchronously before that call, so
-  // there's nothing to render here, only the deferred pushState (if any).
   if (suppressPop) {
     suppressPop = false;
     if (pendingPush) {
@@ -352,20 +267,12 @@ window.addEventListener('popstate', function (e) {
     return;
   }
 
-  // Root guard. A popstate that carries no state at all, or that lands on the
-  // startup sentinel, means there is nothing of this app's own left behind us.
   if (!e.state || e.state.root) {
     if (current !== 'main') {
-      // We were on an inner page, so this back press was meant to step Home --
-      // not to quit. Render Home and put an entry back underneath us.
       goTo('main', true);
       window.history.pushState({ page: 'main', sidebar: false, vmq: false }, '', '#main');
       return;
     }
-    // Already on Home. Backing out of the app from here is the correct thing,
-    // so step off our own sentinel and let it close. The latch keeps this to a
-    // single hop, so in a normal browser tab it can never run away backwards
-    // through the user's own history.
     if (e.state && e.state.root && !leavingApp) {
       leavingApp = true;
       window.history.back();
@@ -389,11 +296,6 @@ window.addEventListener('popstate', function (e) {
   }
 });
 
-// Hand the Campus Walkthrough 360° tour (js/tour360.js) its
-// own enter/leave hooks, same idiom as the map-page sheet wrapper above:
-// start/resume its render loop only while that page is actually visible,
-// pause it (not destroy it -- the loaded model + heightmap stay in memory)
-// the moment the user navigates elsewhere.
 (function () {
   var _goTo3 = window.goTo;
   window.goTo = function (p, fromPopState) {
