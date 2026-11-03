@@ -10,6 +10,7 @@
  "places": [
   {"name": "3 Lab Rooms", "to": "tp_3_lab_rooms", "face": 0.68},
   {"name": "Admin Building", "to": "tp_admin_building", "face": 0.428},
+  {"name": "Admin Court", "to": "tp_admin_court", "face": 0.17},
   {"name": "Agricultural Science Building", "to": "tp_agricultural_science_building", "face": 0.31},
   {"name": "Bangar Park", "to": "tp_bangar_park", "face": 0.31},
   {"name": "BSED", "to": "tp_bsed", "face": 0.28},
@@ -383,7 +384,7 @@
   {"file": "images/360/Z1_StraightRoad/p094.webp", "title": "Zone 1: Straight Road", "fwd": 0.485, "back": 0.99},
   {"file": "images/360/Z1_StraightRoad/p095.webp", "title": "Zone 1: Straight Road", "fwd": 0.601, "back": 0.105},
   {"file": "images/360/Z1_StraightRoad/p096.webp", "title": "Zone 1: Straight Road", "fwd": 0.497, "back": 0.985},
-  {"file": "images/360/Z1_StraightRoad/p097.webp", "title": "Zone 1: Straight Road", "fwd": 0.376, "back": 0.981, "id": "z1_admin_join", "links": [{"to": "z2admin_end", "u": 0.22, "face": 0.986}]},
+  {"file": "images/360/Z1_StraightRoad/p097.webp", "title": "Zone 1: Straight Road", "fwd": 0.376, "back": 0.981, "id": "z1_admin_join", "links": [{"to": "z2admin_end", "u": 0.22, "face": 0.986}, {"to": "z1admincourt_start", "u": 0.635, "face": 0.965}]},
   {"file": "images/360/Z1_StraightRoad/p098.webp", "title": "Zone 1: Straight Road", "fwd": 0.372, "back": 0.972},
   {"file": "images/360/Z1_StraightRoad/p099.webp", "title": "Zone 1: Straight Road", "fwd": 0.372, "back": 0.002},
   {"file": "images/360/Z1_StraightRoad/p100.webp", "title": "Zone 1: Straight Road", "fwd": 0.376, "end": true, "back": 0.006, "id": "z1_end", "links": [{"to": "z3admin_end", "u": 0.273, "face": 0.981}]},
@@ -1048,6 +1049,19 @@
   {"file": "images/360/Z5_StraightRoad_Bridge/p036.webp", "title": "Zone 5: Bridge Road", "fwd": 0.566, "back": 0.06},
   {"file": "images/360/Z5_StraightRoad_Bridge/p035.webp", "title": "Zone 5: Bridge Road", "fwd": 0.524, "back": 0.03},
   {"file": "images/360/Z5_StraightRoad_Bridge/p034.webp", "title": "Zone 5: Bridge Road", "fwd": 0.7, "back": 0.21, "id": "z5bridge_end"},
-  {"file": "images/360/EasterEgg_After_Z5End/p001.webp", "title": "Easter Egg", "fwd": 0.5, "id": "easter_egg", "end": true}
+  {"file": "images/360/EasterEgg_After_Z5End/p001.webp", "title": "Easter Egg", "fwd": 0.5, "id": "easter_egg", "end": true},
+  {"file": "images/360/Z1_to_AdminCourt/p001.webp", "title": "Admin Court Path", "fwd": 0.965, "id": "z1admincourt_start", "prev": "z1_admin_join", "back": 0.66},
+  {"file": "images/360/Z1_to_AdminCourt/p003.webp", "title": "Admin Court Path", "fwd": 0.03},
+  {"file": "images/360/Z1_to_AdminCourt/p004.webp", "title": "Admin Court Path", "fwd": 0.008},
+  {"file": "images/360/Z1_to_AdminCourt/p005.webp", "title": "Admin Court Path", "fwd": 0.004},
+  {"file": "images/360/Z1_to_AdminCourt/p006.webp", "title": "Admin Court Path", "fwd": 0.026},
+  {"file": "images/360/Z1_to_AdminCourt/p007.webp", "title": "Admin Court Path", "fwd": 0.0},
+  {"file": "images/360/Z1_to_AdminCourt/p008.webp", "title": "Admin Court Path", "fwd": 0.04},
+  {"file": "images/360/Z1_to_AdminCourt/p009.webp", "title": "Admin Court Path", "fwd": 0.05, "id": "tp_admin_court"},
+  {"file": "images/360/Z1_to_AdminCourt/p010.webp", "title": "Admin Court Path", "fwd": 0.07},
+  {"file": "images/360/Z1_to_AdminCourt/p011.webp", "title": "Admin Court Path", "fwd": 0.986},
+  {"file": "images/360/Z1_to_AdminCourt/p012.webp", "title": "Admin Court Path", "fwd": 0.03},
+  {"file": "images/360/Z1_to_AdminCourt/p014.webp", "title": "Admin Court Path", "fwd": 0.47},
+  {"file": "images/360/Z1_to_AdminCourt/p015.webp", "title": "Admin Court Path", "fwd": 0.485, "end": true}
  ]
 }
