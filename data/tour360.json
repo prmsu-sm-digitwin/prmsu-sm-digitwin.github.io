@@ -1047,6 +1047,7 @@
   {"file": "images/360/Z5_StraightRoad_Bridge/p037.webp", "title": "Zone 5: Bridge Road", "fwd": 0.53, "back": 0.018},
   {"file": "images/360/Z5_StraightRoad_Bridge/p036.webp", "title": "Zone 5: Bridge Road", "fwd": 0.566, "back": 0.06},
   {"file": "images/360/Z5_StraightRoad_Bridge/p035.webp", "title": "Zone 5: Bridge Road", "fwd": 0.524, "back": 0.03},
-  {"file": "images/360/Z5_StraightRoad_Bridge/p034.webp", "title": "Zone 5: Bridge Road", "fwd": 0.7, "back": 0.21, "id": "z5bridge_end", "end": true}
+  {"file": "images/360/Z5_StraightRoad_Bridge/p034.webp", "title": "Zone 5: Bridge Road", "fwd": 0.7, "back": 0.21, "id": "z5bridge_end"},
+  {"file": "images/360/EasterEgg_After_Z5End/p001.webp", "title": "Easter Egg", "fwd": 0.5, "id": "easter_egg", "end": true}
  ]
 }
