@@ -6,7 +6,7 @@
 //
 //  Data:   data/tour360.json  (stops in walking order, per-stop title and
 //          "fwd" = where in the photo the next stop lies, 0..1 across the
-//          width).  Photos: images/360/<RouteFolder>/pNN.jpg (listed in data/tour360.json).
+//          width).  Photos: images/360/<RouteFolder>/pNN.webp (listed in data/tour360.json).
 //
 //  Not Street View / not photogrammetry: you jump between fixed photo spots.
 // =============================================================
@@ -183,8 +183,8 @@
   // the photo cache so the whole walkthrough works with no internet. It is opt-in: it shows the
   // size, checks free space, can be resumed after an interruption (already-saved photos are
   // skipped) and the saved photos can be removed again.
-  var PHOTO_CACHE_NAME = 'prmsu-photos-v5';      // must match PHOTO_CACHE in service-worker.js
-  var AVG_PHOTO_MB = 0.69;                        // average size of one tour photo (about 760 MB / 1100)
+  var PHOTO_CACHE_NAME = 'prmsu-photos-v6';      // must match PHOTO_CACHE in service-worker.js
+  var AVG_PHOTO_MB = 0.62;                        // average size of one tour photo (about 626 MB / 1010)
   var OFFLINE_ASKED_KEY = 'tour360-offline-asked';
   var offlineEl = null, offlineSavedSet = {}, offlineBusy = false, offlineCancel = false, wakeLock = null;
 

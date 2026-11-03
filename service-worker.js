@@ -4,7 +4,7 @@
 // app update (new CACHE_NAME) doesn't throw ~90 MB away and make every phone
 // download it all again. Only bump PHOTO_CACHE when you REPLACE photos that keep
 // the same file name (new photos / new file names are picked up automatically).
-const PHOTO_CACHE = 'prmsu-photos-v5';
+const PHOTO_CACHE = 'prmsu-photos-v6';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
 const CACHE_NAME = 'prmsu-digitwin-v4.84'; // Update this version whenever files change
 
