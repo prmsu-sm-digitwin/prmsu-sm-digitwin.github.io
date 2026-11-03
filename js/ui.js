@@ -650,10 +650,18 @@ function openDevzonePOV(zone) {
   label.textContent = zone.label;
   pov.classList.add('is-open');
 
+  const tilt = document.getElementById('devzones-pov-tilt');
   img.classList.remove('animated');
-  img.onload = function () { fitPovImage(); };
+  img.style.opacity = '0';
+  if (tilt) tilt.style.transition = 'none';
+  const reveal = function () {
+    fitPovImage();
+    if (tilt) { void tilt.offsetWidth; tilt.style.transition = ''; }
+    requestAnimationFrame(function () { img.style.opacity = '1'; });
+  };
+  img.onload = reveal;
   img.src = zone.photo;
-  if (img.complete && img.naturalWidth) fitPovImage();
+  if (img.complete && img.naturalWidth) reveal();
 }
 
 function closeDevzonePOV() {

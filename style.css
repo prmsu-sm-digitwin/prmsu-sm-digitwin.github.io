@@ -936,7 +936,7 @@
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
-    transition: transform 0.15s ease-out;
+    transition: transform 0.3s ease-out;
     will-change: transform;
   }
   .devzones-pov-img {
@@ -949,7 +949,8 @@
     -webkit-user-drag: none;
     pointer-events: none;
   }
-  .devzones-pov-img.animated { transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
+  .devzones-pov-img { transition: opacity 0.3s ease; }
+  .devzones-pov-img.animated { transition: transform 0.3s ease-out, opacity 0.3s ease; }
   .devzones-pov-label {
     position: absolute;
     z-index: 1;
