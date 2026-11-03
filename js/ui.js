@@ -283,7 +283,7 @@ function fitDevzonesMap() {
 
   const fit = Math.max(wrapW / devzonesView.imgW, wrapH / devzonesView.imgH);
   devzonesView.baseScale = fit;
-  devzonesView.minScale = Math.min(wrapW / devzonesView.imgW, wrapH / devzonesView.imgH);
+  devzonesView.minScale = fit;
   devzonesView.maxScale = fit * 6;
   wrap.style.setProperty('--dz-bg', 'url("' + img.getAttribute('src') + '")');
   devzonesView.scale = fit;
