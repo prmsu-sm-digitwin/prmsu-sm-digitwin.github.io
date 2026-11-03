@@ -58,6 +58,7 @@
       '<div class="tour-hint" id="tour-hint">Drag to look around · tap or hold the arrows to walk</div>' +
       '<div class="tour-toast" id="tour-toast"></div>' +
       '<div class="tour-topleft">' +
+        '<div class="tour-hud" id="tour-hud" title="Tap for details"></div>' +
         '<button class="tour-places-btn" id="tour-places-btn" type="button" aria-label="Places" title="Places">' +
         '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="3.6" cy="6" r="1" fill="currentColor"/><circle cx="3.6" cy="12" r="1" fill="currentColor"/><circle cx="3.6" cy="18" r="1" fill="currentColor"/></svg></button>' +
       '</div>' +
@@ -67,6 +68,7 @@
 
     canvas   = document.getElementById('tour-canvas');
     btnBack  = document.getElementById('tour-back');
+    document.getElementById('tour-hud').addEventListener('click', function () { hudDetail = !hudDetail; updateHud(); });
     document.getElementById('tour-places-btn').addEventListener('click', function (e) { e.stopPropagation(); togglePlaces(); });
     fadeEl   = document.getElementById('tour-fade');
     toastEl  = document.getElementById('tour-toast');
@@ -323,8 +325,9 @@
 
   function nextIdx(i) {
     var s = stops[i];
-    if (!s || s.end || i >= stops.length - 1) return -1;
+    if (!s || s.end) return -1;
     if (s.next != null && idToIdx[s.next] != null) return idToIdx[s.next];
+    if (i >= stops.length - 1) return -1;
     return i + 1;
   }
   function prevIdx(i) {
@@ -501,11 +504,24 @@
   function next() { var n = nextIdx(idx); if (n >= 0) showStop(n, 'fwd'); }
   function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, (p === idx - 1 || (stops[p].next != null && idToIdx[stops[p].next] === idx)) ? 'back' : 'jump'); }
 
-  function updateHud() {}
+  var hudDetail = false;
+  function updateHud() {
+    var el = document.getElementById('tour-hud');
+    if (!el || !stops.length) return;
+    var s = stops[idx];
+    var line = 'Stop ' + (idx + 1) + ' / ' + stops.length;
+    if (hudDetail) {
+      var f = String(s.file || '').replace(/^images\/360\//, '');
+      line += '<small>' + f + '<br>fwd ' + (s.fwd != null ? s.fwd : 0) + (fwdOf(s) !== (s.fwd || 0) ? ' (+' + Math.round((fwdOf(s) - (s.fwd || 0)) * 1000) / 1000 + ' offset)' : '') + (s.title ? ' · ' + s.title : '') + (s.aim != null ? ' · aim ' + s.aim : '') + '</small>';
+    }
+    el.innerHTML = line;
+    el.classList.toggle('tour-hud-open', hudDetail);
+  }
   function updateArrows() {
     var s = stops[idx], fy = uToYaw(fwdOf(s));
     var hasNext = nextIdx(idx) >= 0, hasPrev = prevIdx(idx) >= 0;
     arrowFwd.group.rotation.y  = -fy;
+    arrowFwd.pivot.position.z = -(s.fdist || 11);
     arrowFwd.pivot.rotation.y = (s.aim != null) ? -(uToYaw(s.aim + (fwdOf(s) - (s.fwd || 0))) - fy) : 0;
     arrowBack.group.rotation.y = -(s.back != null ? uToYaw(s.back) : fy + Math.PI);
     arrowFwd.group.visible  = hasNext;

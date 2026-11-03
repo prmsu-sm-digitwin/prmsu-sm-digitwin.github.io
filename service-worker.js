@@ -1,7 +1,7 @@
 
 const PHOTO_CACHE = 'prmsu-photos-v6';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v4.98';
+const CACHE_NAME = 'prmsu-digitwin-v5.19';
 
 const STATIC_ASSETS = [
   './',
