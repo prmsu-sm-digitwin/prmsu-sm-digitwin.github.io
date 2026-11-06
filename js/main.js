@@ -600,7 +600,7 @@ function updateGPSMarker(x, z, isOnCampus) {
   }
   currentGPSPosition = isOnCampus ? { x, z } : null;
   if (!gpsMarker) {
-    gpsMarker = new THREE.Mesh(
+    gpsMarker = window.GPSChar ? GPSChar.create() : new THREE.Mesh(
       new THREE.SphereGeometry(4, 16, 16),
       new THREE.MeshBasicMaterial({ color: 0xe74c3c })
     );
@@ -812,6 +812,7 @@ function animate() {
       var gd = Math.hypot(gdx, gdz);
       if (gd > 80) gpsMarker.position.set(gpsTarget.x, 4, gpsTarget.z);
       else if (gd > 0.05) gpsMarker.position.set(gpsMarker.position.x + gdx * 0.08, 4, gpsMarker.position.z + gdz * 0.08);
+      if (window.GPSChar && gpsMarker.userData.gpsChar) GPSChar.update(gpsMarker, gdx, gdz, gd);
     }
     renderer.render(scene, camera);
     layoutYouHere();
@@ -827,7 +828,7 @@ function layoutYouHere() {
   const spot = currentGPSPosition || (waypointMap.main_gate && waypointMap.main_gate.position);
   if (!youHereOn || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
   if (!_yhV) _yhV = new THREE.Vector3();
-  _yhV.set(spot.x, currentGPSPosition ? 10 : 4, spot.z).project(camera);
+  _yhV.set(spot.x, currentGPSPosition ? ((window.GPSChar && GPSChar.ready) ? 22 : 10) : 4, spot.z).project(camera);
   const el = renderer.domElement, W = el.clientWidth, H = el.clientHeight;
   const sx = (_yhV.x + 1) / 2 * W, sy = (1 - _yhV.y) / 2 * H;
   if (_yhV.z > 1 || sx < -40 || sx > W + 40 || sy < -40 || sy > H + 40) { _yhEl.style.display = 'none'; return; }
