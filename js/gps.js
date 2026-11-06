@@ -4,6 +4,7 @@ let _origin = null;
 let _bounds = null;
 let _watchId = null;
 let _kf = null;
+let _simTimer = null;
 const GPS_MAX_ACC = 60;
 const GPS_MIN_ACC = 5;
 const GPS_WALK_Q  = 4;
@@ -31,6 +32,7 @@ function setGPSEnabled(enabled) {
 }
 
 function startWatching() {
+  if (simGPSOn()) { startSim(); return; }
   if (!navigator.geolocation) {
     console.warn('[gps] Geolocation not supported on this device.');
     return;
@@ -47,6 +49,7 @@ function startWatching() {
 }
 
 function stopWatching() {
+  stopSim();
   if (_watchId !== null) {
     navigator.geolocation.clearWatch(_watchId);
     _watchId = null;
@@ -166,3 +169,65 @@ function latLngToXZ(lat, lng) {
 function clamp(val, min, max) {
   return Math.max(min, Math.min(max, val));
 }
+
+(function () {
+  try {
+    var m = /[?&]simgps=([01])/.exec(location.search);
+    if (m) { if (m[1] === '1') localStorage.setItem('simgps', '1'); else localStorage.removeItem('simgps'); }
+  } catch (e) {}
+})();
+
+function simGPSOn() {
+  try { return localStorage.getItem('simgps') === '1'; } catch (e) { return false; }
+}
+
+function stopSim() {
+  if (_simTimer) { clearInterval(_simTimer); _simTimer = null; }
+}
+
+function startSim() {
+  if (_simTimer) return;
+  if (typeof waypointMap === 'undefined' || typeof findPath !== 'function') return;
+  var ids = Object.keys(waypointMap);
+  var ref = (typeof lookTarget !== 'undefined') ? lookTarget : { x: 0, z: 0 };
+  var start = ids[0], bd = 1e9;
+  ids.forEach(function (id) {
+    var p = waypointMap[id].position, d = Math.hypot(p.x - ref.x, p.z - ref.z);
+    if (d < bd) { bd = d; start = id; }
+  });
+  var route = null, tries = 0;
+  var order = ids.slice().sort(function () { return Math.random() - 0.5; });
+  for (var i = 0; i < order.length && !route; i++) {
+    var g = order[i], gp = waypointMap[g].position, sp = waypointMap[start].position;
+    var dist = Math.hypot(gp.x - sp.x, gp.z - sp.z);
+    if (dist < 120 || dist > 400) continue;
+    var r = findPath(waypointMap, start, g);
+    if (r && r.length > 3) route = r;
+  }
+  if (!route) { console.warn('[gps] simulation: no route found'); return; }
+  var pts = route.map(function (id) { return waypointMap[id].position; });
+  pts = pts.concat(pts.slice(0, -1).reverse());
+  var seg = 0, off = 0;
+  var speed = window.SIMGPS_SPEED || 4;
+  if (typeof showGPSToast === 'function') showGPSToast('GPS simulation on (test mode)');
+  function tick() {
+    var left = speed;
+    while (left > 0) {
+      var a = pts[seg], b = pts[(seg + 1) % pts.length];
+      var len = Math.hypot(b.x - a.x, b.z - a.z) || 0.001;
+      if (off + left < len) { off += left; left = 0; }
+      else { left -= (len - off); off = 0; seg = (seg + 1) % (pts.length - 1 || 1); }
+    }
+    var a2 = pts[seg], b2 = pts[(seg + 1) % pts.length];
+    var l2 = Math.hypot(b2.x - a2.x, b2.z - a2.z) || 0.001, t = off / l2;
+    var x = a2.x + (b2.x - a2.x) * t, z = a2.z + (b2.z - a2.z) * t;
+    if (typeof updateGPSMarker === 'function') updateGPSMarker(x, z, true);
+  }
+  tick();
+  _simTimer = setInterval(tick, 1000);
+}
+
+window.simulateGPS = function (on) {
+  try { if (on === false) localStorage.removeItem('simgps'); else localStorage.setItem('simgps', '1'); } catch (e) {}
+  if (typeof gpsEnabled !== 'undefined' && gpsEnabled) { stopSim(); startSim(); }
+};

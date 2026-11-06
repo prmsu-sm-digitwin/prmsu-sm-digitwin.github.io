@@ -1,10 +1,10 @@
 (function () {
   var SHEET = 'sprites/sprites_navmap/16x32%20Walk-Sheet.png';
   var CELL = 32, COLS = 4;
-  var VOX = 0.6;
+  var VOX = 0.42;
   var DEPTH = 5;
   var WALK_FPS = 7;
-  var MOVE_START = 2.0, MOVE_STOP = 0.6;
+  var MOVE_START = 0.8, MOVE_STOP = 0.3;
   var SHADE = { front: 1, back: 0.8, side: 0.72, top: 0.95, bottom: 0.55 };
 
   var pix = null, loading = false, waiting = [];
@@ -91,6 +91,7 @@
 
     var mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
     var body = new THREE.Mesh(buildEmpty(), mat);
+    body.position.y = -3.8;
     body.visible = false;
     group.add(body);
 
@@ -105,12 +106,21 @@
 
   function buildEmpty() { return new THREE.BufferGeometry(); }
 
-  API.update = function (group, dx, dz, dist) {
+  API.update = function (group) {
     var s = group.userData.gpsChar;
     if (!s || !pix || !s.body.visible || typeof camera === 'undefined' || !camera) return;
     var now = performance.now();
     var dt = s.last ? Math.min(0.1, (now - s.last) / 1000) : 0;
     s.last = now;
+
+    var mx = group.position.x, mz = group.position.z;
+    if (s.px === undefined) { s.px = mx; s.pz = mz; s.sp = 0; s.hx = 0; s.hz = 1; }
+    var mdx = mx - s.px, mdz = mz - s.pz;
+    s.px = mx; s.pz = mz;
+    var inst = dt > 0 ? Math.hypot(mdx, mdz) / dt : 0;
+    if (inst > 40) { inst = 0; mdx = 0; mdz = 0; }
+    s.sp += (inst - s.sp) * Math.min(1, dt * 4);
+    if (inst > 0.05) { s.hx = mdx; s.hz = mdz; }
 
     if (!_dir) _dir = new THREE.Vector3();
     camera.getWorldDirection(_dir);
@@ -122,12 +132,12 @@
     s.body.rotation.x = -Math.max(0, elev * 0.8) * Math.PI / 180;
     s.body.scale.z = 0.6;
 
-    if (!s.moving && dist > MOVE_START) s.moving = true;
-    else if (s.moving && dist < MOVE_STOP) s.moving = false;
+    if (!s.moving && s.sp > MOVE_START) s.moving = true;
+    else if (s.moving && s.sp < MOVE_STOP) s.moving = false;
 
     if (s.moving) {
-      var sx = dx * (-fz) + dz * fx;
-      var sy = dx * fx + dz * fz;
+      var sx = s.hx * (-fz) + s.hz * fx;
+      var sy = s.hx * fx + s.hz * fz;
       var a = Math.atan2(Math.abs(sx), -sy) * 180 / Math.PI;
       s.row = a < 22.5 ? 0 : a < 67.5 ? 1 : a < 112.5 ? 2 : a < 157.5 ? 3 : 4;
       s.flip = sx < 0;

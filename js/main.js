@@ -828,7 +828,7 @@ function layoutYouHere() {
   const spot = currentGPSPosition || (waypointMap.main_gate && waypointMap.main_gate.position);
   if (!youHereOn || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
   if (!_yhV) _yhV = new THREE.Vector3();
-  _yhV.set(spot.x, currentGPSPosition ? ((window.GPSChar && GPSChar.ready) ? 22 : 10) : 4, spot.z).project(camera);
+  _yhV.set(spot.x, currentGPSPosition ? ((window.GPSChar && GPSChar.ready) ? 16 : 10) : 4, spot.z).project(camera);
   const el = renderer.domElement, W = el.clientWidth, H = el.clientHeight;
   const sx = (_yhV.x + 1) / 2 * W, sy = (1 - _yhV.y) / 2 * H;
   if (_yhV.z > 1 || sx < -40 || sx > W + 40 || sy < -40 || sy > H + 40) { _yhEl.style.display = 'none'; return; }
