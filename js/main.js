@@ -28,15 +28,17 @@ function initScene() {
   mouse = new THREE.Vector2();
 
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));  // 2 made phones draw ~78% more pixels
   renderer.setSize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
-  renderer.shadowMap.enabled = true;
+  // Shadows are off: the sun's shadow camera only covered a ~10 unit patch of the
+  // 1300 unit campus, so the extra shadow pass cost frame time and showed nothing.
+  renderer.shadowMap.enabled = false;
 
   const ambient = new THREE.AmbientLight(0xffffff, 0.7);
   scene.add(ambient);
   const sun = new THREE.DirectionalLight(0xffffff, 0.9);
   sun.position.set(300, 500, 200);
-  sun.castShadow = true;
+  sun.castShadow = false;
   scene.add(sun);
 
   window.addEventListener('resize', onResize);
