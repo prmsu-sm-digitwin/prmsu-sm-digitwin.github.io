@@ -216,23 +216,50 @@
 
           
           
-          <button id="fp-btn" title="First-person view" aria-label="First-person view">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-              <circle cx="12" cy="13" r="4"/>
-            </svg>
-          </button>
+          <div class="map-tools" id="map-tools">
+            <button id="fp-btn" title="First-person view" aria-label="First-person view">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </button>
+            <button id="char-btn" type="button" title="Choose character" aria-label="Choose character" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="7" r="3.2"/>
+                <path d="M12 11v5M7 13.5l5-2.5 5 2.5M9 21l3-5 3 5"/>
+              </svg>
+            </button>
+            <button id="legend-btn" onclick="toggleLegend()" title="Map legend">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="char-panel" class="char-panel hidden" role="dialog" aria-label="Choose your character">
+            <button class="char-arrow" id="char-prev" type="button" aria-label="Previous character">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+            </button>
+            <div class="char-card">
+              <div class="char-frame" id="char-frame">
+                <img id="char-portrait" alt="" hidden>
+                <canvas id="char-portrait-canvas" width="96" height="96" hidden></canvas>
+                <span class="char-q" id="char-q" hidden>?</span>
+              </div>
+              <div class="char-name" id="char-name">Princess</div>
+              <div class="char-sub" id="char-sub"></div>
+              <button class="char-select" id="char-select" type="button">Select</button>
+            </div>
+            <button class="char-arrow" id="char-next" type="button" aria-label="Next character">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
           <div id="fp-hint" class="fp-hint fp-hint-hidden">Joystick to walk · drag to look around</div>
           <div id="fp-joy" class="fp-joy"><div id="fp-joy-nub" class="fp-joy-nub"></div></div>
 
-          <button id="legend-btn" onclick="toggleLegend()" title="Map legend">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-              <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-            </svg>
-          </button>
         </div>
 
         
@@ -839,6 +866,7 @@
 <script defer src="js/pathfinding.js"></script>
 <script defer src="js/gps.js"></script>
 <script defer src="js/gpschar.js"></script>
+<script defer src="js/charpicker.js"></script>
 <script defer src="js/ui.js"></script>
 <script defer src="js/main.js"></script>
 <script defer src="js/navfp.js"></script>

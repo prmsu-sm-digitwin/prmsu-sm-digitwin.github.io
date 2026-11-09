@@ -125,7 +125,15 @@ function buildGround(g) {
   let material;
   if (g.texture) {
     const tex = new THREE.TextureLoader().load(g.texture);
-    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    if (g.textureTile) {
+      // Tiled ground (e.g. the grass image): one tile every textureTile world units.
+      // Mirrored repeat hides the seams between tiles.
+      tex.wrapS = tex.wrapT = THREE.MirroredRepeatWrapping;
+      tex.repeat.set(g.width / g.textureTile, g.depth / g.textureTile);
+      tex.anisotropy = 4;
+    } else {
+      tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    }
     material = new THREE.MeshLambertMaterial({ map: tex });
   } else {
     material = new THREE.MeshLambertMaterial({ color: g.color });
@@ -141,7 +149,7 @@ function buildGround(g) {
 
   const backing = new THREE.Mesh(
     new THREE.PlaneGeometry(9000, 9000),
-    new THREE.MeshLambertMaterial({ color: g.color || 0x7cb87a })
+    new THREE.MeshLambertMaterial({ color: (g.texture && g.backingColor) ? g.backingColor : (g.color || 0x7cb87a) })
   );
   backing.rotation.x = -Math.PI / 2;
   backing.position.set(g.offsetX, -0.3, g.offsetZ);
@@ -591,6 +599,8 @@ function clearPath() {
   if (typeof hidePathInfo === 'function') hidePathInfo();
 }
 
+const GPS_DEAD_ZONE = 1.5;
+
 function updateGPSMarker(x, z, isOnCampus) {
   if (x === null || z === null) {
     if (gpsMarker) gpsMarker.visible = false;
@@ -600,10 +610,13 @@ function updateGPSMarker(x, z, isOnCampus) {
   }
   currentGPSPosition = isOnCampus ? { x, z } : null;
   if (!gpsMarker) {
-    gpsMarker = window.GPSChar ? GPSChar.create() : new THREE.Mesh(
-      new THREE.SphereGeometry(4, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0xe74c3c })
-    );
+    try { if (window.GPSChar) gpsMarker = GPSChar.create(); } catch (e) { console.warn('[gps] character failed, using dot', e); gpsMarker = null; }
+    if (!gpsMarker) {
+      gpsMarker = new THREE.Mesh(
+        new THREE.SphereGeometry(4, 16, 16),
+        new THREE.MeshBasicMaterial({ color: 0xe74c3c })
+      );
+    }
     gpsMarker.userData.isGPS = true;
     scene.add(gpsMarker);
   }
@@ -613,6 +626,7 @@ function updateGPSMarker(x, z, isOnCampus) {
   }
   gpsMarker.visible = !(window.NavFP && NavFP.active);
   var first = !gpsTarget;
+  if (!first && Math.hypot(x - gpsTarget.x, z - gpsTarget.z) < GPS_DEAD_ZONE) return;
   gpsTarget = { x: x, z: z };
   if (first) gpsMarker.position.set(x, 4, z);
 }
@@ -677,10 +691,6 @@ function panMove(e) {
   const speed = camOffset.y * 0.002;
   lookTarget.x -= (Math.sin(phi) * dx + Math.cos(phi) * dy * 0.6) * speed;
   lookTarget.z -= (-Math.cos(phi) * dx + Math.sin(phi) * dy * 0.6) * speed;
-
-  const b = campusData.bounds;
-  lookTarget.x = Math.max(b.minX, Math.min(b.maxX, lookTarget.x));
-  lookTarget.z = Math.max(b.minZ, Math.min(b.maxZ, lookTarget.z));
 
   updateCameraFromTarget();
 }
@@ -762,7 +772,7 @@ function getTouchMidpoint(touches) {
 }
 
 const ZOOM_MIN = 70;
-const ZOOM_MAX = 330;
+const ZOOM_MAX = 240;
 
 function zoomCamera(newY) {
   const clampedY = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, newY));
@@ -793,7 +803,62 @@ function rotateCamera(deltaAzimuth, deltaElevation) {
   updateCameraFromTarget();
 }
 
+// Keep the view centre inside the campus. Two limits work together:
+// 1) the campus rectangle, pulled in the further zoomed out you are, and
+// 2) the outline of the real campus (a hull around all buildings and roads),
+//    so you cannot pan out to the empty corners on either side of the strip.
+const PAN_INSET_FACTOR = 0.45;
+const HULL_MARGIN      = 30;   // how far past the outline you can pan when zoomed in
+let _campusHull = null;
+
+function buildCampusHull() {
+  const pts = [];
+  (campusData.buildings || []).forEach(b => { if (b.position) pts.push([b.position.x, b.position.z]); });
+  (campusData.waypoints || []).forEach(w => { if (w.position) pts.push([w.position.x, w.position.z]); });
+  pts.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+  const cross = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+  const lower = [];
+  for (const p of pts) { while (lower.length >= 2 && cross(lower[lower.length-2], lower[lower.length-1], p) <= 0) lower.pop(); lower.push(p); }
+  const upper = [];
+  for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (upper.length >= 2 && cross(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop(); upper.push(p); }
+  lower.pop(); upper.pop();
+  return lower.concat(upper);   // counter-clockwise
+}
+
+function clampLookTarget() {
+  if (!campusData || !campusData.bounds) return;
+  const b = campusData.bounds;
+  const over = Math.max(0, camOffset.y - ZOOM_MIN);
+  const inset = over * PAN_INSET_FACTOR;
+  const maxIn = Math.min((b.maxX - b.minX) / 2, (b.maxZ - b.minZ) / 2) - 1;
+  const k = Math.min(inset, maxIn);
+  lookTarget.x = Math.max(b.minX + k, Math.min(b.maxX - k, lookTarget.x));
+  lookTarget.z = Math.max(b.minZ + k, Math.min(b.maxZ - k, lookTarget.z));
+
+  if (!_campusHull) _campusHull = buildCampusHull();
+  const hull = _campusHull;
+  if (hull.length < 3) return;
+  const margin = Math.max(-20, HULL_MARGIN - over * 0.2);
+  for (let pass = 0; pass < 6; pass++) {
+    let moved = false;
+    for (let i = 0; i < hull.length; i++) {
+      const a = hull[i], c = hull[(i + 1) % hull.length];
+      const ex = c[0] - a[0], ez = c[1] - a[1];
+      const len = Math.hypot(ex, ez) || 1;
+      const d = (ex * (lookTarget.z - a[1]) - ez * (lookTarget.x - a[0])) / len;  // >0 = inside
+      if (d < -margin) {
+        const push = -margin - d;
+        lookTarget.x += (-ez / len) * push;
+        lookTarget.z += ( ex / len) * push;
+        moved = true;
+      }
+    }
+    if (!moved) break;
+  }
+}
+
 function updateCameraFromTarget() {
+  clampLookTarget();
   camera.position.set(
     lookTarget.x + camOffset.x,
     lookTarget.y + camOffset.y,
@@ -812,7 +877,7 @@ function animate() {
       var gd = Math.hypot(gdx, gdz);
       if (gd > 80) gpsMarker.position.set(gpsTarget.x, 4, gpsTarget.z);
       else if (gd > 0.05) gpsMarker.position.set(gpsMarker.position.x + gdx * 0.08, 4, gpsMarker.position.z + gdz * 0.08);
-      if (window.GPSChar && gpsMarker.userData.gpsChar) GPSChar.update(gpsMarker, gdx, gdz, gd);
+      if (window.GPSChar && gpsMarker.userData.gpsChar) GPSChar.update(gpsMarker);
     }
     renderer.render(scene, camera);
     layoutYouHere();
@@ -826,7 +891,7 @@ function layoutYouHere() {
   if (!_yhEl) _yhEl = document.getElementById('you-are-here');
   if (!_yhEl) return;
   const spot = currentGPSPosition || (waypointMap.main_gate && waypointMap.main_gate.position);
-  if (!youHereOn || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
+  if ((!youHereOn && !currentGPSPosition) || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
   if (!_yhV) _yhV = new THREE.Vector3();
   _yhV.set(spot.x, currentGPSPosition ? ((window.GPSChar && GPSChar.ready) ? 16 : 10) : 4, spot.z).project(camera);
   const el = renderer.domElement, W = el.clientWidth, H = el.clientHeight;

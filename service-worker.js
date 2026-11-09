@@ -1,7 +1,7 @@
 
 const PHOTO_CACHE = 'prmsu-photos-v7';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v5.25';
+const CACHE_NAME = 'prmsu-digitwin-v5.91';
 
 const STATIC_ASSETS = [
   './',
@@ -9,10 +9,17 @@ const STATIC_ASSETS = [
   './style.css',
   './script.js',
   './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './images/ground-grass.jpg',
+  './sprites/sprites_navmap/portraits/Shane.png',
   './js/pathfinding.js',
   './js/gps.js',
   './js/gpschar.js',
-  './sprites/sprites_navmap/16x32%20Walk-Sheet.png',
+  './js/charpicker.js',
+  './sprites/sprites_navmap/Princess.png',
+  './sprites/sprites_navmap/Jonathan.png',
+  './sprites/sprites_navmap/Shane.png',
   './js/ui.js',
   './js/main.js',
   './js/navfp.js',
@@ -23,7 +30,6 @@ const STATIC_ASSETS = [
   './data/campus.json',
   './data/devzones.json',
   './images/devzones/DEV_ZONES_SATMAP.jpg',
-  './models/QuadrangleNav.glb',
   './images/admin-building.png',
   './images/university-gate.jpg',
   './images/LegendMap.png',
@@ -37,10 +43,123 @@ const STATIC_ASSETS = [
   './js/vendor/three.min.js',
 ];
 
-const HEAVY_NAMES = ['QuadrangleNav.glb', 'admin-building.png', 'DEV_ZONES_SATMAP.jpg'];
+// Every 3D building and place model used by the Navigation Map (about 16 MB).
+// Warmed in the background after first load (see warmHeavy) so the map works fully offline.
+const MODEL_ASSETS = [
+  './models/QuadrangleNav.glb',
+  './models/ASBNav.glb',
+  './models/AdminCourtNav.glb',
+  './models/AdminNav.glb',
+  './models/Agritech1Nav.glb',
+  './models/Agritech2Nav.glb',
+  './models/BEEDNav.glb',
+  './models/BSEDNav.glb',
+  './models/CANTEENNav.glb',
+  './models/CCIT1Nav.glb',
+  './models/CCIT2_LHSFacultyNav.glb',
+  './models/ExecutiveHouseNav.glb',
+  './models/GabaldonNav.glb',
+  './models/GuardHouseNav.glb',
+  './models/HM1Nav.glb',
+  './models/HM2Nav.glb',
+  './models/Housing10Nav.glb',
+  './models/Housing11Nav.glb',
+  './models/Housing12Nav.glb',
+  './models/Housing1Nav.glb',
+  './models/Housing2Nav.glb',
+  './models/Housing3Nav.glb',
+  './models/Housing4Nav.glb',
+  './models/Housing5Nav.glb',
+  './models/Housing6Nav.glb',
+  './models/Housing7Nav.glb',
+  './models/Housing8Nav.glb',
+  './models/Housing9Nav.glb',
+  './models/LHSNav.glb',
+  './models/LIBNav.glb',
+  './models/MMNav.glb',
+  './models/MenDormNav.glb',
+  './models/MotorpoolNav.glb',
+  './models/Prac_GuestNav.glb',
+  './models/R&DCenterNav.glb',
+  './models/RMCNav.glb',
+  './models/ROMCNav.glb',
+  './models/SCNav.glb',
+  './models/WomenDormNav.glb',
+  './models/places/1st_Statue.glb',
+  './models/places/2nd_Statue.glb',
+  './models/places/Agri_ShedFIN.glb',
+  './models/places/BSED_Shed_Long_FIN.glb',
+  './models/places/Bench-LHS_CCIT_FIN.glb',
+  './models/places/Bench_With_Fence_FIN.glb',
+  './models/places/Broken_Building.glb',
+  './models/places/Broken_chairs_FINglb.glb',
+  './models/places/Bsed_Shed_Near_Banggar_FIN.glb',
+  './models/places/Bsed_Shed_Ni_Justine_FIN.glb',
+  './models/places/Bsed_Shed_uli_FIN.glb',
+  './models/places/CcitPuntodFIN.glb',
+  './models/places/CentralNurseryFIN.glb',
+  './models/places/FrontGateBench_FIN.glb',
+  './models/places/Front_Gate_MOO_FIN.glb',
+  './models/places/Front_Harang_FIN.glb',
+  './models/places/GrandStandFIN.glb',
+  './models/places/Guard_House_Farm_FIN.glb',
+  './models/places/LHS_Shed_FIN.glb',
+  './models/places/LHS_Thingy.glb',
+  './models/places/Lahar_LTDA.glb',
+  './models/places/Lib_Shed_FIN.glb',
+  './models/places/LibraryShedFINglb.glb',
+  './models/places/MRF.glb',
+  './models/places/Random_Nether_Portal_FIN.glb',
+  './models/places/SC_Benches_Trees_FIN.glb',
+  './models/places/Shed_Gabaldon_FIN.glb',
+  './models/places/Shed_Near_Tractor_FIN.glb',
+  './models/places/Small_Trees_Cluster_Model.glb',
+  './models/places/Under_ConstrictionFIN.glb',
+  './models/places/banggarFIN.glb',
+  './models/places/bsed chaird.glb',
+  './models/places/tractorFIN.glb',
+  './models/places/Agri_Z3_Shed.glb',
+  './models/places/Practice_House_BenchesFINglb.glb',
+  './models/places/Zone3_Greenhouse_beside_oldLin_NEW.glb',
+];
+
+// Campus Directory photos (about 11 MB). Warmed in the background after first load
+// so the Directory page shows its pictures offline too.
+const DIRECTORY_ASSETS = [
+  './images/directory/ADMIN_BUILDING.jpg',
+  './images/directory/ADMIN_COURT.jpg',
+  './images/directory/AGRITECH.jpg',
+  './images/directory/ASB.jpg',
+  './images/directory/CANTEEN.jpg',
+  './images/directory/CCIT_MAIN.jpg',
+  './images/directory/CHM_1.jpg',
+  './images/directory/CHM_2.jpg',
+  './images/directory/CTE_BEED.jpg',
+  './images/directory/CTE_BSED.jpg',
+  './images/directory/GABALDON_COURT.jpg',
+  './images/directory/GUARD_HOUSE.jpg',
+  './images/directory/GUEST_HOUSE.jpg',
+  './images/directory/LHS.jpg',
+  './images/directory/LHS_CCIT.jpg',
+  './images/directory/LIBRARY.jpg',
+  './images/directory/LTDA.jpg',
+  './images/directory/MENS_DORMITORY.jpg',
+  './images/directory/MITOS.jpg',
+  './images/directory/MOTORPOOL.jpg',
+  './images/directory/MRF.jpg',
+  './images/directory/OVAL.jpg',
+  './images/directory/QUADRANGLE_COURT.jpg',
+  './images/directory/RMC.jpg',
+  './images/directory/RND_CENTER.jpg',
+  './images/directory/ROMC.jpg',
+  './images/directory/SC.jpg',
+  './images/directory/WOMENS_DORMITORY.jpg',
+];
+
+const HEAVY_NAMES = ['admin-building.png', 'DEV_ZONES_SATMAP.jpg'];
 const isHeavy = u => HEAVY_NAMES.some(n => u.endsWith('/' + n));
 const CORE_ASSETS  = STATIC_ASSETS.filter(u => !isHeavy(u));
-const HEAVY_ASSETS = STATIC_ASSETS.filter(isHeavy);
+const HEAVY_ASSETS = STATIC_ASSETS.filter(isHeavy).concat(MODEL_ASSETS, DIRECTORY_ASSETS);
 
 self.addEventListener('install', event => {
   event.waitUntil(

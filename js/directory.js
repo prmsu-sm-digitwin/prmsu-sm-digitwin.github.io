@@ -6,7 +6,7 @@ const DIRECTORY_DATA = [
     items: [
       { name: 'Agriculture Technology (Agri-Tech)', photo: 'images/directory/AGRITECH.jpg',
         text: 'Some College of Agriculture (CAg) classrooms, located in front of the Mitos Magsaysay Building.' },
-      { name: 'ASB Building', photo: 'images/directory/ASB.jpg',
+      { name: 'Agricultural Science Building (ASB)', photo: 'images/directory/ASB.jpg',
         text: 'CAg building with classrooms and a faculty office.' },
       { name: 'CCIT Main', photo: 'images/directory/CCIT_MAIN.jpg',
         text: 'Faculty offices and a computer laboratory, with first year classrooms.' },
@@ -18,7 +18,9 @@ const DIRECTORY_DATA = [
         text: 'CTE building in front of Gabaldon Court.' },
       { name: 'CTE (BSED)', photo: 'images/directory/CTE_BSED.jpg',
         text: 'CTE building with a faculty office and classrooms.' },
-      { name: 'LHS Building', photo: 'images/directory/LHS.jpg',
+      { name: 'Lahar-laden Technology Demonstration Area (LTDA)', photo: 'images/directory/LTDA.jpg',
+        text: 'The building is used as the College of Agriculture (CAg) horticulture room.' },
+      { name: 'Laboratory High School (LHS)', photo: 'images/directory/LHS.jpg',
         text: 'LHS building with classrooms.' },
       { name: 'LHS Faculty / CCIT', photo: 'images/directory/LHS_CCIT.jpg',
         text: 'Joint building for LHS faculty and CCIT second to fourth year classrooms.' },
@@ -33,7 +35,7 @@ const DIRECTORY_DATA = [
       { name: 'Admin Building', photo: 'images/directory/ADMIN_BUILDING.jpg',
         text: "Cashier, Registrar, and HRMO on the first floor. Second floor: the campus director's office and the accreditation room." },
       { name: 'Canteen', photo: "images/directory/CANTEEN.jpg",
-        text: 'Has four food stalls.' },
+        text: 'A building with four food stalls that serves students and faculty.' },
       { name: "Guard's House", photo: 'images/directory/GUARD_HOUSE.jpg',
         text: "A small building located beside the inner gate." },
       { name: 'Library', photo: "images/directory/LIBRARY.jpg",
@@ -42,13 +44,15 @@ const DIRECTORY_DATA = [
         text: 'Dormitory housing for male students and faculty.' },
       { name: 'Motorpool', photo: "images/directory/MOTORPOOL.jpg",
         text: 'Campus motorpool and service garage.' },
+      { name: 'MRF and Granary', photo: 'images/directory/MRF.jpg',
+        text: 'Material Recovery Facility and the other building is a storehouse built to keep harvested grain dry.' },
       { name: 'Practice House', photo: 'images/directory/GUEST_HOUSE.jpg',
         text: 'Abandoned building that could be used as a campus landmark.' },
       { name: 'Regional Mango Center', photo: 'images/directory/RMC.jpg',
         text: 'Has an event hall and some offices.' },
-      { name: 'RMTU Organic Mango Center', photo: "images/directory/ROMC.jpg",
+      { name: 'Organic Mango Center', photo: "images/directory/ROMC.jpg",
         text: 'Organic mango research and production facility.' },
-      { name: 'RMTU Research and Development Center', photo: "images/directory/RND_CENTER.jpg",
+      { name: 'Research and Development Center', photo: "images/directory/RND_CENTER.jpg",
         text: 'PRMSU research services office.' },
       { name: 'Student Center', photo: "images/directory/SC.jpg",
         text: 'Office of Student Affairs, Clinic, Dental, and SSG office.' },
@@ -57,15 +61,17 @@ const DIRECTORY_DATA = [
     ]
   },
   {
-    id: 'court',
-    title: 'Multi-Court',
+    id: 'court_and_outdoor_areas',
+    title: 'Multi-Court and Outdoor Areas',
     items: [
       { name: 'Admin Court', photo: 'images/directory/ADMIN_COURT.jpg',
         text: 'Covered court beside the Admin Building, used for campus activities.' },
       { name: 'Gabaldon Court', photo: 'images/directory/GABALDON_COURT.jpg',
         text: 'Covered court used for campus activities.' },
       { name: 'Multi-purpose Quad', photo: 'images/directory/QUADRANGLE_COURT.jpg',
-        text: 'Open court used for sports and CHM programs.' }
+        text: 'Open court used for sports and CHM programs.' },
+      { name: 'Oval', photo: 'images/directory/OVAL.jpg',
+        text: 'The campus oval, used for sports and other activities.' }
     ]
   }
 ];

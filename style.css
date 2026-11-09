@@ -2066,3 +2066,129 @@
   display: block; width: 100%; margin-top: 10px; padding: 6px; border: 0; background: none;
   color: rgba(255,255,255,0.6); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer;
 }
+
+.map-tools {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 6;
+}
+.map-tools #fp-btn,
+.map-tools #legend-btn,
+.map-tools #char-btn {
+  position: static;
+  left: auto; right: auto; top: auto; bottom: auto;
+}
+#char-btn {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  color: var(--maroon);
+  transition: background 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+#char-btn svg { width: 22px; height: 22px; }
+#char-btn.char-active {
+  background: var(--maroon);
+  color: var(--white);
+  border-color: var(--maroon);
+}
+.char-panel {
+  position: absolute;
+  left: 10px;
+  top: 60px;
+  z-index: 7;
+  width: min(280px, calc(100% - 20px));
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+}
+.char-panel.hidden { display: none; }
+
+/* While a route is showing, the path bar (Clear button) takes the top row,
+   so the tool buttons and the character panel sit below it instead of covering it. */
+#path-bar:not(.hidden) ~ .map-tools { top: 62px; }
+#path-bar:not(.hidden) ~ .char-panel { top: 112px; }
+.char-arrow {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--maroon);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.char-arrow:active { background: var(--maroon); color: var(--white); }
+.char-arrow svg { width: 18px; height: 18px; }
+.char-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.char-frame {
+  width: 88px;
+  height: 88px;
+  box-sizing: border-box;
+  border: 3px solid var(--maroon);
+  border-radius: 14px;
+  background: #e3f4e3;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.7);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.char-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; image-rendering: pixelated; display: block; }
+.char-frame canvas { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; display: block; }
+.char-frame img[hidden], .char-frame canvas[hidden], .char-frame .char-q[hidden] { display: none; }
+.char-q { font: 700 40px/1 'DM Sans', sans-serif; color: var(--maroon); }
+.char-name { margin-top: 6px; font: 700 14px/1.2 'DM Sans', sans-serif; color: var(--maroon); }
+.char-sub { margin-top: 2px; font: 500 11px/1.3 'DM Sans', sans-serif; color: var(--text-muted); }
+.char-sub:empty { display: none; }
+.char-select {
+  margin-top: 8px;
+  min-width: 92px;
+  height: 32px;
+  padding: 0 16px;
+  border: 1.5px solid var(--maroon);
+  border-radius: 999px;
+  background: var(--maroon);
+  color: var(--white);
+  font: 600 13px/1 'DM Sans', sans-serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.char-select:active { opacity: 0.85; }
+.char-select:disabled {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-muted);
+  cursor: default;
+}
