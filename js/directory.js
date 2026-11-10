@@ -15,7 +15,7 @@ const DIRECTORY_DATA = [
       { name: 'CHM 2', photo: 'images/directory/CHM_2.jpg',
         text: 'Second CHM building with the faculty office and some classrooms.' },
       { name: 'CTE (BEED)', photo: 'images/directory/CTE_BEED.jpg',
-        text: 'CTE building in front of Gabaldon Court.' },
+        text: 'CTE building in front of Gabaldon Court. It also houses the GAD Office (Gender and Development Office).' },
       { name: 'CTE (BSED)', photo: 'images/directory/CTE_BSED.jpg',
         text: 'CTE building with a faculty office and classrooms.' },
       { name: 'Lahar-laden Technology Demonstration Area (LTDA)', photo: 'images/directory/LTDA.jpg',

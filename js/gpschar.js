@@ -3,7 +3,7 @@
 
   var NAMES = ['Princess', 'Jonathan', 'Shane'];
   var SHEET_DIR = 'sprites/sprites_navmap/';
-  var TEMPLATE = SHEET_DIR + 'Princess.png';
+  var TEMPLATE = SHEET_DIR + 'Shane.png';
   var BAG_KEY = 'navmapCharBag';
   var PICK_KEY = 'navmapCharPick';
   var CELL = 32, COLS = 4, ROWS = 5;

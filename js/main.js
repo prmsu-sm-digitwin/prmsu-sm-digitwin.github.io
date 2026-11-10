@@ -959,11 +959,33 @@ function animate() {
       else if (gd > 0.05) gpsMarker.position.set(gpsMarker.position.x + gdx * 0.08, 4, gpsMarker.position.z + gdz * 0.08);
       if (window.GPSChar && gpsMarker.userData.gpsChar) GPSChar.update(gpsMarker);
     }
+    updateGateMarker();
     renderer.render(scene, camera);
     layoutYouHere();
   } else {
     var yh0 = document.getElementById('you-are-here'); if (yh0) yh0.style.display = 'none';
   }
+}
+
+// Character standing at the Main Gate, under the "You are here" label, for visitors who
+// have no GPS fix on campus (GPS off, or phone outside the campus).
+let gateMarker = null;
+function updateGateMarker() {
+  const gp = waypointMap && waypointMap.main_gate && waypointMap.main_gate.position;
+  if (!window.GPSChar || !gp || typeof scene === 'undefined') return;
+  if (gateMarker === null) {
+    try {
+      gateMarker = GPSChar.create();
+      gateMarker.position.set(gp.x, 4, gp.z);
+      gateMarker.visible = false;
+      scene.add(gateMarker);
+    } catch (e) { console.warn('[gate sprite]', e); gateMarker = false; }
+  }
+  if (!gateMarker) return;
+  const st = gateMarker.userData.gpsChar;
+  const show = !!(GPSChar.ready && st && !st.failed && !currentGPSPosition && !(window.NavFP && NavFP.active));
+  gateMarker.visible = show;
+  if (show) GPSChar.update(gateMarker);
 }
 
 let _yhEl = null, _yhV = null;
@@ -973,9 +995,21 @@ function layoutYouHere() {
   const spot = currentGPSPosition || (waypointMap.main_gate && waypointMap.main_gate.position);
   if ((!youHereOn && !currentGPSPosition) || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
   if (!_yhV) _yhV = new THREE.Vector3();
-  _yhV.set(spot.x, currentGPSPosition ? ((window.GPSChar && GPSChar.ready) ? 16 : 10) : 4, spot.z).project(camera);
+  // Anchor the label to the top of the character's head (follows the sprite as it tilts
+  // toward a top-down camera); fall back to a fixed height when there is no sprite.
+  const marker = currentGPSPosition ? gpsMarker : (gateMarker && gateMarker.visible ? gateMarker : null);
+  const gc = marker && marker.userData && marker.userData.gpsChar;
+  let headAnchored = false;
+  if (gc && gc.body && gc.body.visible && window.GPSChar && GPSChar.ready) {
+    marker.updateMatrixWorld(true);
+    gc.body.localToWorld(_yhV.set(0, 12.8, 0));
+    _yhV.project(camera);
+    headAnchored = true;
+  } else {
+    _yhV.set(spot.x, currentGPSPosition ? ((window.GPSChar && GPSChar.ready) ? 16 : 10) : 4, spot.z).project(camera);
+  }
   const el = renderer.domElement, W = el.clientWidth, H = el.clientHeight;
-  const sx = (_yhV.x + 1) / 2 * W, sy = (1 - _yhV.y) / 2 * H;
+  const sx = (_yhV.x + 1) / 2 * W, sy = (1 - _yhV.y) / 2 * H - (headAnchored ? 6 : 0);
   if (_yhV.z > 1 || sx < -40 || sx > W + 40 || sy < -40 || sy > H + 40) { _yhEl.style.display = 'none'; return; }
   _yhEl.style.display = 'block';
   _yhEl.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) translate(-50%,-100%)';
