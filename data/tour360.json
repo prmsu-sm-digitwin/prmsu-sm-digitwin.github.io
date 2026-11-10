@@ -12,6 +12,7 @@
   {"name": "Admin Building", "to": "tp_admin_building", "face": 0.428},
   {"name": "Admin Court", "to": "tp_admin_court", "face": 0.17},
   {"name": "Agricultural Science Building", "to": "tp_agricultural_science_building", "face": 0.31},
+  {"name": "ATEP Farm", "to": "z5bridge_end", "face": 0.95},
   {"name": "Bangar Park", "to": "tp_bangar_park", "face": 0.31},
   {"name": "BSED", "to": "tp_bsed", "face": 0.28},
   {"name": "Canteen", "to": "tp_canteen", "face": 0.22},
@@ -37,8 +38,7 @@
   {"name": "R & D Center", "to": "tp_r_d_center", "face": 0.27},
   {"name": "RMC", "to": "tp_rmc", "face": 0.23},
   {"name": "Student Center", "to": "beed_start", "face": 0.46},
-  {"name": "Women's Dormitory", "to": "tp_women_s_dormitory", "face": 0.22},
-  {"name": "Z5 End", "to": "z5bridge_end", "face": 0.95}
+  {"name": "Women's Dormitory", "to": "tp_women_s_dormitory", "face": 0.22}
  ],
  "stops": [
   {"file": "images/360/MainGate_to_InnerGate/p01.webp", "title": "Main Gate", "fwd": 0.948, "id": "tp_main_gate"},
