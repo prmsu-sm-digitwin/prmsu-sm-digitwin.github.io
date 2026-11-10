@@ -788,13 +788,31 @@ function initDevzonesViewer() {
 initDevzonesViewer();
 
 
+// Extra words each building can be found by (full college names, acronyms).
+// Add a line here to make another building searchable by more than its name.
+const BUILDING_SEARCH_TERMS = {
+  ccit_main:      'College of Communication and Information Technology CCIT',
+  lhs_fac_ccit:   'College of Communication and Information Technology CCIT Laboratory High School LHS faculty',
+  cte_beed:       'College of Teacher Education CTE BEED Elementary Education',
+  cte_bsed:       'College of Teacher Education CTE BSED Secondary Education',
+  lhs:            'Laboratory High School LHS',
+  asb:            'Agricultural Science Building ASB College of Agriculture CAg',
+  ltda:           'Lahar-laden Technology Demonstration Area LTDA College of Agriculture CAg horticulture',
+  mrf:            'Material Recovery Facility MRF Granary',
+  rmtu_rd_center: 'R&D RMTU Research and Development'
+};
+
 function filterBuildingSheet(query) {
   if (!campusData || !campusData.buildings) return;
   const q = query.trim().toLowerCase();
+  const words = q.split(/\s+/).filter(Boolean);
   const searchable = campusData.buildings.filter(b => b.category !== 'housing' && b.category !== 'place');
-  const filtered = !q
+  const filtered = !words.length
     ? searchable
-    : searchable.filter(b => (b.name || '').toLowerCase().includes(q));
+    : searchable.filter(b => {
+        const hay = ((b.name || '') + ' ' + (BUILDING_SEARCH_TERMS[b.id] || '')).toLowerCase();
+        return words.every(w => hay.includes(w));
+      });
   populateBuildingSheet(filtered);
 }
 

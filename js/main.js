@@ -226,6 +226,83 @@ function spawnPlaceBox(p) {
   placeBlockMeshes.push(mesh);
 }
 
+// >>> mergeStaticMeshes
+// A model made of hundreds of small objects (pebbles, flowers, hedge pieces) costs one
+// draw call per object, which makes phones stutter. After loading, this joins all meshes
+// that share a material into one mesh. The picture is identical and the .glb stays small,
+// because the file keeps its shared copies and only the in-memory copy is merged.
+function mergeStaticMeshes(root) {
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const groups = new Map();
+  root.traverse(c => {
+    if (!c.isMesh || c.isSkinnedMesh || c.isInstancedMesh || !c.geometry || !c.geometry.attributes.position) return;
+    if (c.userData && c.userData.isNameTag) return;
+    if (Array.isArray(c.material)) return;
+    const key = c.material.uuid;
+    if (!groups.has(key)) groups.set(key, { material: c.material, meshes: [] });
+    groups.get(key).meshes.push(c);
+  });
+
+  const m4 = new THREE.Matrix4(), n3 = new THREE.Matrix3(), v = new THREE.Vector3();
+  groups.forEach(g => {
+    if (g.meshes.length < 2) return;
+    const hasUV = g.meshes.every(m => m.geometry.attributes.uv);
+    const hasColor = g.meshes.every(m => m.geometry.attributes.color && m.geometry.attributes.color.itemSize === 3);
+    let vTotal = 0, iTotal = 0;
+    g.meshes.forEach(m => {
+      const geo = m.geometry, pc = geo.attributes.position.count;
+      vTotal += pc; iTotal += geo.index ? geo.index.count : pc;
+    });
+    const pos = new Float32Array(vTotal * 3), nor = new Float32Array(vTotal * 3);
+    const uv = hasUV ? new Float32Array(vTotal * 2) : null;
+    const col = hasColor ? new Float32Array(vTotal * 3) : null;
+    const idx = vTotal > 65535 ? new Uint32Array(iTotal) : new Uint16Array(iTotal);
+    let vo = 0, io = 0;
+    g.meshes.forEach(m => {
+      const geo = m.geometry, pa = geo.attributes.position, na = geo.attributes.normal;
+      m.updateMatrixWorld(true);
+      m4.multiplyMatrices(inv, m.matrixWorld);
+      n3.getNormalMatrix(m4);
+      for (let i = 0; i < pa.count; i++) {
+        v.fromBufferAttribute(pa, i).applyMatrix4(m4);
+        pos[(vo + i) * 3] = v.x; pos[(vo + i) * 3 + 1] = v.y; pos[(vo + i) * 3 + 2] = v.z;
+        if (na) {
+          v.fromBufferAttribute(na, i).applyMatrix3(n3).normalize();
+          nor[(vo + i) * 3] = v.x; nor[(vo + i) * 3 + 1] = v.y; nor[(vo + i) * 3 + 2] = v.z;
+        } else { nor[(vo + i) * 3 + 1] = 1; }
+        if (uv) { uv[(vo + i) * 2] = geo.attributes.uv.getX(i); uv[(vo + i) * 2 + 1] = geo.attributes.uv.getY(i); }
+        if (col) { const ca = geo.attributes.color; col[(vo + i) * 3] = ca.getX(i); col[(vo + i) * 3 + 1] = ca.getY(i); col[(vo + i) * 3 + 2] = ca.getZ(i); }
+      }
+      // A negative scale (mirrored copy) flips the triangle winding, so flip it back.
+      const flip = m4.determinant() < 0;
+      const n = geo.index ? geo.index.count : pa.count;
+      for (let i = 0; i < n; i += 3) {
+        const a = geo.index ? geo.index.getX(i)     : i;
+        const b = geo.index ? geo.index.getX(i + 1) : i + 1;
+        const c = geo.index ? geo.index.getX(i + 2) : i + 2;
+        idx[io++] = vo + a;
+        idx[io++] = vo + (flip ? c : b);
+        idx[io++] = vo + (flip ? b : c);
+      }
+      vo += pa.count;
+    });
+    const merged = new THREE.BufferGeometry();
+    merged.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    merged.setAttribute('normal',   new THREE.BufferAttribute(nor, 3));
+    if (uv)  merged.setAttribute('uv',    new THREE.BufferAttribute(uv, 2));
+    if (col) merged.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    merged.setIndex(new THREE.BufferAttribute(idx, 1));
+    merged.computeBoundingSphere();
+    merged.computeBoundingBox();
+    const mesh = new THREE.Mesh(merged, g.material);
+    mesh.name = 'merged:' + (g.material.name || g.material.uuid.slice(0, 6));
+    g.meshes.forEach(m => { if (m.parent) m.parent.remove(m); });
+    root.add(mesh);
+  });
+}
+// <<< mergeStaticMeshes
+
 function preparePlaceModel(root, strip) {
   if (strip && strip.length) {
     const drop = [];
@@ -236,6 +313,7 @@ function preparePlaceModel(root, strip) {
     });
     drop.forEach(o => o.parent && o.parent.remove(o));
   }
+  mergeStaticMeshes(root);
   root.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(root);
   const c = box.getCenter(new THREE.Vector3());
@@ -340,18 +418,18 @@ function loadGLB(bldg) {
       model.userData = { buildingId: bldg.id };
 
       const tintColor = bldg.glbTint ? parseInt((bldg.color || '#4a90d9').replace('#', ''), 16) : null;
+      const tintMat = tintColor !== null ? new THREE.MeshLambertMaterial({ color: tintColor, side: THREE.DoubleSide }) : null;
 
       model.traverse(child => {
         if (child.isMesh) {
-          if (tintColor !== null) {
-            child.material = new THREE.MeshLambertMaterial({ color: tintColor, side: THREE.DoubleSide });
-          }
+          if (tintMat) child.material = tintMat;
           child.castShadow = true;
           child.receiveShadow = true;
           child.userData.buildingId = bldg.id;
         }
       });
 
+      mergeStaticMeshes(model);
       scene.add(model);
       buildingMeshes.push({ mesh: model, data: bldg });
       console.log(`GLB loaded: ${bldg.id} → ${bldg.glbModel}`);
