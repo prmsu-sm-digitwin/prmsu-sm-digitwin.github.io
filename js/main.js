@@ -571,6 +571,27 @@ function resetVirtualCharacter() {
   virtualPos = null;
 }
 
+function entryIdsOf(b) {
+  if (!b) return [];
+  var ids = [b.entryWaypoint].concat(b.extraEntryWaypoints || []);
+  return ids.filter(function (id, i) { return id && waypointMap[id] && ids.indexOf(id) === i; });
+}
+
+function shortestToBuilding(startId, tb) {
+  var best = null;
+  entryIdsOf(tb).forEach(function (eid) {
+    var ids = findPath(waypointMap, startId, eid);
+    if (!ids || !ids.length) return;
+    var len = 0;
+    for (var i = 0; i < ids.length - 1; i++) {
+      var a = waypointMap[ids[i]].position, c = waypointMap[ids[i + 1]].position;
+      len += Math.hypot(c.x - a.x, c.z - a.z);
+    }
+    if (!best || len < best.len) best = { ids: ids, len: len };
+  });
+  return best;
+}
+
 function navigateTo(targetBuildingId, fromBuildingId) {
   if (!campusData) return;
 
@@ -612,13 +633,9 @@ function navigateTo(targetBuildingId, fromBuildingId) {
       }) : [];
       let best = null;
       cands.forEach(c => {
-        const ids = findPath(waypointMap, c.id, tb.entryWaypoint);
-        if (!ids || !ids.length) return;
-        let len = c.d;
-        for (let i = 0; i < ids.length - 1; i++) {
-          const a = waypointMap[ids[i]].position, b = waypointMap[ids[i + 1]].position;
-          len += Math.hypot(b.x - a.x, b.z - a.z);
-        }
+        const sp = shortestToBuilding(c.id, tb);
+        if (!sp) return;
+        const len = c.d + sp.len;
         if (!best || len < best.len) best = { id: c.id, len: len };
       });
       if (best) { originWpId = best.id; fromPos = pos; fpOrigin = true; }
@@ -637,11 +654,15 @@ function navigateTo(targetBuildingId, fromBuildingId) {
   }
   const targetBldg = campusData.buildings.find(b => b.id === targetBuildingId);
   if (!targetBldg) return;
-  const targetWpId = targetBldg.entryWaypoint;
-
   if (typeof findPath !== 'function') return;
 
-  const pathIds = findPath(waypointMap, originWpId, targetWpId);
+  const originIds = fromBldg ? entryIdsOf(fromBldg) : [originWpId];
+  let bestRoute = null;
+  originIds.forEach(oid => {
+    const sp = shortestToBuilding(oid, targetBldg);
+    if (sp && (!bestRoute || sp.len < bestRoute.len)) bestRoute = sp;
+  });
+  const pathIds = bestRoute ? bestRoute.ids : [];
   if (!pathIds || pathIds.length === 0) { if (typeof showGPSToast === 'function') showGPSToast('No route to this place yet.'); return; }
 
   drawPath(pathIds, fromPos);
@@ -1065,6 +1086,7 @@ function animate() {
   requestAnimationFrame(animate);
   const mapPage = document.getElementById('page-map');
   if (mapPage && mapPage.classList.contains('active')) {
+    kbMapStep();
     if (window.NavFP) NavFP.frame();
     if (gpsMarker && gpsTarget && gpsMarker.visible) {
       var gdx = gpsTarget.x - gpsMarker.position.x, gdz = gpsTarget.z - gpsMarker.position.z;
@@ -1132,6 +1154,60 @@ function layoutYouHere() {
   if (_yhV.z > 1 || sx < -40 || sx > W + 40 || sy < -40 || sy > H + 40) { _yhEl.style.display = 'none'; return; }
   _yhEl.style.display = 'block';
   _yhEl.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) translate(-50%,-100%)';
+}
+
+var kbMap = {}, kbLastT = 0;
+var KB_MAP_KEYS = { ArrowUp: 1, ArrowDown: 1, ArrowLeft: 1, ArrowRight: 1, KeyW: 1, KeyA: 1, KeyS: 1, KeyD: 1, KeyQ: 1, KeyE: 1, Equal: 1, NumpadAdd: 1, Minus: 1, NumpadSubtract: 1 };
+function kbMapAllowed(e) {
+  if (e.ctrlKey || e.metaKey || e.altKey || !campusData) return false;
+  if (window.NavFP && NavFP.active) return false;
+  var mp = document.getElementById('page-map');
+  if (!mp || !mp.classList.contains('active')) return false;
+  var t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return false;
+  var tg = document.getElementById('tg-root');
+  if (tg && tg.classList.contains('tg-open')) return false;
+  if (typeof legendOpen !== 'undefined' && legendOpen) return false;
+  return true;
+}
+document.addEventListener('keydown', function (e) {
+  if (!KB_MAP_KEYS[e.code] || !kbMapAllowed(e)) return;
+  var c = e.code;
+  if (c === 'Equal' || c === 'NumpadAdd') { e.preventDefault(); zoomCamera(camOffset.y - 30); }
+  else if (c === 'Minus' || c === 'NumpadSubtract') { e.preventDefault(); zoomCamera(camOffset.y + 30); }
+  else { e.preventDefault(); camPanTo = null; kbMap[c] = true; }
+});
+document.addEventListener('keydown', function (e) {
+  if (e.code !== 'KeyF' || e.repeat || e.ctrlKey || e.metaKey || e.altKey || !campusData) return;
+  var mp = document.getElementById('page-map');
+  if (!mp || !mp.classList.contains('active')) return;
+  var t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+  var tg = document.getElementById('tg-root');
+  if (tg && tg.classList.contains('tg-open')) return;
+  var fb = document.getElementById('fp-btn');
+  if (fb && fb.offsetParent) { e.preventDefault(); fb.click(); }
+});
+document.addEventListener('keyup', function (e) { kbMap[e.code] = false; });
+window.addEventListener('blur', function () { kbMap = {}; });
+function kbMapStep() {
+  var now = performance.now();
+  var dt = kbLastT ? Math.min(0.1, (now - kbLastT) / 1000) : 0.016;
+  kbLastT = now;
+  if (!campusData || (window.NavFP && NavFP.active)) return;
+  var dxk = ((kbMap.ArrowLeft || kbMap.KeyA) ? 1 : 0) - ((kbMap.ArrowRight || kbMap.KeyD) ? 1 : 0);
+  var dyk = ((kbMap.ArrowUp || kbMap.KeyW) ? 1 : 0) - ((kbMap.ArrowDown || kbMap.KeyS) ? 1 : 0);
+  if (dxk || dyk) {
+    var px = 500 * dt;
+    var phi = Math.atan2(camOffset.z, camOffset.x);
+    var speed = camOffset.y * 0.002;
+    var dx = dxk * px, dy = dyk * px;
+    lookTarget.x -= (Math.sin(phi) * dx + Math.cos(phi) * dy * 0.6) * speed;
+    lookTarget.z -= (-Math.cos(phi) * dx + Math.sin(phi) * dy * 0.6) * speed;
+    updateCameraFromTarget();
+  }
+  var rot = (kbMap.KeyE ? 1 : 0) - (kbMap.KeyQ ? 1 : 0);
+  if (rot) rotateCamera(rot * 1.4 * dt, 0);
 }
 
 function zoomIn()  { zoomCamera(camera ? camera.position.y - 40 : 220); }

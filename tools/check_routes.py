@@ -45,7 +45,7 @@ while st:
     for v in adj[u]:
         if v not in linked: linked.add(v); st.append(v)
 blds = [b for b in d['buildings'] if b.get('entryWaypoint') in w]
-unreachable = [b['id'] for b in blds if b['entryWaypoint'] not in linked]
+unreachable = [b['id'] for b in blds if b['entryWaypoint'] not in linked] + [b['id'] + ' (extra entrance ' + e + ')' for b in blds for e in b.get('extraEntryWaypoints', []) if e not in linked]
 print('waypoints', len(w), 'paths', sum(len(a) for a in adj.values()) // 2)
 print('places that cannot be reached from the Main Gate:', unreachable or 'none')
 routable = [b for b in blds if b['entryWaypoint'] in linked]

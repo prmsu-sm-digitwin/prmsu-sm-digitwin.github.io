@@ -49,6 +49,9 @@
     return { text: 'To install this app on a computer: click the install icon at the right end of the address bar, or open the browser menu and choose Install. On a phone, use the browser menu and pick Add to Home screen.' };
   }
 
+  function notDesktop() { return document.documentElement.getAttribute('data-device') !== 'desktop'; }
+  function isDesktop() { return document.documentElement.getAttribute('data-device') === 'desktop'; }
+
   var INSTALL_STEP = { dynamic: installInfo, skipIf: function () { return isStandalone() || installedNow; } };
 
   var TOURS = {
@@ -63,6 +66,7 @@
       { text: 'This is the Navigation Map, a 3D model of the whole campus. Let me show you the main parts.' },
       { target: '#sheet-search-bar', text: 'Search for a building here, like CCIT, CAg or Library. You can also scroll the list below it.' },
       { text: 'Drag to move around the map, pinch to zoom, and use two fingers to rotate. Tap a building to see its details, then press Navigate Here to get an orange route, or Start from to pick where you begin.' },
+      { target: '#kb-btn-map', text: 'On a computer you can use the keyboard too. This button lists all the keys. The arrow keys or W, A, S, D move the map, plus and minus zoom, Q and E rotate, F switches to first person, and the / key opens the search.', skipIf: notDesktop },
       { target: '#fp-btn', text: 'This camera button lets you walk around the campus in first person, with a joystick.' },
       { target: '#legend-btn', text: 'This opens the legend, so you can see what the colors and symbols on the map mean.' },
       { target: '#char-btn', text: 'Tap here to choose your character. It is the one that shows where you are on the map. In first person view this button turns into a pin that jumps you to any building.' },
@@ -70,7 +74,8 @@
     ] },
     firstperson: { guide: 'Princess', steps: [
       { text: 'You are now in first person view, walking on the campus paths like you are really there!' },
-      { target: '#fp-joy', text: 'Drag this joystick to walk. Push it forward to go ahead, and sideways to turn.' },
+      { target: '#fp-joy', text: 'Drag this joystick to walk. Push it forward to go ahead, and sideways to turn.', skipIf: isDesktop },
+      { text: 'Use W, A, S, D or the arrow keys to walk, and hold Shift to run. Press the / key to search for a building, and Esc to close a list.', skipIf: notDesktop },
       { text: 'Drag anywhere else on the screen to look around. You will always stay on the campus paths, so you will never walk through a building.' },
       { target: '#char-btn', text: 'This pin button is a teleport. Tap it to see a list of buildings, pick one, and you will jump near it and face it.' },
       { target: '#fp-search-btn', text: 'Need to get somewhere? Tap this search button, pick a building, and press Navigate Here. The orange arrows start right where you are standing, so just follow them along the path.' },
@@ -79,6 +84,7 @@
     walkthrough: { guide: 'Jonathan', steps: [
       { text: 'Hey, I am Jonathan! This is the Campus Walkthrough, a tour of the campus made from 360 degree photos.' },
       { text: 'Drag to look around. Tap or hold the arrows on the road to walk forward, go back, or turn into a side path.' },
+      { target: '#kb-btn-walkthrough', text: 'On a computer you can use the keyboard too. This button lists the keys. Up or W walks forward, Down or S goes back, Left and Right turn the view, plus and minus zoom, and Space also walks forward.', skipIf: notDesktop },
       { target: '#tour-places-btn', text: 'The Places button takes you straight to a spot, like the gates, the Library or the dorms.' },
       { target: '#tour-offline-btn', text: 'Want the tour without internet? Tap this to download all the photos to your phone. It is a big download, so use Wi-Fi.', optional: true },
       { target: '#tour-back', text: 'And this button takes you back to the home page. Enjoy the tour!', last: true }
@@ -493,7 +499,7 @@
         start(p, true);
       }, currentPage() === pg ? 300 : 1100);
     });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menuEl && menuEl.classList.contains('open')) closeMenu(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menuEl && menuEl.classList.contains('open')) { closeMenu(); e.preventDefault(); } });
   }
   window.showTutorial = function () { if (!menuEl) buildMenu(); menuEl.classList.add('open'); };
   window.showInstallHelp = function () {

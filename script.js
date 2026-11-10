@@ -338,3 +338,157 @@ function closeVmq(e) {
     window.history.back();
   }
 }
+window.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape' || e.defaultPrevented) return;
+  var tg = document.getElementById('tg-root');
+  if (tg && tg.classList.contains('tg-open')) return;
+  var kh = document.getElementById('kb-help-overlay');
+  if (kh && kh.classList.contains('open')) { closeKbHelp(); e.preventDefault(); return; }
+  function isOpen(id, cls) { var el = document.getElementById(id); return !!el && el.classList.contains(cls); }
+  if (vmqOverlayOpen || sidebarOverlayOpen) { window.history.back(); e.preventDefault(); return; }
+  if (isOpen('devzones-pov', 'is-open')) { closeDevzonePOV(); e.preventDefault(); return; }
+  if (typeof legendOpen !== 'undefined' && legendOpen) { toggleLegend(); e.preventDefault(); return; }
+  var bp = document.getElementById('building-panel');
+  if (bp && !bp.classList.contains('hidden') && typeof closePanel === 'function') { closePanel(); e.preventDefault(); return; }
+  var sp = document.getElementById('sheet-panel');
+  if (sp && sp.offsetHeight > 0 && typeof window.sheetCollapse === 'function') {
+    var ae = document.activeElement;
+    if (ae && ae.tagName === 'INPUT') ae.blur();
+    window.sheetCollapse(); e.preventDefault();
+    return;
+  }
+  var pb = document.getElementById('path-bar'), mpg = document.getElementById('page-map');
+  if (pb && !pb.classList.contains('hidden') && mpg && mpg.classList.contains('active') && typeof clearNavigation === 'function') {
+    clearNavigation(); e.preventDefault();
+  }
+});
+
+window.addEventListener('keydown', function (e) {
+  if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+  var t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+  var tg = document.getElementById('tg-root');
+  if (tg && tg.classList.contains('tg-open')) return;
+  var mp = document.getElementById('page-map');
+  var inp = document.getElementById('building-search-input');
+  if (!mp || !mp.classList.contains('active') || !inp) return;
+  e.preventDefault();
+  if (window.NavFP && NavFP.active && NavFP.openSearch) { NavFP.openSearch(); return; }
+  if (typeof window.sheetEnsureOpen === 'function') window.sheetEnsureOpen();
+  inp.focus();
+});
+
+document.addEventListener('keydown', function (e) {
+  var inp = document.getElementById('building-search-input');
+  if (!inp) return;
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter') return;
+  var onInput = e.target === inp;
+  if (!onInput) {
+    var tt = e.target;
+    if (tt && (tt.tagName === 'INPUT' || tt.tagName === 'TEXTAREA' || tt.tagName === 'SELECT' || tt.tagName === 'BUTTON' || tt.tagName === 'A' || tt.isContentEditable)) return;
+    var tgo = document.getElementById('tg-root');
+    if (tgo && tgo.classList.contains('tg-open')) return;
+    var kho = document.getElementById('kb-help-overlay');
+    if (kho && kho.classList.contains('open')) return;
+    var bpo = document.getElementById('building-panel');
+    if (bpo && !bpo.classList.contains('hidden')) return;
+    var mpo = document.getElementById('page-map');
+    var spo = document.getElementById('sheet-panel');
+    if (!mpo || !mpo.classList.contains('active') || !spo || spo.offsetHeight <= 0) return;
+  }
+  var items = Array.prototype.slice.call(document.querySelectorAll('#building-sheet-list .building-item'));
+  if (!items.length) return;
+  var cur = -1;
+  items.forEach(function (it, i) { if (it.classList.contains('kb-active')) cur = i; });
+  if (!onInput && e.key === 'Enter' && cur < 0) return;
+  e.preventDefault();
+  if (!onInput) e.stopImmediatePropagation();
+  if (e.key === 'Enter') {
+    var pick = items[cur >= 0 ? cur : 0];
+    inp.blur();
+    pick.click();
+    return;
+  }
+  var n = e.key === 'ArrowDown' ? Math.min(items.length - 1, cur + 1) : Math.max(0, cur <= 0 ? 0 : cur - 1);
+  items.forEach(function (it) { it.classList.remove('kb-active'); });
+  items[n].classList.add('kb-active');
+  items[n].scrollIntoView({ block: 'nearest' });
+});
+
+function kbHelpSections() {
+  var fp = window.NavFP && NavFP.active;
+  var out = [];
+  if (current === 'map' && fp) {
+    out.push({ t: 'First person view', r: [
+      [['W', 'A', 'S', 'D'], 'Walk (the arrow keys work too)'],
+      [['Shift'], 'Hold to run'],
+      [['/'], 'Search for a building'],
+      [['F'], 'Back to the map'] ] });
+  } else if (current === 'map') {
+    out.push({ t: 'Navigation Map', r: [
+      [['Arrows', 'W', 'A', 'S', 'D'], 'Move the map'],
+      [['Q', 'E'], 'Rotate the map'],
+      [['+', '-'], 'Zoom in and out'],
+      [['F'], 'Walk in first person'],
+      [['/'], 'Search for a building'],
+      [['Up', 'Down', 'Enter'], 'Choose in the search list or the building panel'] ] });
+  } else if (current === 'walkthrough') {
+    out.push({ t: 'Campus Walkthrough', r: [
+      [['Up', 'W', 'Space'], 'Walk forward'],
+      [['Down', 'S'], 'Go back'],
+      [['Left', 'Right'], 'Turn the view'],
+      [['+', '-'], 'Zoom in and out'] ] });
+  }
+  return out;
+}
+
+function buildKbHelp() {
+  var ov = document.getElementById('kb-help-overlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'kb-help-overlay';
+    ov.className = 'kb-help-overlay';
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeKbHelp(); });
+    document.body.appendChild(ov);
+  }
+  var html = '<div class="kb-help-card" role="dialog" aria-label="Keyboard shortcuts"><h2 class="kb-help-title">Keyboard shortcuts</h2>';
+  kbHelpSections().forEach(function (s) {
+    html += '<div class="kb-help-group">' + s.t + '</div>';
+    s.r.forEach(function (row) {
+      html += '<div class="kb-help-row2"><span class="kb-help-keys">' + row[0].map(function (k) { return '<kbd>' + k + '</kbd>'; }).join('') + '</span><span>' + row[1] + '</span></div>';
+    });
+  });
+  html += '<button type="button" class="kb-help-close" onclick="closeKbHelp()">Close</button></div>';
+  ov.innerHTML = html;
+  return ov;
+}
+function showKbHelp() { buildKbHelp().classList.add('open'); }
+function closeKbHelp() { var ov = document.getElementById('kb-help-overlay'); if (ov) ov.classList.remove('open'); }
+
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Enter') return;
+  if (document.documentElement.getAttribute('data-device') !== 'desktop') return;
+  var t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.tagName === 'BUTTON' || t.tagName === 'A' || t.isContentEditable)) return;
+  var tg = document.getElementById('tg-root');
+  if (tg && tg.classList.contains('tg-open')) return;
+  var ov = document.getElementById('kb-help-overlay');
+  if (ov && ov.classList.contains('open')) return;
+  var bp = document.getElementById('building-panel');
+  if (!bp || bp.classList.contains('hidden')) return;
+  var btns = ['navigate-btn', 'start-from-btn'].map(function (id) { return document.getElementById(id); })
+    .filter(function (b) { return b && !b.classList.contains('hidden'); });
+  if (!btns.length) return;
+  var cur = -1;
+  btns.forEach(function (b, i) { if (b.classList.contains('kb-active')) cur = i; });
+  e.preventDefault(); e.stopImmediatePropagation();
+  if (e.key === 'Enter') {
+    var pick = btns[cur >= 0 ? cur : 0];
+    btns.forEach(function (b) { b.classList.remove('kb-active'); });
+    pick.click();
+    return;
+  }
+  var n = e.key === 'ArrowDown' ? Math.min(btns.length - 1, cur + 1) : Math.max(0, cur <= 0 ? 0 : cur - 1);
+  btns.forEach(function (b) { b.classList.remove('kb-active'); });
+  btns[n].classList.add('kb-active');
+});

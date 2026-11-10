@@ -64,6 +64,7 @@
       '<div class="tour-places" id="tour-places"><div class="tour-places-title">Go to</div><div class="tour-places-list" id="tour-places-list"></div></div>' +
       '<button class="tour-back" id="tour-back" type="button" aria-label="Back to home" title="Back">' +
       '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+      '<button class="tour-help-btn tour-kb-btn kb-help-btn" id="kb-btn-walkthrough" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts" onclick="showKbHelp()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.6" y="9.4" width="16.4" height="10.6" rx="1.8" stroke="#fff" stroke-width="1.6"/><path d="M5 13h.01M8.2 13h.01M11.4 13h.01M14.6 13h.01M5 16.6h.01M14.6 16.6h.01M7.6 16.6h4.6" stroke="#fff" stroke-width="1.9"/><path d="M14.4 6.4a3.1 3.1 0 1 1 4.8 2.6c-1.2.7-1.8 1.4-1.8 2.7" stroke="#F5C842" stroke-width="2.1"/><path d="M17.4 16.4h.01" stroke="#F5C842" stroke-width="2.6"/></svg></button>' +
       '<button class="tour-help-btn" id="help-btn-walkthrough" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp(\'walkthrough\')">?</button>';
 
     canvas   = document.getElementById('tour-canvas');
@@ -145,6 +146,30 @@
   }
   function togglePlaces() { if (placesEl) { closeOffline(); placesEl.classList.toggle('open'); } }
   function closePlaces() { if (placesEl) placesEl.classList.remove('open'); }
+  var kbTour = {}, lastKbT = 0;
+  var KB_TOUR = { ArrowUp: 1, KeyW: 1, ArrowDown: 1, KeyS: 1, ArrowLeft: 1, KeyA: 1, ArrowRight: 1, KeyD: 1, Space: 1, Equal: 1, NumpadAdd: 1, Minus: 1, NumpadSubtract: 1 };
+  document.addEventListener('keydown', function (e) {
+    if (!running || !KB_TOUR[e.code] || e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    if (e.code === 'Space' && t && t.tagName === 'BUTTON') return;
+    var tg = document.getElementById('tg-root');
+    if (tg && tg.classList.contains('tg-open')) return;
+    e.preventDefault();
+    var c = e.code;
+    if (c === 'ArrowUp' || c === 'KeyW' || c === 'Space') { if (!stepBusy && nextIdx(idx) >= 0) { stopAuto(); next(); } }
+    else if (c === 'ArrowDown' || c === 'KeyS') { if (!stepBusy && prevIdx(idx) >= 0) { stopAuto(); prev(); } }
+    else if (c === 'Equal' || c === 'NumpadAdd') setFov(fov - 5);
+    else if (c === 'Minus' || c === 'NumpadSubtract') setFov(fov + 5);
+    else kbTour[c] = true;
+  });
+  document.addEventListener('keyup', function (e) { kbTour[e.code] = false; });
+  window.addEventListener('blur', function () { kbTour = {}; });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (offlineEl && offlineEl.classList.contains('open')) { closeOffline(); e.preventDefault(); }
+    else if (placesEl && placesEl.classList.contains('open')) { closePlaces(); e.preventDefault(); }
+  });
 
 
   var PHOTO_CACHE_NAME = 'prmsu-photos-v6';
@@ -681,6 +706,11 @@
         velYaw *= 0.92; velPitch *= 0.92; dirty = true;
       }
     }
+    var nowK = performance.now();
+    var dtK = lastKbT ? Math.min(0.1, (nowK - lastKbT) / 1000) : 0.016;
+    lastKbT = nowK;
+    var kbDir = (kbTour.ArrowRight || kbTour.KeyD ? 1 : 0) - (kbTour.ArrowLeft || kbTour.KeyA ? 1 : 0);
+    if (kbDir) { velYaw = 0; yaw += kbDir * 1.1 * dtK * (fov / 75); dirty = true; }
     if (!dirty) return;
     dirty = false;
     camera.rotation.set(pitch, -yaw, 0, 'YXZ');

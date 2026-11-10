@@ -366,7 +366,7 @@
       "neighbors": [
         "Z2_Int4",
         "Z1_Int5",
-        "Z2_Int5.1",
+        "entryWaypoint_CTEBSED_2",
         "Z3_Int5"
       ]
     },
@@ -615,8 +615,8 @@
       ]
     },
     {
-      "id": "Z2_Int5.1",
-      "label": "Z2_Int5.1",
+      "id": "entryWaypoint_CTEBSED_2",
+      "label": "CTE (BSED) Entry 2",
       "latLng": {
         "lat": 14.969423511886504,
         "lng": 120.19749066573857
@@ -2050,6 +2050,7 @@
       "texturedModel": null,
       "rotation": 24.6,
       "entryWaypoint": "entryWaypoint_CTEBSED",
+      "extraEntryWaypoints": ["entryWaypoint_CTEBSED_2"],
       "modelScale": 1.5,
       "labelOffset": {
         "x": -6.1,

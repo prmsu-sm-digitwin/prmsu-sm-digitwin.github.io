@@ -599,6 +599,7 @@
     joy.id = null; joy.x = joy.y = 0; look.id = null;
     setTeleport(false);
     setUi(false);
+    keysDown = {};
     if (typeof window.onFirstPersonExit === 'function') window.onFirstPersonExit();
   }
 
@@ -627,6 +628,14 @@
     if (jobs.length) pumpBake(NavFP.active ? 3 : 6);
     if (NavFP.active) {
       var jx = joy.x, jy = joy.y;
+      var kbX = (keysDown.KeyD || keysDown.ArrowRight ? 1 : 0) - (keysDown.KeyA || keysDown.ArrowLeft ? 1 : 0);
+      var kbY = (keysDown.KeyW || keysDown.ArrowUp ? 1 : 0) - (keysDown.KeyS || keysDown.ArrowDown ? 1 : 0);
+      if (kbX || kbY) {
+        jx += kbX; jy += kbY;
+        var jm = Math.hypot(jx, jy);
+        if (jm > 1) { jx /= jm; jy /= jm; }
+      }
+      var runMul = (keysDown.ShiftLeft || keysDown.ShiftRight) ? 1.6 : 1;
       if (jx && look.id === null) {
         yaw -= jx * AUTO_TURN * dt;
         jx *= 0.6;
@@ -635,7 +644,7 @@
         var fx = -Math.sin(yaw), fz = -Math.cos(yaw);
         var rx =  Math.cos(yaw), rz = -Math.sin(yaw);
         var vx = fx * jy + rx * jx, vz = fz * jy + rz * jx;
-        var mx = vx * WALK_SPEED * dt, mz = vz * WALK_SPEED * dt;
+        var mx = vx * WALK_SPEED * runMul * dt, mz = vz * WALK_SPEED * runMul * dt;
         var steps = Math.max(1, Math.ceil(Math.hypot(mx, mz) / 0.25));
         for (var si = 0; si < steps; si++) {
           var c = clampToPath(pos.x + mx / steps, pos.z + mz / steps);
@@ -649,6 +658,7 @@
     layoutLabels();
   }
 
+  var keysDown = {};
   var wired = false;
   function wireUi() {
     if (wired) return; wired = true;
@@ -662,9 +672,25 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
-      if (tpOpen) setTeleport(false);
-      else if (searchOpen) setSearch(false);
+      if (tpOpen) { setTeleport(false); e.preventDefault(); }
+      else if (searchOpen) { setSearch(false); e.preventDefault(); }
     });
+    var MOVE_KEYS = { KeyW: 1, KeyA: 1, KeyS: 1, KeyD: 1, ArrowUp: 1, ArrowDown: 1, ArrowLeft: 1, ArrowRight: 1, ShiftLeft: 1, ShiftRight: 1 };
+    function typingTarget(t) {
+      if (!t || !t.tagName) return false;
+      var n = t.tagName;
+      return n === 'INPUT' || n === 'TEXTAREA' || n === 'SELECT' || t.isContentEditable;
+    }
+    document.addEventListener('keydown', function (e) {
+      if (!MOVE_KEYS[e.code] || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (!NavFP.active || tpOpen || searchOpen || typingTarget(e.target)) return;
+      var tg = document.getElementById('tg-root');
+      if (tg && tg.classList.contains('tg-open')) return;
+      keysDown[e.code] = true;
+      if (e.code.indexOf('Arrow') === 0) e.preventDefault();
+    });
+    document.addEventListener('keyup', function (e) { if (MOVE_KEYS[e.code]) keysDown[e.code] = false; });
+    window.addEventListener('blur', function () { keysDown = {}; });
     var sbtn = document.getElementById('fp-search-btn');
     if (sbtn) sbtn.addEventListener('click', function () { setSearch(!searchOpen); });
     var slist = document.getElementById('building-sheet-list');

@@ -75,6 +75,12 @@
   #update-toast button{font:600 13px 'DM Sans',sans-serif;border:0;cursor:pointer}
   #update-toast .ut-go{background:#F5C842;color:#0F3060;border-radius:999px;padding:7px 14px}
   #update-toast .ut-x{background:none;color:rgba(255,255,255,.6);font-size:18px;line-height:1;padding:4px 8px}
+  @media (min-width:900px){
+    #update-toast{bottom:calc(env(safe-area-inset-bottom,0px) + 18 * var(--u,1px));gap:calc(10 * var(--u,1px));padding:calc(7 * var(--u,1px)) calc(8 * var(--u,1px)) calc(7 * var(--u,1px)) calc(16 * var(--u,1px));font-size:calc(13 * var(--u,1px))}
+    #update-toast button{font-size:calc(13 * var(--u,1px))}
+    #update-toast .ut-go{padding:calc(7 * var(--u,1px)) calc(14 * var(--u,1px))}
+    #update-toast .ut-x{font-size:calc(18 * var(--u,1px));padding:calc(4 * var(--u,1px)) calc(8 * var(--u,1px))}
+  }
 </style>
  
 <div id="splash-screen" style="
@@ -250,6 +256,7 @@
             <span class="inner-top-logo-sub">NAVIGATION MAP</span>
           </div>
         </div>
+        <button class="help-btn help-btn-bar kb-help-btn" id="kb-btn-map" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts" onclick="showKbHelp()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.6" y="9.4" width="16.4" height="10.6" rx="1.8" stroke="#fff" stroke-width="1.6"/><path d="M5 13h.01M8.2 13h.01M11.4 13h.01M14.6 13h.01M5 16.6h.01M14.6 16.6h.01M7.6 16.6h4.6" stroke="#fff" stroke-width="1.9"/><path d="M14.4 6.4a3.1 3.1 0 1 1 4.8 2.6c-1.2.7-1.8 1.4-1.8 2.7" stroke="#F5C842" stroke-width="2.1"/><path d="M17.4 16.4h.01" stroke="#F5C842" stroke-width="2.6"/></svg></button>
         <button class="help-btn help-btn-bar" id="help-btn-map" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp('map')">?</button>
         <button class="inner-hamburger-btn" onclick="openSidebar('map')">
           <div class="ham-line"></div>

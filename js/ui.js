@@ -33,6 +33,7 @@ let pickStartFor     = null;
 
 function showBuildingInfo(bldg) {
   if (pickStartFor) cancelPickStart();
+  ['navigate-btn', 'start-from-btn'].forEach(function (id) { var b = document.getElementById(id); if (b) b.classList.remove('kb-active'); });
   selectedBuilding = bldg;
 
   setText('building-name',        bldg.name        || '—');
@@ -57,6 +58,7 @@ function showBuildingInfo(bldg) {
 
 function hideBuildingInfo() {
   selectedBuilding = null;
+  ['navigate-btn', 'start-from-btn'].forEach(function (id) { var b = document.getElementById(id); if (b) b.classList.remove('kb-active'); });
   hide('building-panel');
 }
 
@@ -93,6 +95,7 @@ function startFromSelected() {
   filterBuildingSheet('');
   if (typeof sheetEnsureOpen === 'function') sheetEnsureOpen();
   if (window.NavFP && NavFP.active && NavFP.openSearch) NavFP.openSearch();
+  if (input && document.documentElement.getAttribute('data-device') === 'desktop') setTimeout(function () { input.focus(); }, 80);
 }
 
 function cancelPickStart() {
@@ -105,6 +108,10 @@ function cancelPickStart() {
   if (window.NavFP && NavFP.closeSearch) NavFP.closeSearch();
 }
 window.onSheetCollapsed = function () {
+  var act = document.querySelectorAll('#building-sheet-list .kb-active');
+  for (var i = 0; i < act.length; i++) act[i].classList.remove('kb-active');
+  var sInp = document.getElementById('building-search-input');
+  if (sInp && document.activeElement === sInp) sInp.blur();
   if (pickStartFor) {
     pickStartFor = null;
     hide('pick-start-banner');

@@ -152,7 +152,7 @@
       if (panel.contains(t) || btn.contains(t)) return;
       setOpen(false);
     });
-    document.addEventListener('keydown', function (e) { if (isOpen && e.key === 'Escape') setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (isOpen && e.key === 'Escape') { setOpen(false); e.preventDefault(); } });
     document.addEventListener('navmapchar', function () { if (isOpen) setOpen(false); });
   }
 
