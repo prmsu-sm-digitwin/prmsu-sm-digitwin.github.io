@@ -1880,14 +1880,6 @@
   transition: opacity 0.25s ease;
 }
 .tour-fade.on { opacity: 0.3; }
-.tour-hint {
-  position: absolute; z-index: 2; left: 50%; top: 30%;
-  transform: translate(-50%, -50%);
-  padding: 10px 16px; border-radius: 10px;
-  background: rgba(0,0,0,0.55); color: #fff;
-  font-family: 'DM Sans', sans-serif; font-size: 12px; text-align: center;
-  pointer-events: none; transition: opacity 0.4s ease;
-}
 .tour-toast {
   position: absolute; z-index: 5; left: 50%; bottom: 24px;
   transform: translate(-50%, 8px); opacity: 0;

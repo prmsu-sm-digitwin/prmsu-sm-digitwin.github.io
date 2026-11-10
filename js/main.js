@@ -593,7 +593,7 @@ function navigateTo(targetBuildingId, fromBuildingId) {
 
   let originWpId = 'main_gate';
   let fromPos = currentGPSPosition;
-  let fromBldg = null, walk = false;
+  let fromBldg = null, walk = false, fpOrigin = false;
   if (fromBuildingId) {
     const fb = campusData.buildings.find(b => b.id === fromBuildingId);
     if (fb && fb.entryWaypoint && waypointMap[fb.entryWaypoint] && connectedToMainNetwork().has(fb.entryWaypoint)) {
@@ -641,7 +641,7 @@ function navigateTo(targetBuildingId, fromBuildingId) {
         }
         if (!best || len < best.len) best = { id: c.id, len: len };
       });
-      if (best) { originWpId = best.id; fromPos = pos; }
+      if (best) { originWpId = best.id; fromPos = pos; fpOrigin = true; }
     }
   } else if (!fromBldg && currentGPSPosition) {
     let bestId = null, bestDist = Infinity;
@@ -665,6 +665,9 @@ function navigateTo(targetBuildingId, fromBuildingId) {
   if (!pathIds || pathIds.length === 0) { if (typeof showGPSToast === 'function') showGPSToast('No route to this place yet.'); return; }
 
   drawPath(pathIds, fromPos);
+  fpNavTarget = fpOrigin ? targetBuildingId : null;
+  fpRouteStart = fpOrigin ? fromPos : null;
+  fpOffCount = 0;
   youHereOn = false;
   if (walk && pathIds.length > 1) startWalk(pathIds);
 
@@ -673,6 +676,32 @@ function navigateTo(targetBuildingId, fromBuildingId) {
 
 let routeLineGroup = null, routeArrowGroup = null;
 let activeRouteIds = null;
+
+// First person: a route that was started from the player's position follows the player.
+// If the player walks off the route (more than 14 units away from it), it is drawn again from where they stand.
+let fpNavTarget = null, fpRouteStart = null, fpWatchT = 0, fpOffCount = 0;
+window.fpRouteWatch = function (x, z, dt) {
+  if (!fpNavTarget || !activeRouteIds || !(window.NavFP && NavFP.active)) { fpOffCount = 0; return; }
+  fpWatchT += dt;
+  if (fpWatchT < 0.5) return;
+  fpWatchT = 0;
+  const pts = [];
+  if (fpRouteStart) pts.push(fpRouteStart);
+  activeRouteIds.forEach(id => { const w = waypointMap[id]; if (w) pts.push(w.position); });
+  let best = Infinity;
+  if (pts.length === 1) best = Math.hypot(x - pts[0].x, z - pts[0].z);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], dx = b.x - a.x, dz = b.z - a.z, l2 = dx * dx + dz * dz;
+    let t = l2 > 0 ? ((x - a.x) * dx + (z - a.z) * dz) / l2 : 0;
+    t = Math.max(0, Math.min(1, t));
+    best = Math.min(best, Math.hypot(x - (a.x + dx * t), z - (a.z + dz * t)));
+  }
+  if (best > 14) {
+    if (++fpOffCount >= 2) { fpOffCount = 0; navigateTo(fpNavTarget); }
+  } else {
+    fpOffCount = 0;
+  }
+};
 
 function setRouteStyle(firstPerson) {
   if (routeLineGroup)  routeLineGroup.visible  = !firstPerson;
@@ -783,6 +812,7 @@ function clearPath() {
   });
   pathLine = null;
   routeLineGroup = null; routeArrowGroup = null; activeRouteIds = null;
+  fpNavTarget = null; fpRouteStart = null; fpOffCount = 0;
   resetVirtualCharacter();
 
   if (typeof hidePathInfo === 'function') hidePathInfo();

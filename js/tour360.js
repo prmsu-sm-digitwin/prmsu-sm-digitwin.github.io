@@ -55,7 +55,6 @@
       '<canvas id="tour-canvas"></canvas>' +
       '<div class="tour-loading" id="tour-loading">Loading 360° tour…</div>' +
       '<div class="tour-fade" id="tour-fade"></div>' +
-      '<div class="tour-hint" id="tour-hint">Drag to look around · tap or hold the arrows to walk</div>' +
       '<div class="tour-toast" id="tour-toast"></div>' +
       '<div class="tour-topleft">' +
         '<div class="tour-hud" id="tour-hud" title="Tap for details"></div>' +

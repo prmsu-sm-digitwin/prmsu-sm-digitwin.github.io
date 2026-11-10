@@ -654,6 +654,7 @@
         }
       }
       applyCamera();
+      if (typeof window.fpRouteWatch === 'function') window.fpRouteWatch(pos.x, pos.z, dt);
     }
     layoutLabels();
   }

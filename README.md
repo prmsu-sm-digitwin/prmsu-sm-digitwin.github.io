@@ -16,7 +16,7 @@ Photogrammetry was done with Agisoft Metashape, but image alignment was too poor
 - A* pathfinding over 101 waypoints and 140 two-way paths. Pick a building and press Navigate to get an orange route with direction arrows.
 - Search by building name, acronym or full college name (for example CCIT or College of Communication and Information Technology).
 - GPS blue dot that can be shown as a character (Princess, Jonathan or Shane).
-- First-person mode with an on-screen joystick (a short guide shows the first time you enter it). In this mode the character button turns into a pin button that opens a list of buildings; picking one jumps you to a free spot on the nearest path, facing that building.
+- First-person mode with an on-screen joystick (a short guide shows the first time you enter it). Routes started in first person begin where you stand and are drawn again if you walk away from them. In this mode the character button turns into a pin button that opens a list of buildings; picking one jumps you to a free spot on the nearest path, facing that building.
 - Drag to pan, pinch or scroll to zoom, right-click drag, Shift + drag or two fingers to rotate.
 - Legend viewer.
 
