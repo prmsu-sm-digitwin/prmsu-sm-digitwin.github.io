@@ -68,7 +68,7 @@ const DIRECTORY_DATA = [
         text: 'Covered court beside the Admin Building, used for campus activities.' },
       { name: 'Gabaldon Court', photo: 'images/directory/GABALDON_COURT.jpg',
         text: 'Covered court used for campus activities.' },
-      { name: 'Multi-purpose Quad', photo: 'images/directory/QUADRANGLE_COURT.jpg',
+      { name: 'Multi-purpose Court', photo: 'images/directory/QUADRANGLE_COURT.jpg',
         text: 'Open court used for sports and CHM programs.' },
       { name: 'Oval', photo: 'images/directory/OVAL.jpg',
         text: 'The campus oval, used for sports and other activities.' }

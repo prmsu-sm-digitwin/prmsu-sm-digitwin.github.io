@@ -158,8 +158,8 @@
       },
       "neighbors": [
         "startWaypoint_entryStudentCenter",
-        "Z1_Int5",
-        "Z2_Int4"
+        "Z2_Int4",
+        "entryWaypoint_GabaldonCourt"
       ]
     },
     {
@@ -174,7 +174,6 @@
         "z": -71.7
       },
       "neighbors": [
-        "Z1_Int4",
         "Z1_Int6",
         "Z2_Int5",
         "entryWaypoint_GabaldonCourt"
@@ -298,7 +297,6 @@
       },
       "neighbors": [
         "Z1_Int2",
-        "Z2_Int2",
         "backWaypoint_entryCanteen",
         "Z2_Int9"
       ]
@@ -315,9 +313,9 @@
         "z": -54.8
       },
       "neighbors": [
-        "Z2_Int1",
         "Z3_Int3",
-        "Z1_Int3"
+        "Z1_Int3",
+        "Z2_Int9"
       ]
     },
     {
@@ -385,7 +383,6 @@
         "z": -125.9
       },
       "neighbors": [
-        "entryWaypoint_LHSFacultyCCIT",
         "Z1_Int9",
         "Z3_Int5",
         "startWaypoint_entryLHSBuilding"
@@ -403,10 +400,10 @@
         "z": -152.3
       },
       "neighbors": [
-        "Z2_Int6",
         "Z2_Int7",
         "Z1_Int10",
-        "startWaypoint_entryLHSFacultyCCIT"
+        "startWaypoint_entryLHSFacultyCCIT",
+        "startWaypoint_entryLHSBuilding"
       ]
     },
     {
@@ -422,7 +419,6 @@
       },
       "neighbors": [
         "entryWaypoint_LHSFacultyCCIT",
-        "Z2_Int8",
         "Z1_Int11",
         "Z3_Int6",
         "startWaypoint_entryCCITMain"
@@ -440,10 +436,10 @@
         "z": -193.7
       },
       "neighbors": [
-        "Z2_Int7",
         "Z1_Int12",
         "entryWaypoint_AdminBuilding",
-        "Z3_Z4_Z2Intersection_4Forks"
+        "Z3_Z4_Z2Intersection_4Forks",
+        "startWaypoint_entryCCITMain"
       ]
     },
     {
@@ -555,7 +551,8 @@
       "neighbors": [
         "entryWaypoint_CHM1",
         "entryWaypoint_MultiPurposeQuad",
-        "Z2_Int1"
+        "Z2_Int1",
+        "Z2_Int2"
       ]
     },
     {
@@ -575,7 +572,7 @@
     },
     {
       "id": "entryWaypoint_MultiPurposeQuad",
-      "label": "Multi-purpose Quad Entry",
+      "label": "Multi-purpose Court Entry",
       "latLng": {
         "lat": 14.968828447402387,
         "lng": 120.19623837818877
@@ -766,10 +763,7 @@
       "neighbors": [
         "processing_startentry",
         "Z2_Int7",
-        "startWaypoint_entryMotorpoolGarage",
-        "startWaypoint_entryOrganicMangoCenter",
-        "Z3_Z4_Z2Intersection_4Forks",
-        "startWaypoint_entryResearchAndDevelopmentCenter"
+        "startWaypoint_entryOrganicMangoCenter"
       ]
     },
     {
@@ -800,7 +794,8 @@
       },
       "neighbors": [
         "Z2_Int7",
-        "entryWaypoint_CCITMain"
+        "entryWaypoint_CCITMain",
+        "Z2_Int8"
       ]
     },
     {
@@ -876,9 +871,6 @@
       "neighbors": [
         "Z3_Int9",
         "startWaypoint_entryRegionalMangoCenter",
-        "Z3_Int6",
-        "startWaypoint_entryMotorpoolGarage",
-        "startWaypoint_entryOrganicMangoCenter",
         "Z4_Int4",
         "Z2_Int8",
         "startWaypoint_entryResearchAndDevelopmentCenter"
@@ -929,8 +921,8 @@
       },
       "neighbors": [
         "entryWaypoint_MotorpoolGarage",
-        "Z3_Int6",
-        "Z3_Z4_Z2Intersection_4Forks"
+        "startWaypoint_entryOrganicMangoCenter",
+        "startWaypoint_entryResearchAndDevelopmentCenter"
       ]
     },
     {
@@ -947,7 +939,7 @@
       "neighbors": [
         "entryWaypoint_OrganicMangoCenter",
         "Z3_Int6",
-        "Z3_Z4_Z2Intersection_4Forks"
+        "startWaypoint_entryMotorpoolGarage"
       ]
     },
     {
@@ -963,7 +955,7 @@
       },
       "neighbors": [
         "entryWaypoint_ResearchAndDevelopmentCenter",
-        "Z3_Int6",
+        "startWaypoint_entryMotorpoolGarage",
         "Z3_Z4_Z2Intersection_4Forks"
       ]
     },
@@ -1122,7 +1114,8 @@
       },
       "neighbors": [
         "Z1_Int5",
-        "entryWaypoint_CTEBEED"
+        "entryWaypoint_CTEBEED",
+        "Z1_Int4"
       ]
     },
     {
@@ -1680,7 +1673,8 @@
       "neighbors": [
         "LHS_BackEntry2",
         "LHS_StartEntry2",
-        "Z2_Int6"
+        "Z2_Int6",
+        "entryWaypoint_LHSFacultyCCIT"
       ]
     },
     {
@@ -1767,7 +1761,7 @@
   "buildings": [
     {
       "id": "multipurpose",
-      "name": "Multi-purpose Quad",
+      "name": "Multi-purpose Court",
       "category": "court",
       "description": "",
       "color": "#797c80",
@@ -2859,7 +2853,8 @@
     },
     {
       "id": "ltda",
-      "name": "LTDA",
+      "name": "Lahar-laden Technology Demonstration Area (LTDA)",
+      "labelText": "LTDA",
       "category": "academic",
       "description": "The building is used as the College of Agriculture (CAg) horticulture room.",
       "color": "#3d9139",

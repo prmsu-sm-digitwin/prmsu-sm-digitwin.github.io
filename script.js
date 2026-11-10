@@ -256,6 +256,7 @@ function goTo(pageId, _fromPopState) {
   if (!_fromPopState) {
     window.history.pushState({ page: pageId, sidebar: false, vmq: false }, '', '#' + pageId);
   }
+  if (window.onPageEnter) { try { window.onPageEnter(pageId); } catch (e) {} }
 }
 
 function goBack() {

@@ -64,11 +64,13 @@
       '</div>' +
       '<div class="tour-places" id="tour-places"><div class="tour-places-title">Go to</div><div class="tour-places-list" id="tour-places-list"></div></div>' +
       '<button class="tour-back" id="tour-back" type="button" aria-label="Back to home" title="Back">' +
-      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>';
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+      '<button class="tour-help-btn" id="help-btn-walkthrough" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp(\'walkthrough\')">?</button>';
 
     canvas   = document.getElementById('tour-canvas');
     btnBack  = document.getElementById('tour-back');
     document.getElementById('tour-hud').addEventListener('click', function () { hudDetail = !hudDetail; updateHud(); });
+    if (!hudEnabled()) document.getElementById('tour-hud').style.display = 'none';
     document.getElementById('tour-places-btn').addEventListener('click', function (e) { e.stopPropagation(); togglePlaces(); });
     fadeEl   = document.getElementById('tour-fade');
     toastEl  = document.getElementById('tour-toast');
@@ -505,9 +507,21 @@
   function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, (p === idx - 1 || (stops[p].next != null && idToIdx[stops[p].next] === idx)) ? 'back' : 'jump'); }
 
   var hudDetail = false;
+  /* The "Stop N / total" counter is a developer tool (it shows which stop has a wrong arrow).
+     It is hidden for normal users. Open the app once with ?hud=1 to show it on that device,
+     and ?hud=0 to hide it again. */
+  function hudEnabled() {
+    try {
+      var q = /[?&]hud=([01])/.exec(window.location.search);
+      if (q) { if (q[1] === '1') localStorage.setItem('prmsuDevHud', '1'); else localStorage.removeItem('prmsuDevHud'); }
+      return localStorage.getItem('prmsuDevHud') === '1';
+    } catch (e) { return false; }
+  }
   function updateHud() {
     var el = document.getElementById('tour-hud');
     if (!el || !stops.length) return;
+    if (!hudEnabled()) { el.style.display = 'none'; return; }
+    el.style.display = '';
     var s = stops[idx];
     var line = 'Stop ' + (idx + 1) + ' / ' + stops.length;
     if (hudDetail) {

@@ -25,6 +25,11 @@
       return { stats: bakeStats, pending: jobs.length, owners: owners.slice(), solidAt: solidAt, blockedRing: blockedRing,
                solidCells: (function () { var n = 0; if (grid) for (var i = 0; i < grid.length; i++) if (grid[i]) n++; return n; })() };
     },
+    toggleTeleport: function () { toggleTeleport(); },
+    closeTeleport: function () { setTeleport(false); },
+    openSearch: function () { setSearch(true); },
+    closeSearch: function () { setSearch(false); },
+    teleportTo: function (id) { return teleportTo(id); },
     _state: function () { return { x: pos.x, z: pos.z, yaw: yaw, pitch: pitch }; },
     _set: function (x, z, y, p) { pos.x = x; pos.z = z; yaw = y; pitch = p; }
   };
@@ -440,6 +445,111 @@
 
   function toggle() { if (NavFP.active) exit(); else enter(); }
 
+  /* ---------- jump to a building (first-person) ---------- */
+  var TP_ORDER = { academic: 0, facility: 1, court: 2 };
+  var tpBuilt = false, tpOpen = false;
+
+  function tpBuildings() {
+    var list = ((typeof campusData !== 'undefined' && campusData && campusData.buildings) || []).filter(function (b) {
+      return b.category !== 'housing' && b.category !== 'place' && b.entryWaypoint && waypointMap[b.entryWaypoint];
+    });
+    list.sort(function (a, b) {
+      var oa = TP_ORDER[a.category], ob = TP_ORDER[b.category];
+      return (oa === undefined ? 9 : oa) - (ob === undefined ? 9 : ob) || String(a.name).localeCompare(String(b.name));
+    });
+    return list;
+  }
+  function buildTpList() {
+    var host = document.getElementById('fp-tp-list');
+    if (!host || tpBuilt) return;
+    tpBuilt = true;
+    host.innerHTML = '';
+    tpBuildings().forEach(function (b) {
+      var it = document.createElement('button');
+      it.type = 'button'; it.className = 'fp-tp-item';
+      var dot = document.createElement('span');
+      dot.className = 'fp-tp-dot'; dot.style.background = CAT_COLOR[b.category] || '#6d7480';
+      var label = document.createElement('span');
+      label.textContent = b.name;
+      it.appendChild(dot); it.appendChild(label);
+      it.addEventListener('click', function (e) { e.stopPropagation(); teleportTo(b.id); setTeleport(false); });
+      host.appendChild(it);
+    });
+  }
+  function setTeleport(on) {
+    tpOpen = !!on && NavFP.active;
+    var panel = document.getElementById('fp-tp-panel');
+    var btn = document.getElementById('char-btn');
+    if (panel) {
+      if (tpOpen) { buildTpList(); var l = document.getElementById('fp-tp-list'); if (l) l.scrollTop = 0; }
+      panel.classList.toggle('hidden', !tpOpen);
+    }
+    if (btn) btn.classList.toggle('char-active', tpOpen);
+  }
+  function toggleTeleport() { setTeleport(!tpOpen); }
+
+  // Is the target building the first thing seen when looking from (px,pz) toward its centre?
+  function seesBuilding(px, pz, cx, cz, owner) {
+    var L = Math.hypot(cx - px, cz - pz), n = Math.max(1, Math.ceil(L / CELL));
+    for (var i = 1; i <= n; i++) {
+      var v = solidAt(px + (cx - px) * i / n, pz + (cz - pz) * i / n);
+      if (v) return v === owner;
+    }
+    return true;
+  }
+  // A free spot ON a path, about 22 units back from the building's footprint, close to its entrance and
+  // with a clear view of it. Only path points that are not inside any model are used, so the camera
+  // never ends up inside a building.
+  function tpSpot(b) {
+    if (jobs.length) pumpBake(2000);
+    var cx = b.position.x, cz = b.position.z, sz = b.size || {};
+    var hw = (+sz.width || 10) / 2, hd = (+sz.depth || 10) / 2, want = 22;
+    var th = (+b.rotation || 0) * Math.PI / 180, ct = Math.cos(th), st = Math.sin(th);
+    // distance from a point to the building's footprint (a rotated rectangle), not to its centre
+    function edgeDist(px, pz) {
+      var ddx = px - cx, ddz = pz - cz;
+      var lx = ddx * ct - ddz * st, lz = ddx * st + ddz * ct;
+      return Math.hypot(Math.max(Math.abs(lx) - hw, 0), Math.max(Math.abs(lz) - hd, 0));
+    }
+    var ent = b.entryWaypoint && waypointMap[b.entryWaypoint] ? waypointMap[b.entryWaypoint].position : null;
+    var oi = owners.indexOf(b.id), own = oi < 0 ? -1 : (oi % 250) + 1;
+    var best = null;
+    for (var i = 0; i < segs.length; i++) {
+      var s = segs[i], dx = s[2] - s[0], dz = s[3] - s[1], L = Math.hypot(dx, dz);
+      if (L < 0.1) continue;
+      var n = Math.max(1, Math.ceil(L / CELL));
+      for (var j = 0; j <= n; j++) {
+        var t = j / n, px = s[0] + dx * t, pz = s[1] + dz * t;
+        var d = edgeDist(px, pz);
+        if (d > want + 40) continue;
+        if (blockedRing(px, pz)) continue;
+        var score = Math.abs(d - want) + (ent ? 0.2 * Math.hypot(px - ent.x, pz - ent.z) : 0) + (seesBuilding(px, pz, cx, cz, own) ? 0 : 40);
+        if (!best || score < best.score) best = { x: px, z: pz, score: score };
+      }
+    }
+    return best;
+  }
+  function teleportTo(id) {
+    if (!NavFP.active) return false;
+    var list = (campusData && campusData.buildings) || [], b = null;
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) { b = list[i]; break; }
+    if (!b) return false;
+    var spot = tpSpot(b);
+    if (!spot) {
+      var e = b.entryWaypoint && waypointMap[b.entryWaypoint] ? waypointMap[b.entryWaypoint].position : b.position;
+      spot = freeSpotOnPath(e.x, e.z);
+    }
+    if (!spot) return false;
+    pos.x = spot.x; pos.z = spot.z;
+    yaw = yawFromDir(b.position.x - spot.x, b.position.z - spot.z);
+    pitch = -0.04;
+    joy.id = null; joy.x = joy.y = 0; look.id = null;
+    var nub = document.getElementById('fp-joy-nub'); if (nub) nub.style.transform = 'translate(0,0)';
+    hideHint();
+    applyCamera();
+    return true;
+  }
+
   function enter() {
     if (typeof campusData === 'undefined' || !campusData || !segs.length) return;
     saved = {
@@ -448,6 +558,7 @@
       camOffset: { x: camOffset.x, y: camOffset.y, z: camOffset.z },
       bg: scene.background
     };
+    if (typeof pickStartFor !== 'undefined' && pickStartFor && typeof cancelPickStart === 'function') cancelPickStart();
     var sx, sz, face = null;
     if (activeRouteIds && activeRouteIds.length > 1 && waypointMap[activeRouteIds[0]]) {
       var a = waypointMap[activeRouteIds[0]].position, b = waypointMap[activeRouteIds[1]].position;
@@ -481,6 +592,7 @@
     if (typeof setRouteStyle === 'function') setRouteStyle(true);
     setUi(true);
     applyCamera();
+    if (typeof window.onFirstPersonEnter === 'function') window.onFirstPersonEnter();
   }
 
   function exit() {
@@ -495,7 +607,9 @@
     if (typeof gpsMarker !== 'undefined' && gpsMarker && currentGPSPosition) gpsMarker.visible = true;
     if (typeof setRouteStyle === 'function') setRouteStyle(false);
     joy.id = null; joy.x = joy.y = 0; look.id = null;
+    setTeleport(false);
     setUi(false);
+    if (typeof window.onFirstPersonExit === 'function') window.onFirstPersonExit();
   }
 
   function applyCamera() {
@@ -549,11 +663,34 @@
     if (wired) return; wired = true;
     var btn = document.getElementById('fp-btn');
     if (btn) btn.addEventListener('click', toggle);
+    document.addEventListener('pointerdown', function (e) {
+      if (!tpOpen) return;
+      var panel = document.getElementById('fp-tp-panel'), cb = document.getElementById('char-btn');
+      if ((panel && panel.contains(e.target)) || (cb && cb.contains(e.target))) return;
+      setTeleport(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (tpOpen) setTeleport(false);
+      else if (searchOpen) setSearch(false);
+    });
+    var sbtn = document.getElementById('fp-search-btn');
+    if (sbtn) sbtn.addEventListener('click', function () { setSearch(!searchOpen); });
+    var slist = document.getElementById('building-sheet-list');
+    if (slist) slist.addEventListener('click', function (e) {
+      if (searchOpen && e.target.closest && e.target.closest('.building-item')) setTimeout(function () { setSearch(false); }, 0);
+    });
+    document.addEventListener('pointerdown', function (e) {
+      if (!searchOpen) return;
+      var sheet = document.getElementById('map-sheet'), sb = document.getElementById('fp-search-btn');
+      if ((sheet && sheet.contains(e.target)) || (sb && sb.contains(e.target))) return;
+      setSearch(false);
+    });
 
     var base = document.getElementById('fp-joy');
     var nub  = document.getElementById('fp-joy-nub');
     if (!base || !nub) return;
-    var R = 46;
+    var R = 40;
     function setVec(e) {
       var r = base.getBoundingClientRect();
       var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -578,11 +715,36 @@
     base.addEventListener('pointercancel', end);
   }
 
+  var searchOpen = false;
+  function setSearch(on) {
+    on = !!on && NavFP.active;
+    if (on === searchOpen) return;
+    searchOpen = on;
+    var vp = document.querySelector('#page-map .map-viewport');
+    if (vp) vp.classList.toggle('fp-search-open', on);
+    var sb = document.getElementById('fp-search-btn');
+    if (sb) sb.classList.toggle('active', on);
+    var inp = document.getElementById('building-search-input');
+    if (on) {
+      setTeleport(false);
+      if (typeof sheetEnsureOpen === 'function') sheetEnsureOpen();
+      if (inp) setTimeout(function () { if (searchOpen) inp.focus(); }, 60);
+    } else {
+      if (inp) inp.blur();
+      if (typeof sheetCollapse === 'function') sheetCollapse();
+    }
+  }
+
   function setUi(on) {
     var vp = document.querySelector('#page-map .map-viewport');
     if (vp) vp.classList.toggle('fp-on', on);
     var btn = document.getElementById('fp-btn');
     if (btn) btn.classList.toggle('fp-active', on);
+    var cbtn = document.getElementById('char-btn');
+    if (cbtn) {
+      cbtn.title = on ? 'Jump to a building' : 'Choose character';
+      cbtn.setAttribute('aria-label', on ? 'Jump to a building' : 'Choose character');
+    }
     var hint = document.getElementById('fp-hint');
     if (hint) hint.classList.toggle('fp-hint-hidden', !on);
   }

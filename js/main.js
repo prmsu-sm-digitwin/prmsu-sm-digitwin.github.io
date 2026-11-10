@@ -603,7 +603,47 @@ function navigateTo(targetBuildingId, fromBuildingId) {
       walk = !currentGPSPosition;
     }
   }
-  if (!fromBldg && currentGPSPosition) {
+  if (!fromBldg && window.NavFP && NavFP.active && NavFP._state) {
+    // first person: start the route where the player is standing
+    const st = NavFP._state();
+    const tb = campusData.buildings.find(b => b.id === targetBuildingId);
+    if (tb && tb.entryWaypoint && typeof findPath === 'function') {
+      const pos = { x: st.x, z: st.z };
+      const linked = connectedToMainNetwork();
+      // find the path segment the player is standing on; the route starts at one of its two ends,
+      // so the arrows always run along that path and never cut across the grass
+      let edge = null;
+      Object.values(waypointMap).forEach(w => {
+        if (!linked.has(w.id)) return;
+        (w.neighbors || []).forEach(nid => {
+          const nb = waypointMap[nid];
+          if (!nb || !linked.has(nid)) return;
+          const ax = w.position.x, az = w.position.z, dx = nb.position.x - ax, dz = nb.position.z - az;
+          const l2 = dx * dx + dz * dz;
+          let t = l2 > 0 ? ((pos.x - ax) * dx + (pos.z - az) * dz) / l2 : 0;
+          t = Math.max(0, Math.min(1, t));
+          const d = Math.hypot(pos.x - (ax + dx * t), pos.z - (az + dz * t));
+          if (!edge || d < edge.d) edge = { d: d, a: w.id, b: nid };
+        });
+      });
+      const cands = edge ? [edge.a, edge.b].map(id => {
+        const w = waypointMap[id];
+        return { id: id, d: Math.hypot(w.position.x - pos.x, w.position.z - pos.z) };
+      }) : [];
+      let best = null;
+      cands.forEach(c => {
+        const ids = findPath(waypointMap, c.id, tb.entryWaypoint);
+        if (!ids || !ids.length) return;
+        let len = c.d;
+        for (let i = 0; i < ids.length - 1; i++) {
+          const a = waypointMap[ids[i]].position, b = waypointMap[ids[i + 1]].position;
+          len += Math.hypot(b.x - a.x, b.z - a.z);
+        }
+        if (!best || len < best.len) best = { id: c.id, len: len };
+      });
+      if (best) { originWpId = best.id; fromPos = pos; }
+    }
+  } else if (!fromBldg && currentGPSPosition) {
     let bestId = null, bestDist = Infinity;
     const linked = connectedToMainNetwork();
     Object.values(waypointMap).forEach(wp => {
@@ -660,9 +700,9 @@ function addArrowsAlong(group, ax, az, bx, bz, startOffset, spacing, arrowMat, h
     const t = d / len;
     const x = ax + dx * t, z = az + dz * t;
     const halo = new THREE.Mesh(ARROW_GEO, haloMat);
-    halo.position.set(x, 0.5, z); halo.rotation.y = ang; halo.scale.set(0.62, 1, 0.62);
+    halo.position.set(x, 0.56, z); halo.rotation.y = ang; halo.scale.set(1.12, 1, 1.12);
     const arrow = new THREE.Mesh(ARROW_GEO, arrowMat);
-    arrow.position.set(x, 0.55, z); arrow.rotation.y = ang; arrow.scale.set(0.46, 1, 0.46);
+    arrow.position.set(x, 0.62, z); arrow.rotation.y = ang; arrow.scale.set(0.84, 1, 0.84);
     group.add(halo); group.add(arrow);
     d += spacing;
   }

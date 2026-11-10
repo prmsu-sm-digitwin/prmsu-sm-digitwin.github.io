@@ -37,11 +37,39 @@
   }
   window.fitPortrait = fitPortrait;
 
+  /* About page portraits are square head-and-shoulders art (sprites/about_portraits).
+     Find the drawing's edges and zoom the image so the head and shoulders fill the round frame. */
+  function fitSquareAvatar(img) {
+    try {
+      var w = img.naturalWidth, h = img.naturalHeight;
+      if (!w || w !== h) return false;
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      var cx = c.getContext('2d', { willReadFrequently: true });
+      cx.drawImage(img, 0, 0);
+      var d = cx.getImageData(0, 0, w, h).data, x0 = w, x1 = -1, y0 = h, x, y;
+      for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+        if (d[(y * w + x) * 4 + 3] > 40) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; }
+      }
+      if (x1 < 0) return false;
+      var side = Math.min(w, (x1 - x0 + 1) * 1.22);
+      var left = Math.max(0, Math.min(w - side, (x0 + x1) / 2 - side / 2));
+      var top = Math.max(0, Math.min(h - side, y0 - side * 0.1));
+      img.classList.add('team-avatar-fit');
+      img.style.width = (w / side * 100).toFixed(2) + '%';
+      img.style.height = (h / side * 100).toFixed(2) + '%';
+      img.style.left = (-left / side * 100).toFixed(2) + '%';
+      img.style.top = (-top / side * 100).toFixed(2) + '%';
+      return true;
+    } catch (e) { return false; }
+  }
+
   function fitTeamAvatars() {
     var imgs = document.querySelectorAll('.team-avatar img');
     Array.prototype.forEach.call(imgs, function (im) {
-      if (im.complete && im.naturalWidth) fitPortrait(im);
-      else im.addEventListener('load', function () { fitPortrait(im); }, { once: true });
+      function go() { if (!fitSquareAvatar(im)) fitPortrait(im); }
+      if (im.complete && im.naturalWidth) go();
+      else im.addEventListener('load', go, { once: true });
     });
   }
   fitTeamAvatars();
@@ -118,7 +146,12 @@
     qEl = $('char-q'); nameEl = $('char-name'); subEl = $('char-sub');
     if (!btn || !panel || !prevBtn || !nextBtn || !selBtn || !imgEl || !canvasEl || !qEl || !nameEl || !subEl) return;
 
-    btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(!isOpen); });
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      // In first-person view the character cannot be seen, so this button jumps to a building instead.
+      if (window.NavFP && NavFP.active) { if (isOpen) setOpen(false); NavFP.toggleTeleport(); return; }
+      setOpen(!isOpen);
+    });
     prevBtn.addEventListener('click', function (e) { e.stopPropagation(); step(-1); });
     nextBtn.addEventListener('click', function (e) { e.stopPropagation(); step(1); });
     selBtn.addEventListener('click', function (e) { e.stopPropagation(); choose(); });

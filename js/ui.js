@@ -93,6 +93,8 @@ function startFromSelected() {
   if (input) { input.value = ''; input.placeholder = 'Search a starting point…'; }
   filterBuildingSheet('');
   if (typeof sheetEnsureOpen === 'function') sheetEnsureOpen();
+  // first person: the search list is hidden until its button is used, so open it here
+  if (window.NavFP && NavFP.active && NavFP.openSearch) NavFP.openSearch();
 }
 
 function cancelPickStart() {
@@ -102,6 +104,7 @@ function cancelPickStart() {
   if (input) { input.placeholder = 'Search campus buildings…'; }
   filterBuildingSheet(input ? input.value : '');
   if (typeof sheetCollapse === 'function') sheetCollapse();
+  if (window.NavFP && NavFP.closeSearch) NavFP.closeSearch();
 }
 window.onSheetCollapsed = function () {
   if (pickStartFor) {

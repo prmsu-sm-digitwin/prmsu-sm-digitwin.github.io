@@ -92,6 +92,7 @@
       <div class="main-hero">
         <img src="images/university-gate.jpg" alt="University Gate" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.45;">
         <div class="hero-gate-text"></div>
+        <button class="help-btn help-btn-float" id="help-btn-main" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp('main')">?</button>
         <div class="hero-badge">
           <span class="hero-badge-label">PRMSU SM</span>
           <div class="hero-badge-title">Digital<br><span>Twin</span></div>
@@ -181,6 +182,7 @@
             <span class="inner-top-logo-sub">NAVIGATION MAP</span>
           </div>
         </div>
+        <button class="help-btn help-btn-bar" id="help-btn-map" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp('map')">?</button>
         <button class="inner-hamburger-btn" onclick="openSidebar('map')">
           <div class="ham-line"></div>
           <div class="ham-line"></div>
@@ -218,8 +220,12 @@
             </svg>
           </button>
 
-          
-          
+          <button id="fp-search-btn" type="button" title="Search for a building" aria-label="Search for a building">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+
           <div class="map-tools" id="map-tools">
             <button id="fp-btn" title="First-person view" aria-label="First-person view">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -236,11 +242,20 @@
               </svg>
             </button>
             <button id="char-btn" type="button" title="Choose character" aria-label="Choose character" aria-expanded="false">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="ico-char" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="7" r="3.2"/>
                 <path d="M12 11v5M7 13.5l5-2.5 5 2.5M9 21l3-5 3 5"/>
               </svg>
+              <svg class="ico-tp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s7-5.6 7-12a7 7 0 0 0-14 0c0 6.4 7 12 7 12z"/>
+                <circle cx="12" cy="10" r="2.6"/>
+              </svg>
             </button>
+          </div>
+
+          <div id="fp-tp-panel" class="fp-tp-panel hidden" role="dialog" aria-label="Jump to a building">
+            <div class="fp-tp-head">Jump to a building</div>
+            <div class="fp-tp-list" id="fp-tp-list"></div>
           </div>
 
           <div id="char-panel" class="char-panel hidden" role="dialog" aria-label="Choose your character">
@@ -261,7 +276,6 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
             </button>
           </div>
-          <div id="fp-hint" class="fp-hint fp-hint-hidden">Joystick to walk · drag to look around</div>
           <div id="fp-joy" class="fp-joy"><div id="fp-joy-nub" class="fp-joy-nub"></div></div>
 
         </div>
@@ -385,6 +399,7 @@
             <span class="inner-top-logo-sub">CAMPUS DIRECTORY</span>
           </div>
         </div>
+        <button class="help-btn help-btn-bar" id="help-btn-directory" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp('directory')">?</button>
         <button class="inner-hamburger-btn" onclick="openSidebar('directory')">
           <div class="ham-line"></div>
           <div class="ham-line"></div>
@@ -415,6 +430,7 @@
             <span class="inner-top-logo-sub">DEVELOPMENT ZONES</span>
           </div>
         </div>
+        <button class="help-btn help-btn-bar" id="help-btn-devzones" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp('devzones')">?</button>
         <button class="inner-hamburger-btn" onclick="openSidebar('devzones')">
           <div class="ham-line"></div>
           <div class="ham-line"></div>
@@ -448,6 +464,7 @@
           <div class="about-title" style="color:white; font-family:'Playfair Display',serif; font-size:16px; font-weight:600;">About</div>
           <div class="about-subtitle">PRMSU Digital Twin PWA</div>
         </div>
+        <button class="help-btn help-btn-bar" id="help-btn-about" type="button" aria-label="Show the guide for this page" title="Guide" onclick="showPageHelp('about')">?</button>
       </div>
 
       <div class="about-content">
@@ -492,24 +509,24 @@
             <div class="info-section-title">Meet the Team</div>
             <div class="team-list">
               <div class="team-member">
-                <div class="team-avatar"><img src="sprites/portraits/Princess.png" alt="Princess" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-avatar"><img src="sprites/about_portraits/Princess_About.png" alt="Princess" width="64" height="64" loading="lazy" decoding="async"></div>
                 <div class="team-info">
                   <div class="team-name">Princess</div>
                   <div class="team-role">Fullstack Developer and lead researcher</div>
                 </div>
               </div>
               <div class="team-member">
-                <div class="team-avatar"><img src="sprites/portraits/Jonathan.png" alt="Jonathan" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-avatar"><img src="sprites/about_portraits/Jonathan_About.png" alt="Jonathan" width="64" height="64" loading="lazy" decoding="async"></div>
                 <div class="team-info">
                   <div class="team-name">Jonathan</div>
                   <div class="team-role">3D Artist and Tester</div>
                 </div>
               </div>
               <div class="team-member">
-                <div class="team-avatar"><img src="sprites/portraits/Shane.png" alt="Shane" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-avatar"><img src="sprites/about_portraits/Shane_About.png" alt="Shane" width="64" height="64" loading="lazy" decoding="async"></div>
                 <div class="team-info">
                   <div class="team-name">Shane</div>
-                  <div class="team-role">3D Artist and Tester</div>
+                  <div class="team-role">3D Artist, Pixel Artist and Tester</div>
                 </div>
               </div>
             </div>
@@ -521,7 +538,15 @@
 
           <div class="info-section">
             <div class="info-section-title">Information</div>
-            <div class="info-link-row" role="button" tabindex="0" onclick="showTutorial()" onkeydown="if(event.key==='Enter'||event.key===' '){showTutorial();}">
+            <div class="info-link-row" role="button" tabindex="0" onclick="showInstallHelp()" onkeydown="if(event.key==='Enter'||event.key===' '){showInstallHelp();}">
+              <div class="info-link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/>
+                </svg>
+              </div>
+              <span class="info-link-text">Install the app on your phone</span>
+            </div>
+            <div class="info-link-row" id="about-howto-row" role="button" tabindex="0" onclick="showTutorial()" onkeydown="if(event.key==='Enter'||event.key===' '){showTutorial();}">
               <div class="info-link-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                   <circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4.5"/><line x1="12" y1="17.5" x2="12" y2="17.51"/>
