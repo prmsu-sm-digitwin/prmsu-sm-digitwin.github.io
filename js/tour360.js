@@ -147,7 +147,7 @@
 
 
   var PHOTO_CACHE_NAME = 'prmsu-photos-v6';
-  var AVG_PHOTO_MB = 0.62;
+  var AVG_PHOTO_MB = 0.42;
   var OFFLINE_ASKED_KEY = 'tour360-offline-asked';
   var offlineEl = null, offlineSavedSet = {}, offlineBusy = false, offlineCancel = false, wakeLock = null;
 
@@ -371,7 +371,7 @@
     try { return matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory && navigator.deviceMemory <= 4); }
     catch (e) { return false; }
   })();
-  var TEX_W = SMALL_DEVICE ? 3072 : 4096;
+  var TEX_W = SMALL_DEVICE ? 2560 : 3072;
   var MAX_KEEP = SMALL_DEVICE ? 7 : 10;
   var pending = {};
 
