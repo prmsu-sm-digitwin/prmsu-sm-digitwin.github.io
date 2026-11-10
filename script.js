@@ -126,6 +126,7 @@ function sidebarGoTo(pageId) {
     animate = (animate === undefined) ? true : animate;
     initSnaps();
     currentSnap = name;
+    if (name === 'collapsed' && typeof window.onSheetCollapsed === 'function') window.onSheetCollapsed();
     var h = name === 'full' ? SNAP_FULL : name === 'mid' ? SNAP_MID : SNAP_COLLAPSED;
     setHeight(h, animate);
   }
@@ -172,6 +173,10 @@ function sidebarGoTo(pageId) {
   window.sheetToggle = function() {
     if (currentSnap === 'collapsed') snapTo('mid');
     else snapTo('collapsed');
+  };
+
+  window.sheetCollapse = function() {
+    if (currentSnap !== 'collapsed') snapTo('collapsed');
   };
 
   window.sheetEnsureOpen = function() {

@@ -532,11 +532,64 @@ function connectedToMainNetwork() {
   return seen;
 }
 
-function navigateTo(targetBuildingId) {
+// Off-campus character (the one standing at the Main Gate). With a From-To route it walks the
+// route; with a plain "Navigate Here" it stays put. WALK_SPEED is in map units per second.
+const WALK_SPEED = 8;
+let simWalk = null;      // { pts: [{x,z}], seg, off } while the character is walking
+let virtualPos = null;   // where the off-campus character stands after a walk (null = Main Gate)
+
+function stepWalk(dt) {
+  if (!simWalk || !gateMarker) return;
+  let left = WALK_SPEED * dt;
+  const pts = simWalk.pts;
+  while (left > 0 && simWalk.seg < pts.length - 1) {
+    const a = pts[simWalk.seg], b = pts[simWalk.seg + 1];
+    const len = Math.hypot(b.x - a.x, b.z - a.z);
+    const rest = len - simWalk.off;
+    if (left >= rest) { left -= rest; simWalk.seg++; simWalk.off = 0; }
+    else { simWalk.off += left; left = 0; }
+  }
+  let p;
+  if (simWalk.seg >= pts.length - 1) { p = pts[pts.length - 1]; virtualPos = { x: p.x, z: p.z }; simWalk = null; }
+  else {
+    const a = pts[simWalk.seg], b = pts[simWalk.seg + 1];
+    const len = Math.hypot(b.x - a.x, b.z - a.z) || 1, t = simWalk.off / len;
+    p = { x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t };
+  }
+  gateMarker.position.set(p.x, 4, p.z);
+}
+
+function startWalk(pathIds) {
+  const pts = pathIds.map(id => waypointMap[id]).filter(Boolean).map(w => ({ x: w.position.x, z: w.position.z }));
+  if (pts.length < 2) return;
+  virtualPos = { x: pts[0].x, z: pts[0].z };
+  simWalk = { pts: pts, seg: 0, off: 0 };
+  if (gateMarker) gateMarker.position.set(pts[0].x, 4, pts[0].z);
+}
+
+function resetVirtualCharacter() {
+  simWalk = null;
+  virtualPos = null;
+}
+
+// fromBuildingId is optional: a chosen starting place (From-To). Without it the route starts
+// at the GPS spot on campus, or at the Main Gate.
+function navigateTo(targetBuildingId, fromBuildingId) {
   if (!campusData) return;
 
   let originWpId = 'main_gate';
-  if (currentGPSPosition) {
+  let fromPos = currentGPSPosition;
+  let fromBldg = null, walk = false;
+  if (fromBuildingId) {
+    const fb = campusData.buildings.find(b => b.id === fromBuildingId);
+    if (fb && fb.entryWaypoint && waypointMap[fb.entryWaypoint] && connectedToMainNetwork().has(fb.entryWaypoint)) {
+      fromBldg = fb;
+      originWpId = fb.entryWaypoint;
+      fromPos = null;
+      walk = !currentGPSPosition;
+    }
+  }
+  if (!fromBldg && currentGPSPosition) {
     let bestId = null, bestDist = Infinity;
     const linked = connectedToMainNetwork();
     Object.values(waypointMap).forEach(wp => {
@@ -557,10 +610,11 @@ function navigateTo(targetBuildingId) {
   const pathIds = findPath(waypointMap, originWpId, targetWpId);
   if (!pathIds || pathIds.length === 0) { if (typeof showGPSToast === 'function') showGPSToast('No route to this place yet.'); return; }
 
-  drawPath(pathIds, currentGPSPosition);
+  drawPath(pathIds, fromPos);
   youHereOn = false;
+  if (walk && pathIds.length > 1) startWalk(pathIds);
 
-  if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg);
+  if (typeof showPathInfo === 'function') showPathInfo(pathIds, targetBldg, fromBldg);
 }
 
 let routeLineGroup = null, routeArrowGroup = null;
@@ -675,6 +729,7 @@ function clearPath() {
   });
   pathLine = null;
   routeLineGroup = null; routeArrowGroup = null; activeRouteIds = null;
+  resetVirtualCharacter();
 
   if (typeof hidePathInfo === 'function') hidePathInfo();
 }
@@ -959,6 +1014,9 @@ function animate() {
       else if (gd > 0.05) gpsMarker.position.set(gpsMarker.position.x + gdx * 0.08, 4, gpsMarker.position.z + gdz * 0.08);
       if (window.GPSChar && gpsMarker.userData.gpsChar) GPSChar.update(gpsMarker);
     }
+    const nowW = performance.now();
+    stepWalk(Math.min(0.25, (nowW - (animate._t || nowW)) / 1000));
+    animate._t = nowW;
     updateGateMarker();
     renderer.render(scene, camera);
     layoutYouHere();
@@ -982,6 +1040,10 @@ function updateGateMarker() {
     } catch (e) { console.warn('[gate sprite]', e); gateMarker = false; }
   }
   if (!gateMarker) return;
+  if (!simWalk) {
+    const rest = virtualPos || gp;
+    gateMarker.position.set(rest.x, 4, rest.z);
+  }
   const st = gateMarker.userData.gpsChar;
   const show = !!(GPSChar.ready && st && !st.failed && !currentGPSPosition && !(window.NavFP && NavFP.active));
   gateMarker.visible = show;
@@ -992,7 +1054,7 @@ let _yhEl = null, _yhV = null;
 function layoutYouHere() {
   if (!_yhEl) _yhEl = document.getElementById('you-are-here');
   if (!_yhEl) return;
-  const spot = currentGPSPosition || (waypointMap.main_gate && waypointMap.main_gate.position);
+  const spot = currentGPSPosition || virtualPos || (waypointMap.main_gate && waypointMap.main_gate.position);
   if ((!youHereOn && !currentGPSPosition) || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
   if (!_yhV) _yhV = new THREE.Vector3();
   // Anchor the label to the top of the character's head (follows the sprite as it tilts

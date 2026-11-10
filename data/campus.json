@@ -50,7 +50,7 @@
       },
       "neighbors": [
         "inner_gate",
-        "startWaypoint_entryWomensDormitory"
+        "startWaypoint_entryGuestHouse"
       ]
     },
     {
@@ -1236,8 +1236,40 @@
         "entryWaypoint_WomensDormitory",
         "Z1_Int1",
         "inner_gate",
-        "main_gate",
+        "startWaypoint_entryGuestHouse",
         "Z1_EntancePath_1"
+      ]
+    },
+    {
+      "id": "startWaypoint_entryGuestHouse",
+      "label": "Guest House Start",
+      "latLng": {
+        "lat": 14.968349442142863,
+        "lng": 120.19492293249742
+      },
+      "position": {
+        "x": 417,
+        "z": 17.9
+      },
+      "neighbors": [
+        "main_gate",
+        "startWaypoint_entryWomensDormitory",
+        "entryWaypoint_GuestHouse"
+      ]
+    },
+    {
+      "id": "entryWaypoint_GuestHouse",
+      "label": "Guest House Entry",
+      "latLng": {
+        "lat": 14.968416891263306,
+        "lng": 120.19492293249742
+      },
+      "position": {
+        "x": 417,
+        "z": 10.4
+      },
+      "neighbors": [
+        "startWaypoint_entryGuestHouse"
       ]
     },
     {
@@ -2676,8 +2708,8 @@
       "glbModel": "models/ExecutiveHouseNav.glb",
       "texturedModel": null,
       "rotation": 262.8,
-      "entryWaypoint": null,
-      "_note": "Private property, intentionally not connected to the pathway graph (no pathfinding route).",
+      "entryWaypoint": "entryWaypoint_GuestHouse",
+      "_note": "A short pathway from the main gate road leads to the front of the Guest House.",
       "modelScale": 1.5,
       "glbTint": true,
       "labelOffset": {

@@ -276,6 +276,12 @@
               </svg>
               Navigate Here
             </button>
+            <button class="navigate-btn start-from-btn" id="start-from-btn" onclick="startFromSelected()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="16" height="16">
+                <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              Start from…
+            </button>
           </div>
         </div>
 
@@ -301,6 +307,10 @@
 
           <div class="sheet-panel" id="sheet-panel">
             <div class="panel-handle" id="sheet-handle"></div>
+            <div id="pick-start-banner" class="pick-start-banner hidden">
+              <span>Choose where you start, going to <b id="pick-start-dest"></b></span>
+              <button type="button" onclick="cancelPickStart()">Cancel</button>
+            </div>
             <div class="sheet-panel-inner" id="building-sheet-list">
               <div class="building-cat">Loading buildings…</div>
             </div>
@@ -474,8 +484,47 @@
             </div>
           </div>
 
+          <div class="info-section team-section">
+            <div class="info-section-title">Meet the Team</div>
+            <div class="team-list">
+              <div class="team-member">
+                <div class="team-avatar"><img src="sprites/sprites_navmap/portraits/Princess.png" alt="Princess" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-info">
+                  <div class="team-name">Princess</div>
+                  <div class="team-role">Fullstack Developer and lead researcher</div>
+                </div>
+              </div>
+              <div class="team-member">
+                <div class="team-avatar"><img src="sprites/sprites_navmap/portraits/Jonathan.png" alt="Jonathan" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-info">
+                  <div class="team-name">Jonathan</div>
+                  <div class="team-role">3D Artist and Tester</div>
+                </div>
+              </div>
+              <div class="team-member">
+                <div class="team-avatar"><img src="sprites/sprites_navmap/portraits/Shane.png" alt="Shane" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-info">
+                  <div class="team-name">Shane</div>
+                  <div class="team-role">3D Artist and Tester</div>
+                </div>
+              </div>
+            </div>
+            <div class="team-studio">
+              <div class="team-studio-name">PixiCraft Studios</div>
+              <div class="team-studio-course">Bachelor of Science in Computer Science</div>
+            </div>
+          </div>
+
           <div class="info-section">
             <div class="info-section-title">Information</div>
+            <div class="info-link-row" role="button" tabindex="0" onclick="showTutorial()" onkeydown="if(event.key==='Enter'||event.key===' '){showTutorial();}">
+              <div class="info-link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4.5"/><line x1="12" y1="17.5" x2="12" y2="17.51"/>
+                </svg>
+              </div>
+              <span class="info-link-text">How to use this app</span>
+            </div>
             <a class="info-link-row" href="https://www.prmsu.edu.ph" target="_blank">
               <div class="info-link-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -865,6 +914,7 @@
 
 <script defer src="js/pathfinding.js"></script>
 <script defer src="js/gps.js"></script>
+<script defer src="js/tutorial.js"></script>
 <script defer src="js/gpschar.js"></script>
 <script defer src="js/charpicker.js"></script>
 <script defer src="js/ui.js"></script>

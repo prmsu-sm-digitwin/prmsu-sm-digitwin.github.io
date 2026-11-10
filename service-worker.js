@@ -1,7 +1,7 @@
 
 const PHOTO_CACHE = 'prmsu-photos-v7';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v6.07';
+const CACHE_NAME = 'prmsu-digitwin-v6.19';
 
 const STATIC_ASSETS = [
   './',
@@ -17,6 +17,7 @@ const STATIC_ASSETS = [
   './sprites/sprites_navmap/portraits/Princess.png',
   './js/pathfinding.js',
   './js/gps.js',
+  './js/tutorial.js',
   './js/gpschar.js',
   './js/charpicker.js',
   './sprites/sprites_navmap/Princess.png',

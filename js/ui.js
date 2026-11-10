@@ -4,6 +4,7 @@
 let selectedBuilding = null;
 let gpsEnabled       = false;
 let campusBuildings  = [];
+let pickStartFor     = null;   // destination building while the user is choosing a starting point
 
 
 (function () {
@@ -31,6 +32,7 @@ let campusBuildings  = [];
 
 
 function showBuildingInfo(bldg) {
+  if (pickStartFor) cancelPickStart();
   selectedBuilding = bldg;
 
   setText('building-name',        bldg.name        || '—');
@@ -44,8 +46,10 @@ function showBuildingInfo(bldg) {
 
   if (bldg.entryWaypoint) {
     show('navigate-btn');
+    show('start-from-btn');
   } else {
     hide('navigate-btn');
+    hide('start-from-btn');
   }
 
   show('building-panel');
@@ -77,8 +81,41 @@ function navigateToSelected() {
   }
 }
 
-function showPathInfo(pathIds, targetBldg) {
-  setText('path-destination', (targetBldg && targetBldg.name) ? targetBldg.name : 'Destination');
+// "Start from…": the user picked a destination first, now picks where to start.
+function startFromSelected() {
+  if (!selectedBuilding) return;
+  const dest = selectedBuilding;
+  hideBuildingInfo();
+  pickStartFor = dest;
+  setText('pick-start-dest', dest.name || 'this place');
+  show('pick-start-banner');
+  const input = document.getElementById('building-search-input');
+  if (input) { input.value = ''; input.placeholder = 'Search a starting point…'; }
+  filterBuildingSheet('');
+  if (typeof sheetEnsureOpen === 'function') sheetEnsureOpen();
+}
+
+function cancelPickStart() {
+  pickStartFor = null;
+  hide('pick-start-banner');
+  const input = document.getElementById('building-search-input');
+  if (input) { input.placeholder = 'Search campus buildings…'; }
+  filterBuildingSheet(input ? input.value : '');
+  if (typeof sheetCollapse === 'function') sheetCollapse();
+}
+window.onSheetCollapsed = function () {
+  if (pickStartFor) {
+    pickStartFor = null;
+    hide('pick-start-banner');
+    const input = document.getElementById('building-search-input');
+    if (input) input.placeholder = 'Search campus buildings…';
+    filterBuildingSheet(input ? input.value : '');
+  }
+};
+
+function showPathInfo(pathIds, targetBldg, fromBldg) {
+  const to = (targetBldg && targetBldg.name) ? targetBldg.name : 'Destination';
+  setText('path-destination', fromBldg && fromBldg.name ? fromBldg.name + ' → ' + to : to);
   setText('path-steps', '');
   show('path-bar');
 }
@@ -798,6 +835,12 @@ const BUILDING_SEARCH_TERMS = {
   lhs:            'Laboratory High School LHS',
   asb:            'Agricultural Science Building ASB College of Agriculture CAg',
   ltda:           'Lahar-laden Technology Demonstration Area LTDA College of Agriculture CAg horticulture',
+  chm1:           'College of Hospitality Management CHM',
+  chm2:           'College of Hospitality Management CHM',
+  guest_house:    'College of Hospitality Management CHM',
+  mitos_magsaysay_building: 'College of Agriculture CAg',
+  '3_lab_rooms':  'College of Agriculture CAg',
+  processing:     'College of Agriculture CAg',
   mrf:            'Material Recovery Facility MRF Granary',
   rmtu_rd_center: 'R&D Research and Development'
 };
@@ -806,7 +849,8 @@ function filterBuildingSheet(query) {
   if (!campusData || !campusData.buildings) return;
   const q = query.trim().toLowerCase();
   const words = q.split(/\s+/).filter(Boolean);
-  const searchable = campusData.buildings.filter(b => b.category !== 'housing' && b.category !== 'place');
+  const searchable = campusData.buildings.filter(b => b.category !== 'housing' && b.category !== 'place' &&
+    (!pickStartFor || (b.entryWaypoint && b.id !== pickStartFor.id)));
   const filtered = !words.length
     ? searchable
     : searchable.filter(b => {
@@ -865,6 +909,17 @@ function populateBuildingSheet(buildings) {
         <div class="building-arrow">›</div>
       `;
       item.addEventListener('click', () => {
+        if (pickStartFor) {
+          const dest = pickStartFor;
+          pickStartFor = null;
+          hide('pick-start-banner');
+          const inp = document.getElementById('building-search-input');
+          if (inp) { inp.value = ''; inp.placeholder = 'Search campus buildings…'; }
+          if (typeof sheetToggle === 'function') sheetToggle();
+          filterBuildingSheet('');
+          if (typeof navigateTo === 'function') navigateTo(dest.id, b.id);
+          return;
+        }
         if (typeof sheetToggle === 'function') sheetToggle();
         showBuildingInfo(b);
         if (typeof selectBuilding === 'function') selectBuilding(b);

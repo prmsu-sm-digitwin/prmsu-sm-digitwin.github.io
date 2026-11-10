@@ -33,6 +33,10 @@ Photogrammetry was done with Agisoft Metashape, but image alignment was too poor
 
 ### About
 - Vision, Mission, Quality Policy, a description of the PWA and links to the university and department pages.
+- Meet the Team (PixiCraft Studios, BS Computer Science) and a "How to use this app" button that replays the first-visit tutorial.
+
+## Screen sizes
+The layout works on phones, tablets, laptops and desktop screens. On wide screens the pages keep their content in a centered column.
 
 ## Offline use
 Open the app once with internet. The map, models, Directory photos and icons are saved automatically in the background. The 360 walkthrough photos are large, so they are an optional download inside the Campus Walkthrough page.
@@ -55,5 +59,5 @@ Then open `http://localhost:8000`.
 ## Team
 PixiCraft Studios, BS Computer Science, PRMSU San Marcelino Campus
 - Princess: Fullstack Developer and lead researcher
-- Jonathan: Artist (Blender and Metashape)
-- Shane: Artist (Blender and Metashape)
+- Jonathan: 3D Artist and Tester
+- Shane: 3D Artist and Tester
