@@ -8,7 +8,7 @@
     { title: 'Using it offline',
       text: 'Add the app to your home screen to install it. To use the Walkthrough without internet, open it and tap the download button to save the photos on your phone.' },
     { title: 'Navigation Map',
-      text: 'Search for a building and tap Navigate to get an orange route. Drag to move around, pinch to zoom, and use two fingers to rotate. The camera button lets you walk the campus in first person.' },
+      text: 'Search for a building and tap Navigate Here to get an orange route, or tap Start from to pick where you begin. Drag to move around, pinch to zoom, and use two fingers to rotate. The camera button lets you walk the campus in first person.' },
     { title: 'Campus Walkthrough',
       text: 'Move through 360 photos of the campus. Drag to look around and tap the arrows on the road to go forward, back or into a side path. The Places button jumps straight to a spot.' },
     { title: 'Directory and Development Zones',

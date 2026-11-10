@@ -115,7 +115,7 @@
               <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
             </svg>
           </div>
-          <span class="btn-label">Navigation Map</span>
+          <span class="btn-label">Navigation Map<small class="btn-sub">Find a building and get a route</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="main-nav-btn" onclick="goTo('walkthrough')">
@@ -126,7 +126,7 @@
               <path d="M9.3 13.7 6.5 15.2 5 20"/>
             </svg>
           </div>
-          <span class="btn-label">Campus Walkthrough</span>
+          <span class="btn-label">Campus Walkthrough<small class="btn-sub">A campus tour with waypoints</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="main-nav-btn" onclick="goTo('directory')">
@@ -135,7 +135,7 @@
               <path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>
             </svg>
           </div>
-          <span class="btn-label">Campus Directory</span>
+          <span class="btn-label">Campus Directory<small class="btn-sub">Details about academic and physical infrastructure</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="main-nav-btn" onclick="goTo('devzones')">
@@ -145,7 +145,7 @@
               <path d="M9 21v-4M4 21h16"/>
             </svg>
           </div>
-          <span class="btn-label">Development Zones</span>
+          <span class="btn-label">Development Zones<small class="btn-sub">Preview of planned developments on campus</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="main-nav-btn" onclick="goTo('about')">
@@ -155,9 +155,13 @@
               <line x1="12" y1="8" x2="12.01" y2="8"/>
             </svg>
           </div>
-          <span class="btn-label">About</span>
+          <span class="btn-label">About<small class="btn-sub">Learn about PRMSU and credits</small></span>
           <span class="btn-arrow">›</span>
         </button>
+      </div>
+
+      <div class="main-footer">
+        <span class="main-footer-sub">PRMSU San Marcelino Campus</span>
       </div>
     </div>
 
@@ -223,18 +227,18 @@
                 <circle cx="12" cy="13" r="4"/>
               </svg>
             </button>
-            <button id="char-btn" type="button" title="Choose character" aria-label="Choose character" aria-expanded="false">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="7" r="3.2"/>
-                <path d="M12 11v5M7 13.5l5-2.5 5 2.5M9 21l3-5 3 5"/>
-              </svg>
-            </button>
             <button id="legend-btn" onclick="toggleLegend()" title="Map legend">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7" rx="1.5"/>
                 <rect x="14" y="3" width="7" height="7" rx="1.5"/>
                 <rect x="3" y="14" width="7" height="7" rx="1.5"/>
                 <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+            </button>
+            <button id="char-btn" type="button" title="Choose character" aria-label="Choose character" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="7" r="3.2"/>
+                <path d="M12 11v5M7 13.5l5-2.5 5 2.5M9 21l3-5 3 5"/>
               </svg>
             </button>
           </div>
@@ -488,21 +492,21 @@
             <div class="info-section-title">Meet the Team</div>
             <div class="team-list">
               <div class="team-member">
-                <div class="team-avatar"><img src="sprites/sprites_navmap/portraits/Princess.png" alt="Princess" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-avatar"><img src="sprites/portraits/Princess.png" alt="Princess" width="64" height="64" loading="lazy" decoding="async"></div>
                 <div class="team-info">
                   <div class="team-name">Princess</div>
                   <div class="team-role">Fullstack Developer and lead researcher</div>
                 </div>
               </div>
               <div class="team-member">
-                <div class="team-avatar"><img src="sprites/sprites_navmap/portraits/Jonathan.png" alt="Jonathan" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-avatar"><img src="sprites/portraits/Jonathan.png" alt="Jonathan" width="64" height="64" loading="lazy" decoding="async"></div>
                 <div class="team-info">
                   <div class="team-name">Jonathan</div>
                   <div class="team-role">3D Artist and Tester</div>
                 </div>
               </div>
               <div class="team-member">
-                <div class="team-avatar"><img src="sprites/sprites_navmap/portraits/Shane.png" alt="Shane" width="64" height="64" loading="lazy" decoding="async"></div>
+                <div class="team-avatar"><img src="sprites/portraits/Shane.png" alt="Shane" width="64" height="64" loading="lazy" decoding="async"></div>
                 <div class="team-info">
                   <div class="team-name">Shane</div>
                   <div class="team-role">3D Artist and Tester</div>

@@ -411,6 +411,25 @@
     }
     return best;
   }
+  // Nearest point ON a path that is also free of buildings. Where a path runs under or into a
+  // building, the plain nearest point is inside the building footprint; spawning there pushes the
+  // player out beside the building, off the path, and the path clamp then pins them there (stuck).
+  function freeSpotOnPath(x, z) {
+    var best = null;
+    for (var i = 0; i < segs.length; i++) {
+      var s = segs[i], dx = s[2] - s[0], dz = s[3] - s[1], L = Math.hypot(dx, dz);
+      if (L < 0.1) continue;
+      var n = Math.max(1, Math.ceil(L / CELL));
+      for (var j = 0; j <= n; j++) {
+        var t = j / n, px = s[0] + dx * t, pz = s[1] + dz * t;
+        var d = Math.hypot(x - px, z - pz);
+        if (best && d >= best.d) continue;
+        if (blockedRing(px, pz)) continue;
+        best = { x: px, z: pz, d: d, dx: dx, dz: dz };
+      }
+    }
+    return best;
+  }
   function clampToPath(x, z) {
     var n = nearestOnPath(x, z);
     if (!n || n.d <= HALF_WIDTH) return { x: x, z: z };
@@ -442,7 +461,16 @@
       face = yawFromDir(dx, dz);
     }
     if (jobs.length) pumpBake(2000);
-    var free = freeSpotNear(sx, sz);
+    var free = freeSpotOnPath(sx, sz);
+    if (free) {
+      if (!(activeRouteIds && activeRouteIds.length > 1)) {
+        var fdx = free.dx, fdz = free.dz;
+        if (fdx < 0 || (fdx === 0 && fdz < 0)) { fdx = -fdx; fdz = -fdz; }
+        face = yawFromDir(fdx, fdz);
+      }
+    } else {
+      free = freeSpotNear(sx, sz);
+    }
     pos.x = free.x; pos.z = free.z; yaw = face; pitch = -0.04;
 
     camera.fov = FOV_FP; camera.near = 0.3; camera.updateProjectionMatrix();

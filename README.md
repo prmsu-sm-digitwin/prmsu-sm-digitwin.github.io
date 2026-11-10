@@ -21,7 +21,7 @@ Photogrammetry was done with Agisoft Metashape, but image alignment was too poor
 - Legend viewer.
 
 ### Campus Walkthrough
-- 360-degree photo tour of Zones 1 to 5 with 1,133 stops shot with a DJI Osmo 360.
+- 360-degree photo tour of Zones 1 to 5 with 1,127 stops shot with a DJI Osmo 360.
 - Forward, back and junction arrows, and a Places list (31 places) to jump to a spot.
 - Optional download of all photos for offline use (about 450 MB).
 

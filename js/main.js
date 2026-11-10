@@ -565,6 +565,20 @@ function startWalk(pathIds) {
   virtualPos = { x: pts[0].x, z: pts[0].z };
   simWalk = { pts: pts, seg: 0, off: 0 };
   if (gateMarker) gateMarker.position.set(pts[0].x, 4, pts[0].z);
+  // Glide the camera to where the character starts (off campus only, never in first person).
+  if (!(window.NavFP && NavFP.active)) camPanTo = { x: pts[0].x, z: pts[0].z };
+}
+
+// Smooth camera glide to a map point; any drag by the user cancels it.
+let camPanTo = null;
+function stepCamPan(dt) {
+  if (!camPanTo) return;
+  const dx = camPanTo.x - lookTarget.x, dz = camPanTo.z - lookTarget.z;
+  if (Math.hypot(dx, dz) < 1) { camPanTo = null; return; }
+  const k = 1 - Math.exp(-4 * dt);   // time based, so slow phones glide as fast as quick ones
+  lookTarget.x += dx * k;
+  lookTarget.z += dz * k;
+  updateCameraFromTarget();
 }
 
 function resetVirtualCharacter() {
@@ -801,6 +815,7 @@ const lookTarget = { x: 700, y: 0, z: -80 };
 
 function panStart(e) {
   if (window.NavFP && NavFP.active) { NavFP.pointerDown(e); return; }
+  camPanTo = null;
   pan.active = true;
   pan.mode = (e.shiftKey || e.button === 2) ? 'rotate' : 'pan';
   pan.lastX = e.clientX ?? (e.touches?.[0]?.clientX ?? 0);
@@ -1017,6 +1032,8 @@ function animate() {
     const nowW = performance.now();
     stepWalk(Math.min(0.25, (nowW - (animate._t || nowW)) / 1000));
     animate._t = nowW;
+    stepCamPan(Math.min(0.25, (nowW - (animate._p || nowW)) / 1000));
+    animate._p = nowW;
     updateGateMarker();
     renderer.render(scene, camera);
     layoutYouHere();

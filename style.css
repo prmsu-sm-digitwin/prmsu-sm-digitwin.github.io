@@ -553,7 +553,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;   /* titles line up at the top in all three boxes */
     gap: 5px;
     border: 1px solid rgba(232,169,0,0.25);
     transition: transform 0.15s;
@@ -2288,12 +2288,12 @@
   #path-bar:not(.hidden) ~ .map-tools { top: 10px; }
   #path-bar:not(.hidden) ~ .char-panel { top: 60px; }
 
-  .main-hero { height: clamp(210px, 32vh, 330px); }
+  .main-hero { height: clamp(230px, 34vh, 320px); }
   .main-hero > img {
     inset: 0 auto 0 50% !important;
-    width: min(100%, 1100px) !important;
+    width: min(100%, 620px) !important;
     transform: translateX(-50%);
-    object-position: center 55%;
+    object-position: center 50%;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
   }
@@ -2321,4 +2321,76 @@
 .pick-start-banner button {
   flex-shrink: 0; border: none; background: none; color: var(--maroon);
   font: 700 12px 'DM Sans', sans-serif; cursor: pointer; padding: 4px 6px;
+}
+
+
+/* ===== Homepage polish ===== */
+.btn-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+}
+.main-footer {
+  margin-top: auto;
+  padding: 18px 20px 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.main-footer-name {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--maroon-dark);
+}
+.main-footer-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.main-nav-btn:active { transform: scale(0.98); }
+@keyframes homeRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes homePop {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: none; }
+}
+.main-logo-section .logo-ring { animation: homePop 0.5s cubic-bezier(.2,.8,.3,1) backwards; }
+.main-nav-btn { animation: homeRise 0.45s ease backwards; }
+.main-nav-btn:nth-child(1) { animation-delay: 0.10s; }
+.main-nav-btn:nth-child(2) { animation-delay: 0.17s; }
+.main-nav-btn:nth-child(3) { animation-delay: 0.24s; }
+.main-nav-btn:nth-child(4) { animation-delay: 0.31s; }
+.main-nav-btn:nth-child(5) { animation-delay: 0.38s; }
+.main-footer { animation: homeRise 0.5s ease 0.5s backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .main-logo-section .logo-ring, .main-nav-btn, .main-footer { animation: none; }
+}
+
+
+/* ===== Phone: route bar (with Clear) sits in the top row between the tool buttons and the GPS button ===== */
+@media (max-width: 899px) {
+  .map-overlay-bar {
+    left: 160px; right: 58px; top: 10px;
+    height: 42px; box-sizing: border-box;
+    padding: 0 8px; gap: 6px; border-radius: 12px;
+  }
+  #path-destination {
+    font-size: 11.5px; line-height: 1.15;
+    white-space: normal;
+    display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  #path-steps:empty { display: none; }
+  #btn-clear-path { font-size: 11.5px; padding: 6px 4px; white-space: nowrap; }
+  #path-bar:not(.hidden) ~ .map-tools { top: 10px; }
+  #path-bar:not(.hidden) ~ .char-panel { top: 60px; }
 }
