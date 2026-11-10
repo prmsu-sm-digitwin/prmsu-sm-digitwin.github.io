@@ -1,7 +1,7 @@
 
 const PHOTO_CACHE = 'prmsu-photos-v6';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v6.65';
+const CACHE_NAME = 'prmsu-digitwin-v6.66'; // Internal cache name. Raise it on every push, never reset it or reuse an old name. Not the version users see (that is the about-version line in index.html).
 
 const STATIC_ASSETS = [
   './',
