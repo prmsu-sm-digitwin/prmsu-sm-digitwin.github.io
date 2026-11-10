@@ -98,7 +98,7 @@
       { text: 'I am Shane again! This is the About page, with the university vision and mission, and the people behind this app.' },
       { target: '.vmq-grid', text: 'Tap Vision, Mission or Quality Policy to read the full text.' },
       { target: '.team-section', text: 'These are the people who made the app: Princess, Jonathan and me.' },
-      { target: '#about-howto-row', text: 'Tap here any time to replay a guide, or to see how to install the app on your phone.', last: true }
+      { target: '#about-howto-row', text: 'Tap here any time to replay a guide, or to see how to install the app on your device.', last: true }
     ] }
   };
   var PAGE_NAMES = { main: 'Home', map: 'Navigation Map', firstperson: 'First-person view', walkthrough: 'Campus Walkthrough', directory: 'Campus Directory', devzones: 'Development Zones', about: 'About' };
@@ -470,7 +470,7 @@
     var html = '<div class="tg-menu-card" role="dialog" aria-modal="true" aria-label="How to use this app">' +
       '<div class="tg-menu-title">How to use this app</div>' +
       '<p class="tg-menu-sub">Pick a guide to replay.</p>' +
-      '<button type="button" class="tg-menu-item tg-menu-install" data-act="install">Install the app on your phone</button>';
+      '<button type="button" class="tg-menu-item tg-menu-install" data-act="install">Install the app on your device</button>';
     ['main', 'map', 'firstperson', 'walkthrough', 'directory', 'devzones', 'about'].forEach(function (p) {
       html += '<button type="button" class="tg-menu-item" data-page="' + p + '">' + PAGE_NAMES[p] + '</button>';
     });

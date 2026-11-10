@@ -40,7 +40,7 @@
   {"name": "Women's Dormitory", "to": "tp_women_s_dormitory", "face": 0.22}
  ],
  "stops": [
-  {"file": "images/360/MainGate_to_InnerGate/p01.webp", "title": "Main Gate", "fwd": 0.948, "id": "tp_main_gate"},
+  {"file": "images/360/MainGate_to_InnerGate/p01.webp", "title": "Main Gate", "fwd": 0.96, "id": "tp_main_gate"},
   {"file": "images/360/MainGate_to_InnerGate/p02.webp", "title": "Main Gate", "fwd": 0.954},
   {"file": "images/360/MainGate_to_InnerGate/p03.webp", "title": "Main Gate", "fwd": -0.046},
   {"file": "images/360/MainGate_to_InnerGate/p04.webp", "title": "Main Gate", "fwd": -0.028},

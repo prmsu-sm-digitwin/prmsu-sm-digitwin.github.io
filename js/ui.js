@@ -443,11 +443,24 @@ function layoutDevzonesLabels() {
   const labels = host.querySelectorAll('.devzones-marker-label');
   labels.forEach(function (l) { l.classList.remove('is-hidden'); });
   const taken = [];
+  const wide = window.innerWidth >= 900 && parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--z')) > 1.05;
+  const pins = [];
+  if (wide) {
+    host.querySelectorAll('.devzones-marker').forEach(function (m) {
+      const sv = m.querySelector('svg');
+      if (sv) pins.push({ owner: m, rect: sv.getBoundingClientRect() });
+    });
+  }
   labels.forEach(function (l) {
     const r = l.getBoundingClientRect();
     if (!r.width) return;
+    const owner = l.parentNode;
     const hit = taken.some(function (t) {
       return !(r.right + 3 < t.left || r.left - 3 > t.right || r.bottom + 2 < t.top || r.top - 2 > t.bottom);
+    }) || pins.some(function (p) {
+      if (p.owner === owner) return false;
+      const t = p.rect;
+      return !(r.right < t.left || r.left > t.right || r.bottom < t.top || r.top > t.bottom);
     });
     if (hit) l.classList.add('is-hidden'); else taken.push(r);
   });

@@ -1,3 +1,18 @@
+(function () {
+  var root = document.documentElement;
+  function applyZ() {
+    var z = 1;
+    if (window.innerWidth >= 900) z = Math.max(1, Math.min(window.innerWidth / 1500, window.innerHeight / 850, 3));
+    z = Math.round(z * 100) / 100;
+    root.style.setProperty('--z', String(z));
+    try {
+      if (typeof layoutDevzonesLabels === 'function') { devzonesLabelScale = -1; layoutDevzonesLabels(); }
+    } catch (e) {}
+  }
+  applyZ();
+  window.addEventListener('resize', applyZ);
+})();
+
 const vmqData = {
   vision: {
     title: 'Vision',
