@@ -92,11 +92,6 @@ function sidebarGoTo(pageId) {
   var SNAP_MID, SNAP_FULL;
   var currentSnap = 'collapsed';
 
-  function getContainer() {
-    var pg = document.getElementById('page-map');
-    return pg ? pg.querySelector('.pages') || pg.parentElement : null;
-  }
-
   function getAvailH() {
 
     var pg = document.getElementById('page-map');
@@ -313,10 +308,6 @@ window.addEventListener('popstate', function (e) {
     }
   };
 })();
-
-function toggleMenu() {
-  goTo('main');
-}
 
 function openVmq(key) {
   const data = vmqData[key];

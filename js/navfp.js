@@ -545,7 +545,6 @@
     pitch = -0.04;
     joy.id = null; joy.x = joy.y = 0; look.id = null;
     var nub = document.getElementById('fp-joy-nub'); if (nub) nub.style.transform = 'translate(0,0)';
-    hideHint();
     applyCamera();
     return true;
   }
@@ -617,7 +616,7 @@
     camera.rotation.set(pitch, yaw, 0, 'YXZ');
   }
 
-  function pointerDown(e) { look.id = e.pointerId; look.x = e.clientX; look.y = e.clientY; hideHint(); }
+  function pointerDown(e) { look.id = e.pointerId; look.x = e.clientX; look.y = e.clientY; }
   function pointerMove(e) {
     if (look.id === null || e.pointerId !== look.id) return;
     var dx = e.clientX - look.x, dy = e.clientY - look.y;
@@ -704,7 +703,7 @@
       e.preventDefault(); e.stopPropagation();
       joy.id = e.pointerId;
       try { base.setPointerCapture(e.pointerId); } catch (err) {}
-      base.classList.add('active'); hideHint(); setVec(e);
+      base.classList.add('active'); setVec(e);
     });
     base.addEventListener('pointermove', function (e) { if (e.pointerId === joy.id) { e.preventDefault(); setVec(e); } });
     function end(e) {
@@ -746,11 +745,5 @@
       cbtn.title = on ? 'Jump to a building' : 'Choose character';
       cbtn.setAttribute('aria-label', on ? 'Jump to a building' : 'Choose character');
     }
-    var hint = document.getElementById('fp-hint');
-    if (hint) hint.classList.toggle('fp-hint-hidden', !on);
-  }
-  function hideHint() {
-    var h = document.getElementById('fp-hint');
-    if (h) h.classList.add('fp-hint-hidden');
   }
 })();

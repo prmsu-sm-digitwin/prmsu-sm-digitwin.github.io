@@ -143,7 +143,7 @@
     if (btn) btn.style.display = any ? '' : 'none';
     placesEl.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   }
-  function togglePlaces() { if (placesEl) { closeOffline(); placesEl.classList.toggle('open'); hideHint(); } }
+  function togglePlaces() { if (placesEl) { closeOffline(); placesEl.classList.toggle('open'); } }
   function closePlaces() { if (placesEl) placesEl.classList.remove('open'); }
 
 
@@ -238,7 +238,7 @@
   }
 
   function setOfflineStatus(t) { var el = document.getElementById('tour-offline-status'); if (el) el.textContent = t || ''; }
-  function openOffline() { if (!offlineEl) return; closePlaces(); offlineEl.classList.add('open'); refreshOffline(); hideHint(); }
+  function openOffline() { if (!offlineEl) return; closePlaces(); offlineEl.classList.add('open'); refreshOffline(); }
   function closeOffline() {
     if (!offlineEl) return;
     offlineEl.classList.remove('open');
@@ -575,7 +575,6 @@
     if (n === 1) { downX = e.clientX; downY = e.clientY; downTime = Date.now(); dragMoved = 0; velYaw = velPitch = 0; startHoldIfArrow(e.clientX, e.clientY); }
     else stopHold();
     if (n === 2) lastPinch = pinchDist();
-    hideHint();
   }
   function onMove(e) {
     var p = pointers[e.pointerId]; if (!p) return;
@@ -612,7 +611,6 @@
   }
   function setFov(v) { fov = Math.max(35, Math.min(95, v)); camera.fov = fov; camera.updateProjectionMatrix(); dirty = true; }
   function clampPitch() { pitch = Math.max(-1.25, Math.min(1.3, pitch)); }
-  function hideHint() { var h = document.getElementById('tour-hint'); if (h) h.classList.add('tour-hidden'); }
 
   function stopHold() {
     if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }

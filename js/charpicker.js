@@ -79,10 +79,6 @@
     return 'random';
   }
 
-  function currentName() {
-    return (window.GPSChar && GPSChar.current) || null;
-  }
-
   function showPortrait(choice) {
     var my = ++token;
     imgEl.hidden = true;
