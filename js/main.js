@@ -28,10 +28,8 @@ function initScene() {
   mouse = new THREE.Vector2();
 
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));  // 2 made phones draw ~78% more pixels
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setSize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
-  // Shadows are off: the sun's shadow camera only covered a ~10 unit patch of the
-  // 1300 unit campus, so the extra shadow pass cost frame time and showed nothing.
   renderer.shadowMap.enabled = false;
 
   const ambient = new THREE.AmbientLight(0xffffff, 0.7);
@@ -128,8 +126,6 @@ function buildGround(g) {
   if (g.texture) {
     const tex = new THREE.TextureLoader().load(g.texture);
     if (g.textureTile) {
-      // Tiled ground (e.g. the grass image): one tile every textureTile world units.
-      // Mirrored repeat hides the seams between tiles.
       tex.wrapS = tex.wrapT = THREE.MirroredRepeatWrapping;
       tex.repeat.set(g.width / g.textureTile, g.depth / g.textureTile);
       tex.anisotropy = 4;
@@ -226,11 +222,6 @@ function spawnPlaceBox(p) {
   placeBlockMeshes.push(mesh);
 }
 
-// >>> mergeStaticMeshes
-// A model made of hundreds of small objects (pebbles, flowers, hedge pieces) costs one
-// draw call per object, which makes phones stutter. After loading, this joins all meshes
-// that share a material into one mesh. The picture is identical and the .glb stays small,
-// because the file keeps its shared copies and only the in-memory copy is merged.
 function mergeStaticMeshes(root) {
   root.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
@@ -274,7 +265,6 @@ function mergeStaticMeshes(root) {
         if (uv) { uv[(vo + i) * 2] = geo.attributes.uv.getX(i); uv[(vo + i) * 2 + 1] = geo.attributes.uv.getY(i); }
         if (col) { const ca = geo.attributes.color; col[(vo + i) * 3] = ca.getX(i); col[(vo + i) * 3 + 1] = ca.getY(i); col[(vo + i) * 3 + 2] = ca.getZ(i); }
       }
-      // A negative scale (mirrored copy) flips the triangle winding, so flip it back.
       const flip = m4.determinant() < 0;
       const n = geo.index ? geo.index.count : pa.count;
       for (let i = 0; i < n; i += 3) {
@@ -301,7 +291,6 @@ function mergeStaticMeshes(root) {
     root.add(mesh);
   });
 }
-// <<< mergeStaticMeshes
 
 function preparePlaceModel(root, strip) {
   if (strip && strip.length) {
@@ -532,11 +521,9 @@ function connectedToMainNetwork() {
   return seen;
 }
 
-// Off-campus character (the one standing at the Main Gate). With a From-To route it walks the
-// route; with a plain "Navigate Here" it stays put. WALK_SPEED is in map units per second.
 const WALK_SPEED = 8;
-let simWalk = null;      // { pts: [{x,z}], seg, off } while the character is walking
-let virtualPos = null;   // where the off-campus character stands after a walk (null = Main Gate)
+let simWalk = null;
+let virtualPos = null;
 
 function stepWalk(dt) {
   if (!simWalk || !gateMarker) return;
@@ -565,17 +552,15 @@ function startWalk(pathIds) {
   virtualPos = { x: pts[0].x, z: pts[0].z };
   simWalk = { pts: pts, seg: 0, off: 0 };
   if (gateMarker) gateMarker.position.set(pts[0].x, 4, pts[0].z);
-  // Glide the camera to where the character starts (off campus only, never in first person).
   if (!(window.NavFP && NavFP.active)) camPanTo = { x: pts[0].x, z: pts[0].z };
 }
 
-// Smooth camera glide to a map point; any drag by the user cancels it.
 let camPanTo = null;
 function stepCamPan(dt) {
   if (!camPanTo) return;
   const dx = camPanTo.x - lookTarget.x, dz = camPanTo.z - lookTarget.z;
   if (Math.hypot(dx, dz) < 1) { camPanTo = null; return; }
-  const k = 1 - Math.exp(-4 * dt);   // time based, so slow phones glide as fast as quick ones
+  const k = 1 - Math.exp(-4 * dt);
   lookTarget.x += dx * k;
   lookTarget.z += dz * k;
   updateCameraFromTarget();
@@ -586,8 +571,6 @@ function resetVirtualCharacter() {
   virtualPos = null;
 }
 
-// fromBuildingId is optional: a chosen starting place (From-To). Without it the route starts
-// at the GPS spot on campus, or at the Main Gate.
 function navigateTo(targetBuildingId, fromBuildingId) {
   if (!campusData) return;
 
@@ -604,14 +587,11 @@ function navigateTo(targetBuildingId, fromBuildingId) {
     }
   }
   if (!fromBldg && window.NavFP && NavFP.active && NavFP._state) {
-    // first person: start the route where the player is standing
     const st = NavFP._state();
     const tb = campusData.buildings.find(b => b.id === targetBuildingId);
     if (tb && tb.entryWaypoint && typeof findPath === 'function') {
       const pos = { x: st.x, z: st.z };
       const linked = connectedToMainNetwork();
-      // find the path segment the player is standing on; the route starts at one of its two ends,
-      // so the arrows always run along that path and never cut across the grass
       let edge = null;
       Object.values(waypointMap).forEach(w => {
         if (!linked.has(w.id)) return;
@@ -677,8 +657,6 @@ function navigateTo(targetBuildingId, fromBuildingId) {
 let routeLineGroup = null, routeArrowGroup = null;
 let activeRouteIds = null;
 
-// First person: a route that was started from the player's position follows the player.
-// If the player walks off the route (more than 14 units away from it), it is drawn again from where they stand.
 let fpNavTarget = null, fpRouteStart = null, fpWatchT = 0, fpOffCount = 0;
 window.fpRouteWatch = function (x, z, dt) {
   if (!fpNavTarget || !activeRouteIds || !(window.NavFP && NavFP.active)) { fpOffCount = 0; return; }
@@ -1023,12 +1001,8 @@ function rotateCamera(deltaAzimuth, deltaElevation) {
   updateCameraFromTarget();
 }
 
-// Keep the view centre inside the campus. Two limits work together:
-// 1) the campus rectangle, pulled in the further zoomed out you are, and
-// 2) the outline of the real campus (a hull around all buildings and roads),
-//    so you cannot pan out to the empty corners on either side of the strip.
 const PAN_INSET_FACTOR = 0.45;
-const HULL_MARGIN      = 30;   // how far past the outline you can pan when zoomed in
+const HULL_MARGIN      = 30;
 let _campusHull = null;
 
 function buildCampusHull() {
@@ -1042,7 +1016,7 @@ function buildCampusHull() {
   const upper = [];
   for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (upper.length >= 2 && cross(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop(); upper.push(p); }
   lower.pop(); upper.pop();
-  return lower.concat(upper);   // counter-clockwise
+  return lower.concat(upper);
 }
 
 function clampLookTarget() {
@@ -1065,7 +1039,7 @@ function clampLookTarget() {
       const a = hull[i], c = hull[(i + 1) % hull.length];
       const ex = c[0] - a[0], ez = c[1] - a[1];
       const len = Math.hypot(ex, ez) || 1;
-      const d = (ex * (lookTarget.z - a[1]) - ez * (lookTarget.x - a[0])) / len;  // >0 = inside
+      const d = (ex * (lookTarget.z - a[1]) - ez * (lookTarget.x - a[0])) / len;
       if (d < -margin) {
         const push = -margin - d;
         lookTarget.x += (-ez / len) * push;
@@ -1112,8 +1086,6 @@ function animate() {
   }
 }
 
-// Character standing at the Main Gate, under the "You are here" label, for visitors who
-// have no GPS fix on campus (GPS off, or phone outside the campus).
 let gateMarker = null;
 function updateGateMarker() {
   const gp = waypointMap && waypointMap.main_gate && waypointMap.main_gate.position;
@@ -1144,8 +1116,6 @@ function layoutYouHere() {
   const spot = currentGPSPosition || virtualPos || (waypointMap.main_gate && waypointMap.main_gate.position);
   if ((!youHereOn && !currentGPSPosition) || !spot || (window.NavFP && NavFP.active)) { _yhEl.style.display = 'none'; return; }
   if (!_yhV) _yhV = new THREE.Vector3();
-  // Anchor the label to the top of the character's head (follows the sprite as it tilts
-  // toward a top-down camera); fall back to a fixed height when there is no sprite.
   const marker = currentGPSPosition ? gpsMarker : (gateMarker && gateMarker.visible ? gateMarker : null);
   const gc = marker && marker.userData && marker.userData.gpsChar;
   let headAnchored = false;

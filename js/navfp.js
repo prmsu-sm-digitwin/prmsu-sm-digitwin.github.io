@@ -416,9 +416,6 @@
     }
     return best;
   }
-  // Nearest point ON a path that is also free of buildings. Where a path runs under or into a
-  // building, the plain nearest point is inside the building footprint; spawning there pushes the
-  // player out beside the building, off the path, and the path clamp then pins them there (stuck).
   function freeSpotOnPath(x, z) {
     var best = null;
     for (var i = 0; i < segs.length; i++) {
@@ -445,7 +442,6 @@
 
   function toggle() { if (NavFP.active) exit(); else enter(); }
 
-  /* ---------- jump to a building (first-person) ---------- */
   var TP_ORDER = { academic: 0, facility: 1, court: 2 };
   var tpBuilt = false, tpOpen = false;
 
@@ -488,7 +484,6 @@
   }
   function toggleTeleport() { setTeleport(!tpOpen); }
 
-  // Is the target building the first thing seen when looking from (px,pz) toward its centre?
   function seesBuilding(px, pz, cx, cz, owner) {
     var L = Math.hypot(cx - px, cz - pz), n = Math.max(1, Math.ceil(L / CELL));
     for (var i = 1; i <= n; i++) {
@@ -497,15 +492,11 @@
     }
     return true;
   }
-  // A free spot ON a path, about 22 units back from the building's footprint, close to its entrance and
-  // with a clear view of it. Only path points that are not inside any model are used, so the camera
-  // never ends up inside a building.
   function tpSpot(b) {
     if (jobs.length) pumpBake(2000);
     var cx = b.position.x, cz = b.position.z, sz = b.size || {};
     var hw = (+sz.width || 10) / 2, hd = (+sz.depth || 10) / 2, want = 22;
     var th = (+b.rotation || 0) * Math.PI / 180, ct = Math.cos(th), st = Math.sin(th);
-    // distance from a point to the building's footprint (a rotated rectangle), not to its centre
     function edgeDist(px, pz) {
       var ddx = px - cx, ddz = pz - cz;
       var lx = ddx * ct - ddz * st, lz = ddx * st + ddz * ct;

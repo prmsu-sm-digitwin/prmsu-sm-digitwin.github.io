@@ -1,7 +1,7 @@
 
 const PHOTO_CACHE = 'prmsu-photos-v6';
 const isPhotoPath = p => /\/images\/(360|devzones)\//.test(p);
-const CACHE_NAME = 'prmsu-digitwin-v6.52';
+const CACHE_NAME = 'prmsu-digitwin-v6.53';
 
 const STATIC_ASSETS = [
   './',
@@ -49,8 +49,6 @@ const STATIC_ASSETS = [
   './js/vendor/three.min.js',
 ];
 
-// Every 3D building and place model used by the Navigation Map (about 16 MB).
-// Warmed in the background after first load (see warmHeavy) so the map works fully offline.
 const MODEL_ASSETS = [
   './models/QuadrangleNav.glb',
   './models/ASBNav.glb',
@@ -129,8 +127,6 @@ const MODEL_ASSETS = [
   './models/places/Zone3_Greenhouse_beside_oldLin_NEW.glb',
 ];
 
-// Campus Directory photos (about 11 MB). Warmed in the background after first load
-// so the Directory page shows its pictures offline too.
 const DIRECTORY_ASSETS = [
   './images/directory/ADMIN_BUILDING.jpg',
   './images/directory/ADMIN_COURT.jpg',

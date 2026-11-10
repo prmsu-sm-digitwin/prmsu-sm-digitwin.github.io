@@ -553,7 +553,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;   /* titles line up at the top in all three boxes */
+    justify-content: flex-start;
     gap: 5px;
     border: 1px solid rgba(232,169,0,0.25);
     transition: transform 0.15s;
@@ -1969,7 +1969,6 @@
   border-color: var(--maroon);
 }
 .map-viewport.fp-on .map-controls { display: none; }
-/* first person: the bottom search bar is replaced by a search button under the GPS button */
 #fp-search-btn {
   display: none;
   position: absolute; top: 58px; right: 10px;
@@ -1985,9 +1984,7 @@
 #fp-search-btn.active { background: var(--maroon); color: var(--white); border-color: var(--maroon); }
 .map-viewport.fp-on #fp-search-btn { display: flex; }
 .map-viewport.fp-on:not(.fp-search-open) ~ #map-sheet { display: none; }
-/* no "Start from" in first person: the route should begin where you stand */
 .map-viewport.fp-on ~ #building-panel #start-from-btn { display: none; }
-/* first-person search: a small search box with its result list hanging under the search button (right side) */
 .map-viewport.fp-on.fp-search-open ~ #map-sheet {
   top: 106px; bottom: auto; left: auto; right: 10px;
   width: min(300px, calc(100% - 20px)); margin: 0;
@@ -2001,7 +1998,6 @@
 }
 .map-viewport.fp-on.fp-search-open ~ #map-sheet .panel-handle { display: none; }
 .map-viewport.fp-on.fp-search-open ~ #map-sheet .sheet-search-input:focus { outline: none; }
-/* tighter spacing in the side box */
 .map-viewport.fp-on.fp-search-open ~ #map-sheet .sheet-panel-inner { flex: 0 1 auto; min-height: 0; padding: 2px 14px 12px; }
 .map-viewport.fp-on.fp-search-open ~ #map-sheet .pick-start-banner { margin: 10px 12px 2px; }
 .map-viewport.fp-on.fp-search-open ~ #map-sheet .building-cat:first-child { padding-top: 4px; }
@@ -2155,8 +2151,6 @@
 }
 .char-panel.hidden { display: none; }
 
-/* While a route is showing, the path bar (Clear button) takes the top row,
-   so the tool buttons and the character panel sit below it instead of covering it. */
 #path-bar:not(.hidden) ~ .map-tools { top: 62px; }
 #path-bar:not(.hidden) ~ .char-panel { top: 112px; }
 .char-arrow {
@@ -2227,7 +2221,6 @@
 }
 
 
-/* ===== About: Meet the Team ===== */
 .team-studio {
   text-align: center;
   margin: 18px 0 4px;
@@ -2267,7 +2260,6 @@
 .team-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--maroon-dark); line-height: 1.2; }
 .team-role { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #C28E00; margin-top: 4px; line-height: 1.4; }
 
-/* ===== "?" guide buttons ===== */
 .help-btn {
   flex: 0 0 auto; width: 34px; height: 34px; padding: 0;
   display: flex; align-items: center; justify-content: center;
@@ -2293,7 +2285,6 @@
 }
 .tour-help-btn:active { background: rgba(0, 0, 0, 0.6); }
 
-/* ===== Guided tours (game-style) ===== */
 #tg-root { display: none; position: fixed; inset: 0; z-index: 3000; touch-action: none; -webkit-tap-highlight-color: transparent; }
 #tg-root.tg-open { display: block; }
 #tg-root.tg-fulldim { background: rgba(8, 18, 40, 0.76); }
@@ -2407,7 +2398,6 @@ html.tg-active, html.tg-active body { overscroll-behavior: none; }
   .tg-cut { transition: none; }
 }
 
-/* ===== Wide screens (laptop and desktop): keep content in a readable column ===== */
 @media (min-width: 900px) {
   .main-nav-buttons { width: 100%; max-width: 560px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
 
@@ -2420,7 +2410,6 @@ html.tg-active, html.tg-active body { overscroll-behavior: none; }
 
   .map-search-panel { left: 0; right: 0; margin-left: auto; margin-right: auto; width: min(560px, 100%); }
   .building-info-panel { left: 0; right: 0; margin-left: auto; margin-right: auto; width: min(560px, 100%); border-radius: 20px 20px 0 0; }
-  /* route bar (with Clear) sits in the top middle on wide screens, so the tool buttons need no push-down */
   .map-overlay-bar { left: 50%; right: auto; transform: translateX(-50%); width: min(520px, calc(100% - 340px)); box-sizing: border-box; justify-content: center; }
   #path-destination { flex: 0 1 auto; }
   #path-bar:not(.hidden) ~ .map-tools { top: 10px; }
@@ -2438,7 +2427,6 @@ html.tg-active, html.tg-active body { overscroll-behavior: none; }
 }
 
 
-/* ===== Start from… (choose your own starting point) ===== */
 .start-from-btn {
   margin-top: 8px;
   background: var(--white);
@@ -2462,7 +2450,6 @@ html.tg-active, html.tg-active body { overscroll-behavior: none; }
 }
 
 
-/* ===== Homepage polish ===== */
 .btn-sub {
   display: block;
   margin-top: 2px;
@@ -2514,7 +2501,6 @@ html.tg-active, html.tg-active body { overscroll-behavior: none; }
 }
 
 
-/* ===== Phone: route bar (with Clear) sits in the top row between the tool buttons and the GPS button ===== */
 @media (max-width: 899px) {
   .map-overlay-bar {
     left: 160px; right: 58px; top: 10px;

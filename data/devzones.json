@@ -1,5 +1,4 @@
 {
-  "_comment": "Development Zones pins. x/y are pixel positions in the satellite map image (map.image). Edit with devzones-editor.html, then replace this file.",
   "map": {
     "image": "images/devzones/DEV_ZONES_SATMAP.jpg"
   },

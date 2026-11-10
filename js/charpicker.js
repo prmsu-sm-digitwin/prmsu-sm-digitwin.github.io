@@ -9,9 +9,6 @@
 
   function $(id) { return document.getElementById(id); }
 
-  // Portraits are tall pictures shown in a square frame. Each artist draws the head at a
-  // different height, so a fixed crop cuts some heads. This finds the top of the drawing
-  // (first row with visible pixels) and crops from just above it, whatever the picture is.
   var topCache = {};
   function fitPortrait(img) {
     try {
@@ -33,12 +30,10 @@
       }
       var p = Math.max(0, Math.min(1, (top - w * 0.06) / (h - w)));
       img.style.objectPosition = 'center ' + (p * 100).toFixed(1) + '%';
-    } catch (e) { /* keep the CSS crop */ }
+    } catch (e) {}
   }
   window.fitPortrait = fitPortrait;
 
-  /* About page portraits are square head-and-shoulders art (sprites/about_portraits).
-     Find the drawing's edges and zoom the image so the head and shoulders fill the round frame. */
   function fitSquareAvatar(img) {
     try {
       var w = img.naturalWidth, h = img.naturalHeight;
@@ -144,7 +139,6 @@
 
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      // In first-person view the character cannot be seen, so this button jumps to a building instead.
       if (window.NavFP && NavFP.active) { if (isOpen) setOpen(false); NavFP.toggleTeleport(); return; }
       setOpen(!isOpen);
     });

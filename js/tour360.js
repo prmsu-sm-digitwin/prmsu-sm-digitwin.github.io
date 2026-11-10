@@ -506,9 +506,6 @@
   function prev() { var p = prevIdx(idx); if (p >= 0) showStop(p, (p === idx - 1 || (stops[p].next != null && idToIdx[stops[p].next] === idx)) ? 'back' : 'jump'); }
 
   var hudDetail = false;
-  /* The "Stop N / total" counter is a developer tool (it shows which stop has a wrong arrow).
-     It is hidden for normal users. Open the app once with ?hud=1 to show it on that device,
-     and ?hud=0 to hide it again. */
   function hudEnabled() {
     try {
       var q = /[?&]hud=([01])/.exec(window.location.search);

@@ -4,7 +4,7 @@
 let selectedBuilding = null;
 let gpsEnabled       = false;
 let campusBuildings  = [];
-let pickStartFor     = null;   // destination building while the user is choosing a starting point
+let pickStartFor     = null;
 
 
 (function () {
@@ -81,7 +81,6 @@ function navigateToSelected() {
   }
 }
 
-// "Start from…": the user picked a destination first, now picks where to start.
 function startFromSelected() {
   if (!selectedBuilding) return;
   const dest = selectedBuilding;
@@ -93,7 +92,6 @@ function startFromSelected() {
   if (input) { input.value = ''; input.placeholder = 'Search a starting point…'; }
   filterBuildingSheet('');
   if (typeof sheetEnsureOpen === 'function') sheetEnsureOpen();
-  // first person: the search list is hidden until its button is used, so open it here
   if (window.NavFP && NavFP.active && NavFP.openSearch) NavFP.openSearch();
 }
 
@@ -828,8 +826,6 @@ function initDevzonesViewer() {
 initDevzonesViewer();
 
 
-// Extra words each building can be found by (full college names, acronyms).
-// Add a line here to make another building searchable by more than its name.
 const BUILDING_SEARCH_TERMS = {
   ccit_main:      'College of Communication and Information Technology CCIT',
   lhs_fac_ccit:   'College of Communication and Information Technology CCIT Laboratory High School LHS faculty',

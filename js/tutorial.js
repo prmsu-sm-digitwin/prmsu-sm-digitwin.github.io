@@ -1,16 +1,10 @@
 (function () {
   'use strict';
 
-  /* Game-style guided tours.
-     Each page has its own short tour with a pixel guide character. The screen dims, the
-     button being explained is highlighted, and the guide talks in a dialogue box.
-     Tap the highlight to go on. Skip ends the tour for that page. */
-
   var SEEN_KEY = 'prmsuTourSeen';
   var reduced = false;
   try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
-  /* ---------- install helpers ---------- */
   var deferredPrompt = null, installedNow = false;
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferredPrompt = e; });
   window.addEventListener('appinstalled', function () { deferredPrompt = null; installedNow = true; });
@@ -55,7 +49,6 @@
     return { text: 'To install this app on a computer: click the install icon at the right end of the address bar, or open the browser menu and choose Install. On a phone, use the browser menu and pick Add to Home screen.' };
   }
 
-  /* ---------- tours ---------- */
   var INSTALL_STEP = { dynamic: installInfo, skipIf: function () { return isStandalone() || installedNow; } };
 
   var TOURS = {
@@ -112,7 +105,6 @@
 
   var INSTALL_TOUR = { guide: null, steps: [ INSTALL_STEP ] };
 
-  /* ---------- seen flags ---------- */
   function readSeen() { try { return JSON.parse(localStorage.getItem(SEEN_KEY) || '{}') || {}; } catch (e) { return {}; } }
   function markSeen(page) {
     if (!page || !TOURS[page]) return;
@@ -123,9 +115,6 @@
     try { var o = {}; Object.keys(TOURS).forEach(function (k) { o[k] = 1; }); localStorage.setItem(SEEN_KEY, JSON.stringify(o)); } catch (e) {}
   }
 
-  /* ---------- guide sprite ---------- */
-  /* Uses the artists' full-body pixel portraits (sprites/portraits). They are drawn on a
-     16 px grid, so scaling by 1/4 or 5/16 keeps every pixel block the same whole size. */
   var PORTRAIT_DIR = 'sprites/portraits/';
   var spriteCache = {};
   function guideCanvas(name, cb) {
@@ -153,10 +142,9 @@
     img.src = PORTRAIT_DIR + name + '.png';
   }
 
-  /* ---------- tour runner ---------- */
   var root = null, cutEl = null, stageEl = null, charBox = null, nameEl = null, textEl = null, hintEl = null;
   var actionBtn = null, nextBtn = null, skipBtn = null, caret = null;
-  var run = null;   // { page, tour, steps, i, forced }
+  var run = null;
   var typeTimer = null, typing = false, fullText = '';
   var layoutRaf = 0, askEl = null, asking = false;
 
@@ -225,7 +213,7 @@
     document.addEventListener('keydown', function (e) {
       if (!run) return;
       if (e.key === 'Escape') { if (asking) closeAsk(); else openAsk(); }
-      else if (asking) { /* the skip question is open: ignore the other keys */ }
+      else if (asking) {}
       else if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (typing) finishTyping(); else advance(); }
     });
     window.addEventListener('resize', scheduleLayout);
@@ -290,7 +278,6 @@
       cutEl.style.borderRadius = rad;
       if (!animate) { void cutEl.offsetWidth; cutEl.style.transition = ''; }
       cutEl.classList.add('tg-live'); root.classList.remove('tg-fulldim');
-      // guide at bottom unless the highlight is in the lower part of the screen
       var boxH = stageEl.offsetHeight || 150;
       var overlapsBottom = (y + h) > (vh - boxH - 24);
       stageEl.classList.toggle('tg-top', overlapsBottom);
@@ -304,8 +291,6 @@
     caret.style.display = r ? 'none' : '';
   }
 
-  /* Scroll only the nearest real scroll container, and only when the target is cut off.
-     (scrollIntoView would also move overflow:hidden parents and shift the map layout.) */
   function scrollParent(el) {
     var n = el.parentElement;
     while (n && n !== document.body && n !== document.documentElement) {
@@ -351,7 +336,6 @@
       };
     } else { actionBtn.hidden = true; actionBtn.onclick = null; }
     nameEl.textContent = run.tour.guide || 'Guide';
-    // wait one frame so scrollIntoView has settled before measuring
     place(st, true);
     typeText(text);
     setTimeout(function () { if (run && currentStep() === st) place(st, true); }, 120);
@@ -432,7 +416,6 @@
     return true;
   }
 
-  /* ---------- page hooks ---------- */
   var pageTimer = null;
   function onPageEnter(page) {
     if (run && run.page !== page) finish(true);
@@ -450,7 +433,6 @@
     if (page === 'map' && window.NavFP && NavFP.active) page = 'firstperson';
     start(page, true);
   };
-  /* called by navfp.js when first person starts or stops */
   window.onFirstPersonEnter = function () {
     if (seen('firstperson')) return;
     setTimeout(function () {
@@ -480,7 +462,6 @@
   if (document.readyState === 'complete') maybeAuto();
   else window.addEventListener('load', maybeAuto);
 
-  /* ---------- replay menu and install help (About page) ---------- */
   var menuEl = null;
   function closeMenu() { if (menuEl) menuEl.classList.remove('open'); }
   function buildMenu() {
