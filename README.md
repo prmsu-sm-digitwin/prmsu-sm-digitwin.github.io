@@ -53,7 +53,7 @@ Then open `http://localhost:8000`.
 
 ## For developers
 - `data/campus.json` holds buildings, places, waypoints and paths. `data/tour360.json` and `data/devzones.json` hold the walkthrough and Development Zones data.
-- `campus-editor.html` and `devzones-editor.html` are the editors for the map and the Development Zones pins. They are not part of the installed app.
+- Map editors (for the owner, contributors and developers only): `campus-editor.html` edits buildings, places, waypoints and paths, and `devzones-editor.html` places the Development Zones pins. They are not part of the app and are deliberately not in this public repo, so they are not on the website. They are kept in a separate private `editors` folder with a small `serve_editors.py` script that runs them against this repo's `data` folder. Ask the owner (Princess) for the editors folder if you need to edit the map data. Do not add the editor pages back to this repo.
 - After changing any file, increase `CACHE_NAME` in `service-worker.js`. Then reload the app twice so the new version replaces the cached one.
 - Models are `.glb` files in `models/`. New models must also be listed in `MODEL_ASSETS` in `service-worker.js` so they work offline.
 

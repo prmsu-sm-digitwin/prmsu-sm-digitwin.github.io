@@ -146,3 +146,7 @@ images/360/**/*.part
 # Dev Zones: full-size PNG originals + raw satmap stay on this PC; the app uses the compressed *_dz.jpg
 images/devzones/*_DZ.PNG
 images/devzones/PRMSU_SM_SATMAP.png
+
+# Map editors are for the owner, contributors and developers only: kept outside this public repo
+campus-editor.html
+devzones-editor.html
