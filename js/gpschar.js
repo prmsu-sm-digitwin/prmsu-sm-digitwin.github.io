@@ -11,6 +11,7 @@
   var DEPTH = 5;
   var Z_SQUASH = 0.6;
   var FOOT_Y = -3.8;
+  var TILT = 0.5;
   var SHADE = { front: 1, back: 0.8, side: 0.72, top: 0.95, bottom: 0.55 };
 
   var MOVE_START = 0.6, MOVE_STOP = 0.25;
@@ -124,6 +125,7 @@
     s.failed = true;
     API.ready = false;
     s.body.visible = false;
+    if (s.shadow) s.shadow.visible = false;
     s.fallback.visible = true;
     console.warn('[gpschar] ' + why, e || '');
   }
@@ -292,8 +294,19 @@
     body.visible = false;
     group.add(body);
 
+    var shadow = new THREE.Mesh(
+      new THREE.CircleGeometry(3.6, 24),
+      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 })
+    );
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.scale.set(1, 0.7, 1);
+    shadow.position.y = FOOT_Y + 0.25;
+    shadow.renderOrder = 1;
+    shadow.visible = false;
+    group.add(shadow);
+
     var s = {
-      body: body, fallback: fallback, failed: false, name: null, rec: null,
+      shadow: shadow, body: body, fallback: fallback, failed: false, name: null, rec: null,
       row: 0, flip: false, hasRow: false, rowT: 0,
       moving: false, phase: 0,
       last: 0, px: 0, pz: 0, vx: 0, vz: 0
@@ -337,7 +350,8 @@
       s.body.rotation.order = 'YXZ';
       s.body.rotation.y = Math.atan2(-_dir.x, -_dir.z);
       var elev = Math.asin(Math.max(-1, Math.min(1, -_dir.y))) * 180 / Math.PI;
-      s.body.rotation.x = -Math.max(0, elev * 0.8) * Math.PI / 180;
+      s.body.rotation.x = -Math.max(0, elev * TILT) * Math.PI / 180;
+      if (s.shadow) s.shadow.visible = true;
 
       if (!s.moving && speed > MOVE_START) s.moving = true;
       else if (s.moving && speed < MOVE_STOP) s.moving = false;
