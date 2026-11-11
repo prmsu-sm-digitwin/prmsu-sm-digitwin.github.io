@@ -2715,7 +2715,7 @@ html.tg-active, html.tg-active body { overscroll-behavior: none; }
 
 .kb-help-btn { display: none; }
 :root[data-device="desktop"] .kb-help-btn { display: flex; }
-.kb-help-btn + .help-btn-bar { margin-left: 0; }
+:root[data-device="desktop"] .kb-help-btn + .help-btn-bar { margin-left: 0; }
 .tour-kb-btn { right: 102px; }
 #navigate-btn.kb-active, #start-from-btn.kb-active { outline: 3px solid #F5C842; outline-offset: 2px; }
 
