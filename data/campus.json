@@ -338,12 +338,12 @@
       "id": "Z2_Int4",
       "label": "Z2_Int4",
       "latLng": {
-        "lat": 14.969281177085511,
-        "lng": 120.19715346080335
+        "lat": 14.969269539648952,
+        "lng": 120.19714510035041
       },
       "position": {
-        "x": 658,
-        "z": -86.1
+        "x": 657.1,
+        "z": -84.8
       },
       "neighbors": [
         "Z2_Int3",
@@ -603,12 +603,12 @@
       "id": "entryWaypoint_CTEBSED",
       "label": "CTE (BSED) Entry",
       "latLng": {
-        "lat": 14.969543467001806,
-        "lng": 120.19707357203082
+        "lat": 14.969517506566405,
+        "lng": 120.19702433825239
       },
       "position": {
-        "x": 649.4,
-        "z": -115.4
+        "x": 644.1,
+        "z": -112.5
       },
       "neighbors": [
         "Z2_Int4"
@@ -618,12 +618,12 @@
       "id": "entryWaypoint_CTEBSED_2",
       "label": "CTE (BSED) Entry 2",
       "latLng": {
-        "lat": 14.969423511886504,
-        "lng": 120.19749066573857
+        "lat": 14.969431568573352,
+        "lng": 120.19747951846799
       },
       "position": {
-        "x": 694.3,
-        "z": -102
+        "x": 693.1,
+        "z": -102.9
       },
       "neighbors": [
         "Z2_Int5"
@@ -1781,7 +1781,7 @@
       "texturedModel": null,
       "rotation": 106.2,
       "entryWaypoint": "entryWaypoint_MultiPurposeQuad",
-      "glbTint": true,
+      "glbTint": false,
       "modelScale": 1
     },
     {
@@ -1808,7 +1808,7 @@
       "rotation": 105,
       "entryWaypoint": "entryWaypoint_StudentCenter",
       "modelScale": 1.5,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "gabaldon",
@@ -1891,14 +1891,14 @@
       "rotation": 110.5,
       "entryWaypoint": "entryWaypoint_Library",
       "modelScale": 1.5,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "asb",
       "name": "ASB Building",
       "category": "academic",
       "description": "Agricultural Science Building.",
-      "color": "#3d9139",
+      "color": null,
       "latLng": {
         "lat": 14.969184496843328,
         "lng": 120.19944236703037
@@ -1917,7 +1917,7 @@
       "rotation": 112.5,
       "entryWaypoint": "entryWaypoint_ASBBuilding",
       "modelScale": 1.5,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "admin",
@@ -1969,7 +1969,7 @@
       "rotation": 286.5,
       "entryWaypoint": "backWaypoint_entryCanteen",
       "modelScale": 1.2,
-      "glbTint": true,
+      "glbTint": false,
       "labelOffset": {
         "x": 1.9,
         "y": 1.5,
@@ -2000,7 +2000,7 @@
       "rotation": 195,
       "entryWaypoint": "entryWaypoint_CHM1",
       "modelScale": 1.5,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "chm2",
@@ -2025,7 +2025,7 @@
       "texturedModel": null,
       "rotation": 293.8,
       "entryWaypoint": "entryWaypoint_CHM2",
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "cte_bsed",
@@ -2034,12 +2034,12 @@
       "description": "College of Teacher Education (Bachelor of Secondary Education).",
       "color": "#2f6ec2",
       "latLng": {
-        "lat": 14.970032239337293,
-        "lng": 120.19714231353275
+        "lat": 14.970026868212727,
+        "lng": 120.19715810549943
       },
       "position": {
-        "x": 656.8,
-        "z": -170
+        "x": 658.5,
+        "z": -169.4
       },
       "size": {
         "width": 48.9,
@@ -2048,7 +2048,7 @@
       },
       "glbModel": "models/BSEDNav.glb",
       "texturedModel": null,
-      "rotation": 24.6,
+      "rotation": 24,
       "entryWaypoint": "entryWaypoint_CTEBSED",
       "extraEntryWaypoints": [
         "entryWaypoint_CTEBSED_2"
@@ -2059,7 +2059,7 @@
         "y": 0,
         "z": 28.3
       },
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "lhs",
@@ -2085,7 +2085,7 @@
       "rotation": 114.2,
       "entryWaypoint": "LHS_BackEntry2",
       "modelScale": 1.5,
-      "glbTint": true,
+      "glbTint": false,
       "labelOffset": {
         "x": 1.2,
         "y": 0,
@@ -2254,7 +2254,7 @@
         "y": 3,
         "z": 2.3
       },
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "organic_mango_center",
@@ -2285,7 +2285,7 @@
         "y": 8,
         "z": 0
       },
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "rmtu_rd_center",
@@ -2311,7 +2311,7 @@
       "rotation": 289.7,
       "entryWaypoint": "entryWaypoint_ResearchAndDevelopmentCenter",
       "modelScale": 1,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "regional_mango_center",
@@ -2368,7 +2368,7 @@
       "rotation": 201.5,
       "entryWaypoint": "entryWaypoint_MitosMagsaysayBuilding",
       "modelScale": 1.5,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "housing_1",
@@ -2707,7 +2707,7 @@
       "entryWaypoint": "entryWaypoint_GuestHouse",
       "_note": "A short pathway from the main gate road leads to the front of the Guest House.",
       "modelScale": 1.5,
-      "glbTint": true,
+      "glbTint": false,
       "labelOffset": {
         "x": 7.8,
         "y": 1.5,
@@ -2737,7 +2737,7 @@
       "texturedModel": null,
       "rotation": 113.5,
       "entryWaypoint": "entryWaypoint_MensDormitory",
-      "glbTint": true,
+      "glbTint": false,
       "modelScale": 1.5
     },
     {
@@ -2769,7 +2769,7 @@
         "y": 6,
         "z": 8.1
       },
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "prachouse",
@@ -2795,7 +2795,7 @@
       "rotation": 181.8,
       "entryWaypoint": "entryWaypoint_PracticeHouse",
       "modelScale": 1,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "guard_house",
@@ -2821,7 +2821,7 @@
       "rotation": 106.7,
       "entryWaypoint": "entryWaypoint_GuardHouse",
       "modelScale": 1,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "mrf",
@@ -3427,12 +3427,12 @@
       "description": "",
       "color": "#8a6d4b",
       "latLng": {
-        "lat": 14.96928923377236,
-        "lng": 120.19707264309159
+        "lat": 14.969257902212393,
+        "lng": 120.19703641446219
       },
       "position": {
-        "x": 649.3,
-        "z": -87
+        "x": 645.4,
+        "z": -83.5
       },
       "size": {
         "width": 4.43,
