@@ -1512,12 +1512,12 @@
       "id": "Z1_Int16",
       "label": "Z1_Int16",
       "latLng": {
-        "lat": 14.969888114161444,
-        "lng": 120.20057009923799
+        "lat": 14.969804861730674,
+        "lng": 120.20050228667527
       },
       "position": {
-        "x": 1025.8,
-        "z": -153.9
+        "x": 1018.5,
+        "z": -144.6
       },
       "neighbors": [
         "Z1_Int14",
@@ -1680,12 +1680,12 @@
       "id": "entryWaypoint_AdminCourt",
       "label": "Admin Court Main Entry",
       "latLng": {
-        "lat": 14.96986304891347,
-        "lng": 120.20074473981052
+        "lat": 14.969816499167234,
+        "lng": 120.20076889223012
       },
       "position": {
-        "x": 1044.6,
-        "z": -151.1
+        "x": 1047.2,
+        "z": -145.9
       },
       "neighbors": [
         "startWaypoint_entryAdminCourt"
@@ -1695,12 +1695,12 @@
       "id": "startWaypoint_entryAdminCourt",
       "label": "Admin Court StartEntry",
       "latLng": {
-        "lat": 14.969891679451173,
-        "lng": 120.20060929951862
+        "lat": 14.969782482044984,
+        "lng": 120.20059889635368
       },
       "position": {
-        "x": 1030,
-        "z": -154.3
+        "x": 1028.9,
+        "z": -142.1
       },
       "neighbors": [
         "entryWaypoint_AdminCourt",
@@ -2050,7 +2050,9 @@
       "texturedModel": null,
       "rotation": 24.6,
       "entryWaypoint": "entryWaypoint_CTEBSED",
-      "extraEntryWaypoints": ["entryWaypoint_CTEBSED_2"],
+      "extraEntryWaypoints": [
+        "entryWaypoint_CTEBSED_2"
+      ],
       "modelScale": 1.5,
       "labelOffset": {
         "x": -6.1,
@@ -2149,23 +2151,23 @@
       "description": "",
       "color": "#797c80",
       "latLng": {
-        "lat": 14.969856782601477,
-        "lng": 120.20079397358894
+        "lat": 14.969760102359293,
+        "lng": 120.200940745985
       },
       "position": {
-        "x": 1049.9,
-        "z": -150.4
+        "x": 1065.7,
+        "z": -139.6
       },
       "size": {
-        "width": 20,
-        "depth": 15,
+        "width": 43.2,
+        "depth": 50.8,
         "height": 10
       },
       "glbModel": "models/AdminCourtNav.glb",
       "texturedModel": null,
-      "rotation": 195,
+      "rotation": 192.9,
       "entryWaypoint": "entryWaypoint_AdminCourt",
-      "glbTint": true,
+      "glbTint": false,
       "modelScale": 1.8,
       "labelOffset": {
         "x": 3.3,
