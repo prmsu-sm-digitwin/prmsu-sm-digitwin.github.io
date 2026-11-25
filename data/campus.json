@@ -165,12 +165,12 @@
       "id": "Z1_Int5",
       "label": "Z1_Int5",
       "latLng": {
-        "lat": 14.969152270095933,
-        "lng": 120.19760678314051
+        "lat": 14.969150479721078,
+        "lng": 120.19761978828953
       },
       "position": {
-        "x": 706.8,
-        "z": -71.7
+        "x": 708.2,
+        "z": -71.5
       },
       "neighbors": [
         "Z1_Int6",
@@ -321,12 +321,12 @@
       "id": "Z2_Int3",
       "label": "Z2_Int3",
       "latLng": {
-        "lat": 14.969111091474261,
-        "lng": 120.19682461632105
+        "lat": 14.969104825162267,
+        "lng": 120.19678374299556
       },
       "position": {
-        "x": 622.6,
-        "z": -67.1
+        "x": 618.2,
+        "z": -66.4
       },
       "neighbors": [
         "Z3_Int3",
@@ -356,12 +356,12 @@
       "id": "Z2_Int5",
       "label": "Z2_Int5",
       "latLng": {
-        "lat": 14.969419035949366,
-        "lng": 120.19749438149543
+        "lat": 14.969408293700235,
+        "lng": 120.19746930013662
       },
       "position": {
-        "x": 694.7,
-        "z": -101.5
+        "x": 692,
+        "z": -100.3
       },
       "neighbors": [
         "Z2_Int4",
@@ -524,12 +524,12 @@
       "id": "entryWaypoint_ASBBuilding",
       "label": "ASB Building Entry",
       "latLng": {
-        "lat": 14.969212247653584,
-        "lng": 120.19963094169111
+        "lat": 14.969222094715288,
+        "lng": 120.19956870276367
       },
       "position": {
-        "x": 924.7,
-        "z": -78.4
+        "x": 918,
+        "z": -79.5
       },
       "neighbors": [
         "startWaypoint_entryASBBuilding",
@@ -588,12 +588,12 @@
       "id": "entryWaypoint_CHM2",
       "label": "CHM 2 Entry",
       "latLng": {
-        "lat": 14.969314299020333,
-        "lng": 120.196677843925
+        "lat": 14.96918718240561,
+        "lng": 120.19673265133872
       },
       "position": {
-        "x": 606.8,
-        "z": -89.8
+        "x": 612.7,
+        "z": -75.6
       },
       "neighbors": [
         "Z2_Int3"
@@ -618,12 +618,12 @@
       "id": "entryWaypoint_CTEBSED_2",
       "label": "CTE (BSED) Entry 2",
       "latLng": {
-        "lat": 14.969431568573352,
-        "lng": 120.19747951846799
+        "lat": 14.969382333264834,
+        "lng": 120.19740613226996
       },
       "position": {
-        "x": 693.1,
-        "z": -102.9
+        "x": 685.2,
+        "z": -97.4
       },
       "neighbors": [
         "Z2_Int5"
@@ -911,12 +911,12 @@
       "id": "startWaypoint_entryMotorpoolGarage",
       "label": "Motorpool Garage StartEntry",
       "latLng": {
-        "lat": 14.970820004273607,
-        "lng": 120.19915996950886
+        "lat": 14.97082268983589,
+        "lng": 120.19920641646962
       },
       "position": {
-        "x": 874,
-        "z": -258
+        "x": 879,
+        "z": -258.3
       },
       "neighbors": [
         "entryWaypoint_MotorpoolGarage",
@@ -928,12 +928,12 @@
       "id": "startWaypoint_entryOrganicMangoCenter",
       "label": "Organic Mango Center StartEntry",
       "latLng": {
-        "lat": 14.970797624587917,
-        "lng": 120.19902898907947
+        "lat": 14.970805681274765,
+        "lng": 120.19903270483633
       },
       "position": {
-        "x": 859.9,
-        "z": -255.5
+        "x": 860.3,
+        "z": -256.4
       },
       "neighbors": [
         "entryWaypoint_OrganicMangoCenter",
@@ -945,12 +945,12 @@
       "id": "startWaypoint_entryResearchAndDevelopmentCenter",
       "label": "Research and Development Center StartEntry",
       "latLng": {
-        "lat": 14.970862078082705,
-        "lng": 120.1993661940147
+        "lat": 14.970858497332994,
+        "lng": 120.19936898083235
       },
       "position": {
-        "x": 896.2,
-        "z": -262.7
+        "x": 896.5,
+        "z": -262.3
       },
       "neighbors": [
         "entryWaypoint_ResearchAndDevelopmentCenter",
@@ -1012,12 +1012,12 @@
       "id": "entryWaypoint_MotorpoolGarage",
       "label": "Motorpool Garage Entry",
       "latLng": {
-        "lat": 14.970695573221166,
-        "lng": 120.19918040617159
+        "lat": 14.970745703717114,
+        "lng": 120.19922406631473
       },
       "position": {
-        "x": 876.2,
-        "z": -244.1
+        "x": 880.9,
+        "z": -249.7
       },
       "neighbors": [
         "startWaypoint_entryMotorpoolGarage"
@@ -1027,12 +1027,12 @@
       "id": "entryWaypoint_OrganicMangoCenter",
       "label": "Organic Mango Center Entry",
       "latLng": {
-        "lat": 14.970922950827784,
-        "lng": 120.19897325272653
+        "lat": 14.970933693076915,
+        "lng": 120.19898718681476
       },
       "position": {
-        "x": 853.9,
-        "z": -269.5
+        "x": 855.4,
+        "z": -270.7
       },
       "neighbors": [
         "startWaypoint_entryOrganicMangoCenter"
@@ -1072,12 +1072,12 @@
       "id": "startWaypoint_entryMitosMagsaysayBuilding",
       "label": "Mitos Magsaysay Building StartEntry",
       "latLng": {
-        "lat": 14.970659765724061,
-        "lng": 120.19855058538347
+        "lat": 14.970657975349205,
+        "lng": 120.19854222493053
       },
       "position": {
-        "x": 808.4,
-        "z": -240.1
+        "x": 807.5,
+        "z": -239.9
       },
       "neighbors": [
         "entryWaypoint_MitosMagsaysayBuilding",
@@ -1089,12 +1089,12 @@
       "id": "entryWaypoint_MitosMagsaysayBuilding",
       "label": "Mitos Magsaysay Building Entry",
       "latLng": {
-        "lat": 14.970779720839364,
-        "lng": 120.19849577796975
+        "lat": 14.970689306909172,
+        "lng": 120.19852364614623
       },
       "position": {
-        "x": 802.5,
-        "z": -253.5
+        "x": 805.5,
+        "z": -243.4
       },
       "neighbors": [
         "startWaypoint_entryMitosMagsaysayBuilding"
@@ -1121,12 +1121,12 @@
       "id": "startWaypoint_entryCanteen",
       "label": "Canteen StartEntry",
       "latLng": {
-        "lat": 14.96878345287575,
-        "lng": 120.19526121162134
+        "lat": 14.968753911690637,
+        "lng": 120.19526771419585
       },
       "position": {
-        "x": 454.3,
-        "z": -30.5
+        "x": 455,
+        "z": -27.2
       },
       "neighbors": [
         "backWaypoint_entryCanteen",
@@ -1168,12 +1168,12 @@
       "id": "entryWaypoint_MensDormitory",
       "label": "Men's Dormitory Entry",
       "latLng": {
-        "lat": 14.972636339564268,
-        "lng": 120.20025518884394
+        "lat": 14.97265066256311,
+        "lng": 120.20025054414786
       },
       "position": {
-        "x": 991.9,
-        "z": -460.9
+        "x": 991.4,
+        "z": -462.5
       },
       "neighbors": [
         "startWaypoint_entryMensDormitory"
@@ -1183,12 +1183,12 @@
       "id": "startWaypoint_entryMensDormitory",
       "label": "Men's Dormitory StartEntry",
       "latLng": {
-        "lat": 14.972849394172043,
-        "lng": 120.20017901582827
+        "lat": 14.972836861548057,
+        "lng": 120.20017251325376
       },
       "position": {
-        "x": 983.7,
-        "z": -484.7
+        "x": 983,
+        "z": -483.3
       },
       "neighbors": [
         "entryWaypoint_MensDormitory",
@@ -1268,12 +1268,12 @@
       "id": "entryWaypoint_CCITMain",
       "label": "CCIT Main Entry",
       "latLng": {
-        "lat": 14.970154880014878,
-        "lng": 120.19942378824605
+        "lat": 14.970123548454911,
+        "lng": 120.19945165642253
       },
       "position": {
-        "x": 902.4,
-        "z": -183.7
+        "x": 905.4,
+        "z": -180.2
       },
       "neighbors": [
         "startWaypoint_entryCCITMain"
@@ -1316,12 +1316,12 @@
       "id": "entryWaypoint_PracticeHouse",
       "label": "Practice House Entry",
       "latLng": {
-        "lat": 14.96833920201973,
-        "lng": 120.1962228112496
+        "lat": 14.96839046559502,
+        "lng": 120.1961808614447
       },
       "position": {
-        "x": 557.8,
-        "z": 19.1
+        "x": 553.3,
+        "z": 13.4
       },
       "neighbors": [
         "startWaypoint_entryPracticeHouse"
@@ -1331,12 +1331,12 @@
       "id": "startWaypoint_entryPracticeHouse",
       "label": "Practice House StartEntry",
       "latLng": {
-        "lat": 14.968583826079387,
-        "lng": 120.19618364826235
+        "lat": 14.96855249451942,
+        "lng": 120.19614556175452
       },
       "position": {
-        "x": 553.6,
-        "z": -8.2
+        "x": 549.5,
+        "z": -4.7
       },
       "neighbors": [
         "entryWaypoint_PracticeHouse",
@@ -1900,12 +1900,12 @@
       "description": "Agricultural Science Building.",
       "color": null,
       "latLng": {
-        "lat": 14.969184496843328,
-        "lng": 120.19944236703037
+        "lat": 14.969197029467313,
+        "lng": 120.19929838145197
       },
       "position": {
-        "x": 904.4,
-        "z": -75.3
+        "x": 888.9,
+        "z": -76.7
       },
       "size": {
         "width": 42.2,
@@ -1926,16 +1926,16 @@
       "description": "",
       "color": "#d6cdc3",
       "latLng": {
-        "lat": 14.970254245819344,
-        "lng": 120.20010191387338
+        "lat": 14.970255141006772,
+        "lng": 120.20015950810475
       },
       "position": {
-        "x": 975.4,
-        "z": -194.8
+        "x": 981.6,
+        "z": -194.9
       },
       "size": {
-        "width": 30.8,
-        "depth": 31.2,
+        "width": 42.4,
+        "depth": 35.9,
         "height": 15
       },
       "glbModel": "models/AdminNav.glb",
@@ -1943,7 +1943,7 @@
       "rotation": 200.8,
       "entryWaypoint": "entryWaypoint_AdminBuilding",
       "modelScale": 1.5,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "canteen",
@@ -1952,16 +1952,16 @@
       "description": "",
       "color": "#948370",
       "latLng": {
-        "lat": 14.968886399429927,
-        "lng": 120.19541077083504
+        "lat": 14.968905198365906,
+        "lng": 120.19537732902329
       },
       "position": {
-        "x": 470.4,
-        "z": -42
+        "x": 466.8,
+        "z": -44.1
       },
       "size": {
-        "width": 26.4,
-        "depth": 16.8,
+        "width": 36.9,
+        "depth": 24.6,
         "height": 10
       },
       "glbModel": "models/CANTEENNav.glb",
@@ -2023,7 +2023,7 @@
       },
       "glbModel": "models/HM2Nav.glb",
       "texturedModel": null,
-      "rotation": 293.8,
+      "rotation": 116.8,
       "entryWaypoint": "entryWaypoint_CHM2",
       "glbTint": false
     },
@@ -2116,7 +2116,7 @@
       "rotation": 289.4,
       "entryWaypoint": "entryWaypoint_LHSFacultyCCIT",
       "modelScale": 1.5,
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "ccit_main",
@@ -2125,12 +2125,12 @@
       "description": "College of Communication and Information Technology.",
       "color": "#535453",
       "latLng": {
-        "lat": 14.970230970946226,
-        "lng": 120.19939870688724
+        "lat": 14.970229180571371,
+        "lng": 120.19941078309704
       },
       "position": {
-        "x": 899.7,
-        "z": -192.2
+        "x": 901,
+        "z": -192
       },
       "size": {
         "width": 16.1,
@@ -2139,7 +2139,7 @@
       },
       "glbModel": "models/CCIT1Nav.glb",
       "texturedModel": null,
-      "rotation": 115.1,
+      "rotation": 112,
       "entryWaypoint": "entryWaypoint_CCITMain",
       "modelScale": 1.5,
       "glbTint": false
@@ -2198,7 +2198,7 @@
       "texturedModel": null,
       "rotation": 17.7,
       "entryWaypoint": "entryWaypoint_3LabRooms",
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "processing",
@@ -2223,7 +2223,7 @@
       "texturedModel": null,
       "rotation": 20.5,
       "entryWaypoint": "entryWaypoint_Processing",
-      "glbTint": true
+      "glbTint": false
     },
     {
       "id": "motorpool_garage",
@@ -2232,27 +2232,27 @@
       "description": "",
       "color": "#948370",
       "latLng": {
-        "lat": 14.97071705771943,
-        "lng": 120.19915346693435
+        "lat": 14.970716162532002,
+        "lng": 120.19918133511081
       },
       "position": {
-        "x": 873.3,
-        "z": -246.5
+        "x": 876.3,
+        "z": -246.4
       },
       "size": {
-        "width": 13.6,
-        "depth": 19.9,
+        "width": 16,
+        "depth": 21.3,
         "height": 5
       },
       "glbModel": "models/MotorpoolNav.glb",
       "texturedModel": null,
-      "rotation": 108.2,
+      "rotation": 99.9,
       "entryWaypoint": "entryWaypoint_MotorpoolGarage",
       "modelScale": 1.5,
       "labelOffset": {
-        "x": 3,
+        "x": 0.3,
         "y": 3,
-        "z": 2.3
+        "z": 0.4
       },
       "glbTint": false
     },
@@ -2351,12 +2351,12 @@
       "description": "One of the CAg buildings.",
       "color": "#3d9139",
       "latLng": {
-        "lat": 14.970883562580969,
-        "lng": 120.19840474192664
+        "lat": 14.970871029956982,
+        "lng": 120.19841124450114
       },
       "position": {
-        "x": 792.7,
-        "z": -265.1
+        "x": 793.4,
+        "z": -263.7
       },
       "size": {
         "width": 26.5,
@@ -2721,16 +2721,16 @@
       "description": "",
       "color": "#948370",
       "latLng": {
-        "lat": 14.972587999443174,
-        "lng": 120.20032950398118
+        "lat": 14.97243492239305,
+        "lng": 120.20037780882039
       },
       "position": {
-        "x": 999.9,
-        "z": -455.5
+        "x": 1005.1,
+        "z": -438.4
       },
       "size": {
-        "width": 29.5,
-        "depth": 47.5,
+        "width": 42.5,
+        "depth": 72.1,
         "height": 15
       },
       "glbModel": "models/MenDormNav.glb",
@@ -2792,10 +2792,15 @@
       },
       "glbModel": "models/Prac_GuestNav.glb",
       "texturedModel": null,
-      "rotation": 181.8,
+      "rotation": 189.6,
       "entryWaypoint": "entryWaypoint_PracticeHouse",
       "modelScale": 1,
-      "glbTint": false
+      "glbTint": false,
+      "labelOffset": {
+        "x": 0,
+        "y": 0,
+        "z": 2.7
+      }
     },
     {
       "id": "guard_house",
@@ -3620,7 +3625,7 @@
       "category": "place",
       "kind": "building",
       "description": "",
-      "color": "#7f8c8d",
+      "color": "#b1b8b9",
       "latLng": {
         "lat": 14.969330412394031,
         "lng": 120.20012606629298
@@ -3642,7 +3647,8 @@
         "x": 0,
         "y": 0,
         "z": -0.2
-      }
+      },
+      "glbTint": true
     },
     {
       "id": "place_agri_shed",
@@ -3678,26 +3684,26 @@
       "description": "",
       "color": "#8a6d4b",
       "latLng": {
-        "lat": 14.970032239337293,
-        "lng": 120.19946744838919
+        "lat": 14.970061780522403,
+        "lng": 120.19953061625584
       },
       "position": {
-        "x": 907.1,
-        "z": -170
+        "x": 913.9,
+        "z": -173.3
       },
       "size": {
-        "width": 5.4,
-        "depth": 6.1,
+        "width": 4.3,
+        "depth": 5.1,
         "height": 1.39
       },
       "glbModel": "models/places/CcitPuntodFIN.glb",
       "texturedModel": null,
-      "rotation": 23.8,
+      "rotation": 203.3,
       "labelHidden": true,
       "labelOffset": {
-        "x": 1.1,
+        "x": 0.9,
         "y": 0,
-        "z": 0.8
+        "z": -1.5
       }
     },
     {
@@ -3737,12 +3743,12 @@
       "description": "",
       "color": "#4a90d9",
       "latLng": {
-        "lat": 14.969177335343906,
-        "lng": 120.19529093767625
+        "lat": 14.969239103276413,
+        "lng": 120.19520175951155
       },
       "position": {
-        "x": 457.5,
-        "z": -74.5
+        "x": 447.9,
+        "z": -81.4
       },
       "size": {
         "width": 20,
