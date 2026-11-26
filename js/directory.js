@@ -5,7 +5,7 @@ const DIRECTORY_DATA = [
     title: 'Academic',
     items: [
       { name: 'Agriculture Technology (Agri-Tech)', photo: 'images/directory/AGRITECH.jpg',
-        text: 'Some College of Agriculture (CAg) classrooms, located in front of the Mitos Magsaysay Building.' },
+        text: 'Some College of Agriculture (CAg) classrooms such as Processing and 3 Lab Rooms, located in front of the Mitos Magsaysay Building.' },
       { name: 'Agricultural Science Building (ASB)', photo: 'images/directory/ASB.jpg',
         text: 'CAg building with classrooms and a faculty office.' },
       { name: 'CCIT Main', photo: 'images/directory/CCIT_MAIN.jpg',
@@ -15,7 +15,7 @@ const DIRECTORY_DATA = [
       { name: 'CHM 2', photo: 'images/directory/CHM_2.jpg',
         text: 'Second CHM building with the faculty office and some classrooms.' },
       { name: 'CTE (BEED)', photo: 'images/directory/CTE_BEED.jpg',
-        text: 'CTE building in front of Gabaldon Court. It also houses the GAD Office (Gender and Development Office).' },
+        text: 'CTE building behind Gabaldon Court. It also houses the GAD Office (Gender and Development Office).' },
       { name: 'CTE (BSED)', photo: 'images/directory/CTE_BSED.jpg',
         text: 'CTE building with a faculty office and classrooms.' },
       { name: 'Lahar-laden Technology Demonstration Area (LTDA)', photo: 'images/directory/LTDA.jpg',
