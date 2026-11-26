@@ -649,12 +649,12 @@
       "id": "entryWaypoint_AdminBuilding",
       "label": "Admin Building Entry",
       "latLng": {
-        "lat": 14.970134290704042,
-        "lng": 120.19989476042832
+        "lat": 14.970210381635392,
+        "lng": 120.19985760285971
       },
       "position": {
-        "x": 953.1,
-        "z": -181.4
+        "x": 949.1,
+        "z": -189.9
       },
       "neighbors": [
         "Z2_Int8",
@@ -2910,8 +2910,8 @@
         "z": -78.1
       },
       "size": {
-        "width": 23.5,
-        "depth": 29.8,
+        "width": 24,
+        "depth": 29.3,
         "height": 20
       },
       "glbModel": "models/places/BangarNav.glb",
@@ -2922,7 +2922,8 @@
         "x": 1.7,
         "y": 0,
         "z": -5.6
-      }
+      },
+      "modelScale": 1.1
     },
     {
       "id": "place_central_nursery",
