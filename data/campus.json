@@ -1817,12 +1817,12 @@
       "description": "",
       "color": "#797c80",
       "latLng": {
-        "lat": 14.968748540566072,
-        "lng": 120.19761978828953
+        "lat": 14.968693038945558,
+        "lng": 120.19769224554834
       },
       "position": {
-        "x": 708.2,
-        "z": -26.6
+        "x": 716,
+        "z": -20.4
       },
       "size": {
         "width": 20,
@@ -1848,12 +1848,12 @@
       "description": "College of Teacher Education (Bachelor of Elementary Education). This building also houses the GAD Office (Gender and Development Office).",
       "color": "#2f6ec2",
       "latLng": {
-        "lat": 14.968742274254078,
-        "lng": 120.19759284905228
+        "lat": 14.968678715946716,
+        "lng": 120.19765044328365
       },
       "position": {
-        "x": 705.3,
-        "z": -25.9
+        "x": 711.5,
+        "z": -18.8
       },
       "size": {
         "width": 17,
